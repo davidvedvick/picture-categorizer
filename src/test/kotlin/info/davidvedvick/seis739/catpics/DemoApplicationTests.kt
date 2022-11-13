@@ -1,4 +1,4 @@
-package com.example.demo
+package info.davidvedvick.seis739.catpics
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
