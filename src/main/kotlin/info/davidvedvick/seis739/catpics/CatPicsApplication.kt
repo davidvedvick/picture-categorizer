@@ -10,7 +10,7 @@ class CatPicsApplication
 fun main(args: Array<String>) {
 	Flyway
 		.configure()
-		.dataSource("jdbc:postgresql://localhost:5432/catpics", "cat", "scratch")
+		.dataSource("jdbc:postgresql://db:5432/catpics", "cat", "scratch")
 		.load()
 		.migrate()
 
