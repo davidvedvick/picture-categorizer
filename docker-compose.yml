@@ -12,3 +12,8 @@ services:
       POSTGRES_DB: catpics
       POSTGRES_USER: cat
       POSTGRES_PASSWORD: scratch
+
+#  web:
+#    image: tomcat
+#    ports:
+#      - "3000:8080"

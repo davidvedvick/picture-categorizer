@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.flywaydb:flyway-core")
 	implementation("com.password4j:password4j:1.6.2")
+	implementation("org.postgresql:postgresql:42.5.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
