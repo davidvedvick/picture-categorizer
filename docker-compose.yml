@@ -17,3 +17,6 @@ services:
     image: tomcat
     ports:
       - "3000:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/catpics
+      SERVER_PORT: 8080
