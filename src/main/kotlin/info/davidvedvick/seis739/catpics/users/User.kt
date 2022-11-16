@@ -1,14 +1,11 @@
 package info.davidvedvick.seis739.catpics.users
 
 import org.hibernate.Hibernate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
 class User(
-    @Id @GeneratedValue var Id: Long = -1,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var Id: Long = -1,
     @Column(length = 50) var userName: String = "",
     @Column(length = 128) var password: String = "",
 ) {
