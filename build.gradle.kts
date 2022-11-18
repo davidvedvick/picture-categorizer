@@ -26,6 +26,10 @@ dependencies {
 	implementation("com.password4j:password4j:1.6.2")
 	implementation("org.postgresql:postgresql:42.5.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("io.mockk:mockk:1.13.2")
+//	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+	testImplementation("org.amshove.kluent:kluent:1.72")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.7.21")
 }
 
 tasks.withType<KotlinCompile> {
