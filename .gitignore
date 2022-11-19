@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+/node/
+/src/main/resources/static/

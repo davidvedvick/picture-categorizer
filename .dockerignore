@@ -1,0 +1,9 @@
+.idea
+build
+node
+design
+src/main/resources/static/
+docker-compose.yml
+Dockerfile
+build.sh
+.env

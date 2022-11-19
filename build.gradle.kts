@@ -44,8 +44,12 @@ tasks.withType<Test> {
 }
 
 frontend {
-	nodeVersion.set("18.2.1")
+	nodeVersion.set("18.12.1")
 	packageJsonDirectory.set(File("frontend"))
 	assembleScript.set("run build")
 	cleanScript.set("run clean")
+}
+
+copy {
+	from("frontend/build").into("src/main/resources/static")
 }
