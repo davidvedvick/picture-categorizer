@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.7.3"
 	id("io.spring.dependency-management") version "1.0.13.RELEASE"
+	id("org.siouan.frontend-jdk11") version "6.0.0"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.spring") version "1.6.21"
 }
@@ -27,7 +28,6 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.5.0")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.13.2")
-//	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 	testImplementation("org.amshove.kluent:kluent:1.72")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.7.21")
 }
@@ -41,4 +41,11 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+frontend {
+	nodeVersion.set("18.2.1")
+	packageJsonDirectory.set(File("frontend"))
+	assembleScript.set("run build")
+	cleanScript.set("run clean")
 }
