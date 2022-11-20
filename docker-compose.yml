@@ -14,9 +14,10 @@ services:
       POSTGRES_PASSWORD: scratch
 
   web:
-    image: tomcat
+    build:
+      context: .
+    image: catpics
     ports:
-      - "3000"
+      - "3000:3000"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/catpics
-#      SERVER_PORT: 8080
