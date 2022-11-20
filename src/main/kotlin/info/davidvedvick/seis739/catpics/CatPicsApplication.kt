@@ -1,8 +1,6 @@
 package info.davidvedvick.seis739.catpics
 
 import org.flywaydb.core.Flyway
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,15 +10,15 @@ import org.springframework.core.env.Environment
 import org.springframework.core.env.get
 
 @SpringBootApplication
-class CatPicsApplication {
+class CatPicsApplication(private val env: Environment) {
 
-	@Autowired private lateinit var env: Environment
+	private val logger by lazyLogger<CatPicsApplication>()
 
 	@Bean
 	fun runner(context: ApplicationContext): CommandLineRunner = CommandLineRunner {
 		val dataSource = env["spring.datasource.url"]
 
-		LoggerFactory.getLogger(CatPicsApplication::class.java).info("Datasource: $dataSource")
+		logger.info("Datasource: $dataSource")
 
 		Flyway
 			.configure()
