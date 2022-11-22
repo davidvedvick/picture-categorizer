@@ -14,14 +14,14 @@ class PictureController(private val pictureRepository: PictureRepository, privat
     @GetMapping("/")
     fun get(): List<Picture> = pictureRepository.findAll()
 
-    fun getUserPictures(principal: Principal): List<Picture> {
-        return userRepository
+    fun getUserPictures(principal: Principal): List<Picture> =
+        userRepository
             .findByUserName(principal.name)
             .value
-            ?.let(pictureRepository::findByUser)
+            ?.id
+            ?.let(pictureRepository::findByUserId)
             ?: emptyList()
-    }
 
     @GetMapping("/{id}")
-    fun getPicture(@PathVariable id: Long): Picture = pictureRepository.findById(id).orElse(null)
+    fun getPicture(@PathVariable id: Long): Picture? = pictureRepository.findById(id).value
 }

@@ -17,7 +17,7 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : Us
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication? =
         request
             ?.inputStream
-            ?.let { ObjectMapper().readValue(it, cls<UserLoginDetails>())}
+            ?.let { ObjectMapper().readValue(it, cls<JwtUserRequest>())}
             ?.let {
                 authenticationManager.authenticate(UsernamePasswordAuthenticationToken(it.username, it.password))
             }
