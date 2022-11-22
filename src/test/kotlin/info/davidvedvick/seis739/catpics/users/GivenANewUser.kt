@@ -1,7 +1,5 @@
-package info.davidvedvick.seis739.catpics.UserTests
+package info.davidvedvick.seis739.catpics.users
 
-import info.davidvedvick.seis739.catpics.users.User
-import info.davidvedvick.seis739.catpics.users.UserController
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be equal to`

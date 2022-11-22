@@ -1,4 +1,4 @@
-package info.davidvedvick.seis739.catpics.UserTests.AuthenticationTests
+package info.davidvedvick.seis739.catpics.users.AuthenticationTests
 
 import info.davidvedvick.seis739.catpics.users.User
 import info.davidvedvick.seis739.catpics.users.authorization.UserLoginDetails
