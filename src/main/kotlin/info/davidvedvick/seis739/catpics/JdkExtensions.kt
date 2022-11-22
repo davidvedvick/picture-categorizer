@@ -2,4 +2,7 @@ package info.davidvedvick.seis739.catpics
 
 import java.util.*
 
-fun <T> Optional<T>.getOrNull(): T? = takeIf { it.isPresent }?.get()
+val <T> Optional<T>.value: T?
+    get() = takeIf { it.isPresent }?.get()
+
+inline fun <reified T> cls() = T::class.java

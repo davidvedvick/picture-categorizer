@@ -5,7 +5,7 @@ import javax.persistence.*
 
 @Entity
 class User(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var Id: Long = -1,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = -1,
     @Column(length = 50) var userName: String = "",
     @Column(length = 128) var password: String = "",
 ) {
@@ -14,13 +14,13 @@ class User(
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
         other as User
 
-        return Id == other.Id
+        return id == other.id
     }
 
     override fun hashCode(): Int = javaClass.hashCode()
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(Id = $Id , userName = $userName , password = $password )"
+        return this::class.simpleName + "(Id = $id , userName = $userName , password = $password )"
     }
 }

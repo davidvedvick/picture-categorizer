@@ -1,5 +1,6 @@
-package info.davidvedvick.seis739.catpics.users
+package info.davidvedvick.seis739.catpics.users.authorization
 
+import info.davidvedvick.seis739.catpics.users.UserRepository
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication

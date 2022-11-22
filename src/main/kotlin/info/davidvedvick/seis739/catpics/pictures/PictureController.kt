@@ -1,7 +1,7 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import info.davidvedvick.seis739.catpics.getOrNull
 import info.davidvedvick.seis739.catpics.users.UserRepository
+import info.davidvedvick.seis739.catpics.value
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +17,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
     fun getUserPictures(principal: Principal): List<Picture> {
         return userRepository
             .findByUserName(principal.name)
-            .getOrNull()
+            .value
             ?.let(pictureRepository::findByUser)
             ?: emptyList()
     }

@@ -2,6 +2,9 @@ import {Button, Col, Container, Form, FormGroup, Input, Label} from "reactstrap"
 
 export function UserLogin() {
 
+    async function handleSubmit() {
+        await fetch("")
+    }
 
     return (
         <Container fluid="sm">
