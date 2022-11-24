@@ -18,7 +18,8 @@ export function UserLogin() {
                         <Input id="password" type="password" placeholder="Password"/>
                         <Label for="password">Password</Label>
                     </FormGroup>
-                    <p><Button type="submit">Login</Button></p>
+                    {/*<p><Button type="submit">Login</Button></p>*/}
+                    <p><Button type="submit" onSubmit={handleSubmit}>Login</Button></p>
                 </Form>
             </Col>
         </Container>
