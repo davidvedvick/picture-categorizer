@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.security.Principal
 
 @RestController
 @RequestMapping("/picture")
@@ -14,13 +13,8 @@ class PictureController(private val pictureRepository: PictureRepository, privat
     @GetMapping("/")
     fun get(): List<Picture> = pictureRepository.findAll()
 
-    fun getUserPictures(principal: Principal): List<Picture> =
-        userRepository
-            .findByUserName(principal.name)
-            .value
-            ?.id
-            ?.let(pictureRepository::findByUserId)
-            ?: emptyList()
+    @GetMapping("/{userId}")
+    fun getUserPictures(userId: Long): List<Picture> = pictureRepository.findByUserId(userId)
 
     @GetMapping("/{id}")
     fun getPicture(@PathVariable id: Long): Picture? = pictureRepository.findById(id).value

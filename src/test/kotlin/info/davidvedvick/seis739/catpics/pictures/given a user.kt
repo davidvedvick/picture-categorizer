@@ -31,11 +31,7 @@ class `given a user` {
 
         @BeforeAll
         fun act() {
-            pictures = services.getUserPictures(
-                mockk {
-                    every { name } returns "8N8k"
-                }
-            )
+            pictures = services.getUserPictures(920)
         }
 
         @Test fun `then the pictures are correct`() {
