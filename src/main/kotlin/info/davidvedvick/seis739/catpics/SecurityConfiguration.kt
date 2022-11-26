@@ -16,9 +16,10 @@ class SecurityConfiguration(private val authenticationManager: AuthenticationMan
 
     @Bean
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain? {
-        httpSecurity.cors().and().csrf().disable().authorizeRequests()
-            .anyRequest().authenticated()
-            .and()
+        httpSecurity.cors().and().csrf().disable()
+//            .authorizeRequests()
+//            .anyRequest().authenticated()
+//            .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager))
             .addFilter(JwtAuthorizationFilter(authenticationManager))
             // this disables session creation on Spring Security

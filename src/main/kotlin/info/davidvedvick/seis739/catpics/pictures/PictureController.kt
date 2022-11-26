@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/picture")
+@RequestMapping("/pictures")
 class PictureController(private val pictureRepository: PictureRepository, private val userRepository: UserRepository) {
     @GetMapping("/")
     fun get(): List<Picture> = pictureRepository.findAll()
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     fun getUserPictures(userId: Long): List<Picture> = pictureRepository.findByUserId(userId)
 
     @GetMapping("/{id}")

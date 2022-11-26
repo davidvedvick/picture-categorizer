@@ -1,5 +1,6 @@
 package info.davidvedvick.seis739.catpics.users
 
+import info.davidvedvick.seis739.catpics.pictures.Picture
 import org.hibernate.Hibernate
 import javax.persistence.*
 
@@ -8,6 +9,7 @@ class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = -1,
     @Column(length = 50) var userName: String = "",
     @Column(length = 128) var password: String = "",
+    @OneToMany(fetch = FetchType.LAZY) @JoinColumn(name = "user_id") var pictures: List<Picture> = emptyList(),
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

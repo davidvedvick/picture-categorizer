@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
@@ -23,7 +24,18 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager) : Bas
                 val username = jwt.subject
                 val role = jwt.getClaim("simple").asString()
                 username
-                    ?.let { UsernamePasswordAuthenticationToken(it, null, mutableListOf(SimpleGrantedAuthority(role))) }
+                    ?.let {
+                        UsernamePasswordAuthenticationToken(
+                            it,
+                            null,
+                            mutableListOf(SimpleGrantedAuthority(role))
+                        )
+                    }
+                    ?.also {
+                        SecurityContextHolder.getContext().authentication = it
+                    }
             }
+
+        chain.doFilter(request, response)
     }
 }
