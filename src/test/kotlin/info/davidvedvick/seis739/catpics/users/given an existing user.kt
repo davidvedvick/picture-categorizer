@@ -7,17 +7,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class `given a new user` {
+class `given an existing user` {
     class `when logging the user in` {
         private val services by lazy {
             UserController(
                 mockk {
-                    every { findByEmail(any()) } returns Optional.empty()
-
-                    every { save(any()) } answers {
-                        user = firstArg()
-                        firstArg()
-                    }
+                    every { findByEmail("2l9L") } returns Optional.of(User(822, "2l9L", "zc89"))
                 }
             )
         }
@@ -26,17 +21,17 @@ class `given a new user` {
 
         @BeforeAll
         fun act() {
-            services.loginUser(User(446, "4Z00cpZ", "SOyRfcI"))
+            user = services.loginUser(User(432, "2l9L", "zc89"))
         }
 
         @Test
         fun `then the email is correct`() {
-            user?.email `should be equal to` "4Z00cpZ"
+            user?.email `should be equal to` "2l9L"
         }
 
         @Test
         fun `then the password is correct`() {
-            user?.password `should be equal to` "SOyRfcI"
+            user?.password `should be equal to` "zc89"
         }
     }
 }
