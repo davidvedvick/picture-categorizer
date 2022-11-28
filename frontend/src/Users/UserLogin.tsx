@@ -1,11 +1,13 @@
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 
 export function UserLogin() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("")
 
-    async function handleSubmit() {
+    async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
+        formEvent.preventDefault();
+
         await fetch(
             "/api/users",
             {
@@ -26,7 +28,7 @@ export function UserLogin() {
         <>
             <div className="sm container-fluid">
                 <div className="sm">
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <div className="form-floating mb-3">
                             <input id="user" className="form-control" type="text" placeholder="User Name" onChange={(e) => setUsername(e.target.value)} value={username}/>
                             <label htmlFor="user">User Name</label>
@@ -35,7 +37,7 @@ export function UserLogin() {
                             <input id="password" className="form-control" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password}/>
                             <label htmlFor="password">Password</label>
                         </div>
-                        <p><button type="submit" onSubmit={handleSubmit}>Login</button></p>
+                        <p><button type="submit" className="btn btn-primary mb-3">Login</button></p>
                     </form>
                 </div>
             </div>
