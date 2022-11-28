@@ -19,7 +19,7 @@ class `given a user` {
                     }
                 },
                 mockk {
-                    every { findByUserName("8N8k") } returns Optional.of(User(id = 920, userName = "8N8k", password = "OaH1Su"))
+                    every { findByEmail("8N8k") } returns Optional.of(User(id = 920, email = "8N8k", password = "OaH1Su"))
                 },
             )
         }

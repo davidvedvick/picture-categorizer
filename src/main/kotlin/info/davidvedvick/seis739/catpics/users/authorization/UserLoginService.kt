@@ -8,9 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService
 class UserLoginService(private val userRepository: UserRepository) : UserDetailsService {
     override fun loadUserByUsername(username: String?): UserDetails? =
         username
-            ?.let(userRepository::findByUserName)
+            ?.let(userRepository::findByEmail)
             ?.value
             ?.run {
-                UserLoginDetails(id, userName, password)
+                UserLoginDetails(id, email, password)
             }
 }

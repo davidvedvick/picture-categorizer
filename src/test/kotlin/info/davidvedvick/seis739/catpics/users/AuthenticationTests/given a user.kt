@@ -10,12 +10,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class GivenAUser {
-    class WhenLoadingTheUserLoginDetails {
+class `given a user` {
+    class `when loading the user login details` {
         private val service by lazy {
             UserLoginService(
                 mockk {
-                    every { findByUserName("9Fi") } returns Optional.of(User(664, "9Fi", "HQgmsw"))
+                    every { findByEmail("9Fi") } returns Optional.of(User(664, "9Fi", "HQgmsw"))
                 }
             )
         }

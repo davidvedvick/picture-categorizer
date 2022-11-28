@@ -6,8 +6,8 @@ import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
-class GivenANewUser {
-    class WhenAddingTheNumber {
+class `given a new user` {
+    class `when logging the user in` {
         private val services by lazy {
             UserController(
                 mockk {
@@ -23,12 +23,12 @@ class GivenANewUser {
 
         @BeforeAll
         fun act() {
-            services.addUser(User(446, "4Z00cpZ", "SOyRfcI"))
+            services.loginUser(User(446, "4Z00cpZ", "SOyRfcI"))
         }
 
         @Test
-        fun `then the user name is correct`() {
-            user?.userName `should be equal to` "4Z00cpZ"
+        fun `then the email is correct`() {
+            user?.email `should be equal to` "4Z00cpZ"
         }
 
         @Test
