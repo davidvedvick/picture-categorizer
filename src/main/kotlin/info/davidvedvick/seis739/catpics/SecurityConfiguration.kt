@@ -18,7 +18,8 @@ class SecurityConfiguration(private val authenticationManager: AuthenticationMan
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain? {
         httpSecurity.cors().and().csrf().disable()
 //            .authorizeRequests()
-//            .anyRequest().authenticated()
+//            .mvcMatchers("/api/users/**")
+//            .authenticated()
 //            .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager))
             .addFilter(JwtAuthorizationFilter(authenticationManager))

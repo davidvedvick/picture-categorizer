@@ -9,17 +9,14 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class `given a user` {
-    class `when getting the users pictures` {
+    class `when adding the users pictures` {
         private val services by lazy {
             PictureController(
                 mockk {
-                    val user = User(id = 920)
-                    every { findByUserId(920) } returns listOf(
-                        Picture(840, "Iox", user),
-                        Picture(736, "yWyIt5ou", user),
-                        Picture(35, "Y18", user),
-                        Picture(180, "oe0K", user),
-                    )
+                    every { save(any()) } answers {
+                        addedPictures.add(firstArg())
+                        firstArg()
+                    }
                 },
                 mockk {
                     every { findByUserName("8N8k") } returns Optional.of(User(id = 920, userName = "8N8k", password = "OaH1Su"))
@@ -27,19 +24,24 @@ class `given a user` {
             )
         }
 
-        private var pictures: List<Picture> = emptyList()
+        private var addedPictures = ArrayList<Picture>()
 
         @BeforeAll
         fun act() {
-            pictures = services.getUserPictures(920)
+            services.addPicture(
+                Picture(
+                    path = "vbzzOT",
+                    user = User(id = 920),
+                )
+            )
         }
 
-        @Test fun `then the pictures are correct`() {
-            pictures `should be equal to` listOf(
-                Picture(840, "Iox"),
-                Picture(736, "yWyIt5ou"),
-                Picture(35, "Y18"),
-                Picture(180, "oe0K"),
+        @Test fun `then the picture is added`() {
+            addedPictures `should be equal to` listOf(
+                Picture(
+                    path = "vbzzOT",
+                    user = User(id = 920),
+                ),
             )
         }
     }
