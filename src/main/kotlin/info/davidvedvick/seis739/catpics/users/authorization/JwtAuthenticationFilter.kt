@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.fasterxml.jackson.databind.ObjectMapper
 import info.davidvedvick.seis739.catpics.cls
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import java.util.*
@@ -19,7 +18,7 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : Us
             ?.inputStream
             ?.let { ObjectMapper().readValue(it, cls<JwtUserRequest>())}
             ?.let {
-                authenticationManager.authenticate(UsernamePasswordAuthenticationToken(it.username, it.password))
+                authenticationManager.authenticate(UnauthenticatedCatEmployee(it.username, it.password, ))
             }
 
     override fun successfulAuthentication(request: HttpServletRequest?, response: HttpServletResponse?, chain: FilterChain?, authResult: Authentication?) {
