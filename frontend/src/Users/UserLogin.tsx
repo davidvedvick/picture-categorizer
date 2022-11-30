@@ -8,7 +8,7 @@ export function UserLogin() {
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
 
-        await fetch(
+        const response = await fetch(
             "/login",
             {
                 method: 'POST',
@@ -22,6 +22,10 @@ export function UserLogin() {
                     }
                 )
             });
+
+        const authHeader = response.headers.get("Authentication")
+        if (authHeader)
+            localStorage.setItem("auth", authHeader)
     }
 
     return (
@@ -30,8 +34,8 @@ export function UserLogin() {
                 <div className="sm">
                     <form onSubmit={handleSubmit}>
                         <div className="form-floating mb-3">
-                            <input id="user" className="form-control" type="text" placeholder="User Name" onChange={(e) => setEmail(e.target.value)} value={email}/>
-                            <label htmlFor="user">User Name</label>
+                            <input id="email" className="form-control" type="text" placeholder="E-mail" onChange={(e) => setEmail(e.target.value)} value={email}/>
+                            <label htmlFor="email">E-mail</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input id="password" className="form-control" type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} value={password}/>
