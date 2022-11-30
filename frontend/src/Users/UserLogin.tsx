@@ -2,14 +2,14 @@ import {FormEvent, useState} from "react";
 
 export function UserLogin() {
 
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
 
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
 
         await fetch(
-            "/api/users",
+            "/login",
             {
                 method: 'POST',
                 headers: {
@@ -17,7 +17,7 @@ export function UserLogin() {
                 },
                 body: JSON.stringify(
                     {
-                        userName: username,
+                        email: email,
                         password: password
                     }
                 )
@@ -30,7 +30,7 @@ export function UserLogin() {
                 <div className="sm">
                     <form onSubmit={handleSubmit}>
                         <div className="form-floating mb-3">
-                            <input id="user" className="form-control" type="text" placeholder="User Name" onChange={(e) => setUsername(e.target.value)} value={username}/>
+                            <input id="user" className="form-control" type="text" placeholder="User Name" onChange={(e) => setEmail(e.target.value)} value={email}/>
                             <label htmlFor="user">User Name</label>
                         </div>
                         <div className="form-floating mb-3">

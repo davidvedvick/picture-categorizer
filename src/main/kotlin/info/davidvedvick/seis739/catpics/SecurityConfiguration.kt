@@ -1,31 +1,50 @@
 package info.davidvedvick.seis739.catpics
 
+import info.davidvedvick.seis739.catpics.users.authorization.BuildJwtTokens
 import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthenticationFilter
 import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthorizationFilter
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfiguration(private val authenticationManager: AuthenticationManager) {
+class SecurityConfiguration(
+    private val authenticationManager: AuthenticationManager,
+    private val userDetailsService: UserDetailsService,
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtTokenBuilder: BuildJwtTokens,
+) {
 
     @Bean
-    fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain? {
+    fun configure(httpSecurity: HttpSecurity): SecurityFilterChain? {
         httpSecurity.cors().and().csrf().disable()
-//            .authorizeRequests()
-//            .mvcMatchers("/api/users/**")
-//            .authenticated()
-//            .and()
-            .addFilter(JwtAuthenticationFilter(authenticationManager))
+            .authorizeRequests()
+            // we only really care about protecting picture uploads, everything else is public
+            .mvcMatchers(HttpMethod.POST,"/api/picture/")
+            .authenticated()
+            .mvcMatchers(HttpMethod.POST, "/api/users/")
+            .authenticated()
+            .and()
+            .addFilter(JwtAuthenticationFilter(authenticationManager, jwtTokenBuilder))
             .addFilter(JwtAuthorizationFilter(authenticationManager))
             // this disables session creation on Spring Security
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         return httpSecurity.build()
+    }
+
+    @Autowired
+    fun registerProvider(authenticationManagerBuilder: AuthenticationManagerBuilder) {
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder)
     }
 }
