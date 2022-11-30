@@ -1,13 +1,12 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import info.davidvedvick.seis739.catpics.users.UserRepository
 import info.davidvedvick.seis739.catpics.value
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @RestController
 @RequestMapping("/pictures")
-class PictureController(private val pictureRepository: PictureRepository, private val userRepository: UserRepository) {
+class PictureController(private val pictureRepository: PictureRepository) {
     @GetMapping("/")
     fun get(): List<Picture> = pictureRepository.findAll()
 

@@ -1,7 +1,7 @@
 package info.davidvedvick.seis739.catpics.users
 
-import info.davidvedvick.seis739.catpics.users.authorization.JwtUserRequest
 import info.davidvedvick.seis739.catpics.users.authorization.UnauthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.users.authorization.UserRequest
 import info.davidvedvick.seis739.catpics.value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.context.SecurityContextHolder
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("users")
 class UserController(private val userRepository: UserRepository, private val authenticationManager: AuthenticationManager) {
     @PostMapping("/")
-    fun loginUser(@RequestBody jwtUserRequest: JwtUserRequest): User {
-        val user = userRepository.findByEmail(jwtUserRequest.email) ?: userRepository.save(User(email = jwtUserRequest.email, password = jwtUserRequest.password))
+    fun loginUser(@RequestBody userRequest: UserRequest): User {
+        val user = userRepository.findByEmail(userRequest.email) ?: userRepository.save(User(email = userRequest.email, password = userRequest.password))
 
         val result = authenticationManager
-            .authenticate(UnauthenticatedCatEmployee(jwtUserRequest.email, jwtUserRequest.password))
+            .authenticate(UnauthenticatedCatEmployee(userRequest.email, userRequest.password))
 
         SecurityContextHolder.getContext().authentication = result
 

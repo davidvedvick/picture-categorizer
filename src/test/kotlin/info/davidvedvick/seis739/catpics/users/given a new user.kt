@@ -1,42 +1,59 @@
 package info.davidvedvick.seis739.catpics.users
 
+import info.davidvedvick.seis739.catpics.users.authorization.AuthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.users.authorization.UnauthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.users.authorization.UserAuthenticationManager
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class `given a new user` {
     class `when logging the user in` {
         private val services by lazy {
-            UserController(
+            UserAuthenticationManager(
                 mockk {
-                    every { findByEmail(any()) } returns Optional.empty()
+                    every { findByEmail(any()) } returns null
 
                     every { save(any()) } answers {
-                        user = firstArg()
+                        addedUser = firstArg()
                         firstArg()
                     }
-                }
+                },
+                mockk {
+                    every { encode("SOyRfcI") } returns "eOLdjk"
+                    every { matches("SOyRfcI", "eOLdjk") } returns true
+                },
             )
         }
 
-        private var user: User? = null
+        private var addedUser: User? = null
+        private var user: AuthenticatedCatEmployee? = null
 
         @BeforeAll
         fun act() {
-            services.loginUser(User(446, "4Z00cpZ", "SOyRfcI"))
+            user = services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI")) as? AuthenticatedCatEmployee
         }
 
         @Test
         fun `then the email is correct`() {
-            user?.email `should be equal to` "4Z00cpZ"
+            addedUser?.email `should be equal to` "4Z00cpZ"
         }
 
         @Test
         fun `then the password is correct`() {
-            user?.password `should be equal to` "SOyRfcI"
+            addedUser?.password `should be equal to` "eOLdjk"
+        }
+
+        @Test
+        fun `then the authenticated user email is correct`() {
+            user?.name `should be equal to` addedUser?.email
+        }
+
+        @Test
+        fun `then the authenticated user password is correct`() {
+            user?.credentials `should be equal to` addedUser?.password
         }
     }
 }

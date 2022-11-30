@@ -1,12 +1,12 @@
 package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.users.User
+import info.davidvedvick.seis739.catpics.users.authorization.AuthenticatedCatEmployee
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class `given a user` {
     class `when adding the users pictures` {
@@ -18,9 +18,6 @@ class `given a user` {
                         firstArg()
                     }
                 },
-                mockk {
-                    every { findByEmail("8N8k") } returns Optional.of(User(id = 920, email = "8N8k", password = "OaH1Su"))
-                },
             )
         }
 
@@ -31,8 +28,9 @@ class `given a user` {
             services.addPicture(
                 Picture(
                     path = "vbzzOT",
-                    user = User(id = 920),
-                )
+                    user = User(id = 920, email = "8N8k", password = "OaH1Su"),
+                ),
+                AuthenticatedCatEmployee("8N8k", "OaH1Su"),
             )
         }
 

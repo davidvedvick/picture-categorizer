@@ -2,5 +2,5 @@ package info.davidvedvick.seis739.catpics.users.authorization
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 
-class UnauthenticatedCatEmployee(email: String, password: String)
+class UnauthenticatedCatEmployee(val email: String, val password: String)
     : UsernamePasswordAuthenticationToken(email, password)
