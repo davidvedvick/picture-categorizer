@@ -1,6 +1,6 @@
 package info.davidvedvick.seis739.catpics.users.authorization
 
-data class JwtUserRequest(
-    var username: String = "",
+data class UserRequest(
+    var email: String = "",
     var password: String = "",
 )
