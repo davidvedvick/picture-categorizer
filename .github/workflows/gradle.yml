@@ -8,10 +8,8 @@
 name: Gradle
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "feature/*" ]
+    branches: [ "main" ]
 
 permissions:
   contents: read
