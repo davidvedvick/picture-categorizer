@@ -7,6 +7,7 @@ import io.mockk.mockk
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.springframework.mock.web.MockMultipartFile
 
 class `given a user` {
     class `when adding the users pictures` {
@@ -26,8 +27,10 @@ class `given a user` {
         @BeforeAll
         fun act() {
             services.addPicture(
+                MockMultipartFile("KEDSlros", byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
                 Picture(
-                    path = "vbzzOT",
+                    id = 314,
+                    fileName = "vbzzOT",
                     user = User(id = 920, email = "8N8k", password = "OaH1Su"),
                 ),
                 AuthenticatedCatEmployee("8N8k", "OaH1Su"),
@@ -37,10 +40,23 @@ class `given a user` {
         @Test fun `then the picture is added`() {
             addedPictures `should be equal to` listOf(
                 Picture(
-                    path = "vbzzOT",
-                    user = User(id = 920),
+                    id = 314,
                 ),
             )
+        }
+
+        @Test fun `then the picture has the correct user`() {
+            addedPictures.map { it.user } `should be equal to` listOf(
+                User(id = 920),
+            )
+        }
+
+        @Test fun `then the picture has the correct path`() {
+            addedPictures.map { it.fileName } `should be equal to` listOf("KEDSlros")
+        }
+
+        @Test fun `then the picture bytes are correct`() {
+            addedPictures.single().file `should be equal to` byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
         }
     }
 }
