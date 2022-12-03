@@ -8,7 +8,7 @@ import javax.persistence.*
 class Picture(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0,
     @Column(length = 1_024) var fileName: String = "",
-    @Lob var file: ByteArray = ByteArray(0),
+    var file: ByteArray = ByteArray(0),
     @ManyToOne var user: User? = null,
 ) {
     override fun equals(other: Any?): Boolean {

@@ -23,7 +23,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
         pictureRepository.saveAll(files.map { file ->
             Picture(
                 file = file.bytes,
-                fileName = file.name,
+                fileName = file.originalFilename ?: file.name,
                 user = user
             )
         })
