@@ -26,8 +26,6 @@ class SecurityConfiguration(
             // we only really care about protecting picture uploads, everything else is public
             .mvcMatchers(HttpMethod.POST,"/pictures")
             .authenticated()
-//            .mvcMatchers(HttpMethod.POST, "/api/users/")
-//            .authenticated()
             .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager, jwtTokenBuilder))
             .addFilter(JwtAuthorizationFilter(authenticationManager))
