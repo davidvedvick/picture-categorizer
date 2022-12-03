@@ -30,23 +30,28 @@ class `given a user` {
         @BeforeAll
         fun act() {
             services.addPictures(
-                arrayOf(MockMultipartFile("files", "KEDSlros", null, byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte()))),
+                arrayOf(
+                    MockMultipartFile("files", "KEDSlros", null, byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
+                    MockMultipartFile("files", "sight", null, byteArrayOf(661.toByte(), 64.toByte(), 318.toByte(), 590.toByte())),
+                ),
                 AuthenticatedCatEmployee("8N8k", "OaH1Su"),
             )
         }
 
-        @Test fun `then the picture has the correct user`() {
-            addedPictures.map { it.user } `should be equal to` listOf(
+        @Test fun `then the pictures have the correct user`() {
+            addedPictures.map { it.user }.distinctBy { it?.id } `should be equal to` listOf(
                 User(id = 920),
             )
         }
 
         @Test fun `then the picture has the correct path`() {
-            addedPictures.map { it.fileName } `should be equal to` listOf("KEDSlros")
+            addedPictures.map { it.fileName } `should be equal to` listOf("KEDSlros", "sight")
         }
 
         @Test fun `then the picture bytes are correct`() {
-            addedPictures.single().file `should be equal to` byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
+            addedPictures.flatMap { it.file.toList() } `should be equal to` listOf(
+                247.toByte(), 761.toByte(), 879.toByte(), 11.toByte(), 661.toByte(), 64.toByte(), 318.toByte(), 590.toByte()
+            )
         }
     }
 }
