@@ -10,6 +10,7 @@ class JwtTokenBuilder : BuildJwtTokens {
     override fun generateToken(authenticatedEmployee: AuthenticatedCatEmployee): JwtToken =
         JWT.create()
             .withSubject(authenticatedEmployee.name)
+            .withClaim("simple", "simple")
             .withExpiresAt(Date(System.currentTimeMillis() + AuthenticationConstants.ExpirationDuration))
             .sign(Algorithm.HMAC512(AuthenticationConstants.Secret.toByteArray()))
             .let(::JwtToken)

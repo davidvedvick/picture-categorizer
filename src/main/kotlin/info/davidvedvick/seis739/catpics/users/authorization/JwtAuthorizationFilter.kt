@@ -18,7 +18,7 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager) : Bas
             ?.let {
                 JWT.require(Algorithm.HMAC512(AuthenticationConstants.Secret))
                     .build()
-                    .verify(it.replace(AuthenticationConstants.TokenPrefix, ""))
+                    .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
             }
             ?.let { jwt ->
                 val username = jwt.subject

@@ -24,7 +24,7 @@ class SecurityConfiguration(
         httpSecurity.cors().and().csrf().disable()
             .authorizeRequests()
             // we only really care about protecting picture uploads, everything else is public
-            .mvcMatchers(HttpMethod.POST,"/api/picture/")
+            .mvcMatchers(HttpMethod.POST,"/pictures")
             .authenticated()
 //            .mvcMatchers(HttpMethod.POST, "/api/users/")
 //            .authenticated()

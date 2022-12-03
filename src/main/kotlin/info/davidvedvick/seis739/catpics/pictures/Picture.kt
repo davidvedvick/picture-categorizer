@@ -6,8 +6,9 @@ import javax.persistence.*
 
 @Entity
 class Picture(
-    @Id @GeneratedValue var id: Long = 0,
-    @Column(length = 4_000) var path: String = "",
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0,
+    @Column(length = 1_024) var fileName: String = "",
+    var file: ByteArray = ByteArray(0),
     @ManyToOne var user: User? = null,
 ) {
     override fun equals(other: Any?): Boolean {
@@ -22,6 +23,6 @@ class Picture(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , path = $path , user = $user )"
+        return this::class.simpleName + "(id = $id , path = $fileName , user = $user )"
     }
 }
