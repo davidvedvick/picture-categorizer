@@ -14,11 +14,14 @@ class `given a user` {
         private val services by lazy {
             PictureController(
                 mockk {
-                    every { save(any()) } answers {
-                        addedPictures.add(firstArg())
+                    every { saveAll(any<Iterable<Picture>>()) } answers {
+                        addedPictures.addAll(firstArg())
                         firstArg()
                     }
                 },
+                mockk {
+                    every { findByEmail("8N8k") } returns User(id = 920, password = "OaH1Su")
+                }
             )
         }
 
@@ -27,21 +30,8 @@ class `given a user` {
         @BeforeAll
         fun act() {
             services.addPictures(
-                MockMultipartFile("KEDSlros", byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
-                Picture(
-                    id = 314,
-                    fileName = "vbzzOT",
-                    user = User(id = 920, email = "8N8k", password = "OaH1Su"),
-                ),
+                arrayOf(MockMultipartFile("files", "KEDSlros", null, byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte()))),
                 AuthenticatedCatEmployee("8N8k", "OaH1Su"),
-            )
-        }
-
-        @Test fun `then the picture is added`() {
-            addedPictures `should be equal to` listOf(
-                Picture(
-                    id = 314,
-                ),
             )
         }
 
