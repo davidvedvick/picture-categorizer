@@ -26,7 +26,7 @@ class `given a user` {
 
         @BeforeAll
         fun act() {
-            services.addPicture(
+            services.addPictures(
                 MockMultipartFile("KEDSlros", byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
                 Picture(
                     id = 314,

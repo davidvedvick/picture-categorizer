@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {BrowserRouter as Router, NavLink, Route, Routes} from "react-router-dom";
+import {PictureUploads} from "./Pictures/PictureUploads";
 
 function App() {
     return (
@@ -30,7 +31,7 @@ function App() {
                 <div className="container mt-3">
                     <Routes>
                         <Route path="/" />
-                        <Route path="/pictures" />
+                        <Route path="/pictures" element={<PictureUploads />} />
                         <Route path="/user" element={<UserLogin/>} />
                     </Routes>
                 </div>

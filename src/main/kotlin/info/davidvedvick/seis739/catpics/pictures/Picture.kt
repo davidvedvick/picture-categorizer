@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 class Picture(
-    @Id @GeneratedValue var id: Long = 0,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0,
     @Column(length = 1_024) var fileName: String = "",
     @Lob var file: ByteArray = ByteArray(0),
     @ManyToOne var user: User? = null,

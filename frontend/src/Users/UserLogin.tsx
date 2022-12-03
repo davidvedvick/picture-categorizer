@@ -9,7 +9,7 @@ export function UserLogin() {
         formEvent.preventDefault();
 
         const response = await fetch(
-            "/login",
+            "/api/login",
             {
                 method: 'POST',
                 headers: {
@@ -23,7 +23,7 @@ export function UserLogin() {
                 )
             });
 
-        const authHeader = response.headers.get("Authentication")
+        const authHeader = response.headers.get("authorization")
         if (authHeader)
             localStorage.setItem("auth", authHeader)
     }
