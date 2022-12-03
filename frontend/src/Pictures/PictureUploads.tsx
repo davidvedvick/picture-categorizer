@@ -18,22 +18,25 @@ export function PictureUploads() {
         const authHeader = localStorage.getItem("auth")
         if (!authHeader) return;
 
-        const formData = new FormData();
+        const promisedUploads: Promise<Response>[] = []
         for (let i = 0; i < localFiles.length; i++) {
             const file = localFiles.item(i)
-            if (file)
-                formData.append("files", file)
-        }
+            if (!file) continue;
 
-        const response = await fetch(
+            const formData = new FormData();
+            formData.set("file", file)
+            promisedUploads.push(fetch(
             "/api/pictures/",
             {
                 method: 'POST',
                 headers: {
-                  'Authorization': authHeader
+                    'Authorization': authHeader
                 },
                 body: formData
-            });
+            }))
+        }
+
+        await Promise.all(promisedUploads)
     }
 
     return (

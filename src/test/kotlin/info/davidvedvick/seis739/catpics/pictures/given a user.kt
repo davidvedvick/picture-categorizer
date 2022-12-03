@@ -4,9 +4,12 @@ import info.davidvedvick.seis739.catpics.users.User
 import info.davidvedvick.seis739.catpics.users.authorization.AuthenticatedCatEmployee
 import io.mockk.every
 import io.mockk.mockk
+import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 
 class `given a user` {
@@ -14,10 +17,12 @@ class `given a user` {
         private val services by lazy {
             PictureController(
                 mockk {
-                    every { saveAll(any<Iterable<Picture>>()) } answers {
-                        addedPictures.addAll(firstArg())
+                    every { save(any()) } answers {
+                        addedPictures.add(firstArg())
                         firstArg()
                     }
+
+                    every { findByUserIdAndFileName(any(), any()) } returns null
                 },
                 mockk {
                     every { findByEmail("8N8k") } returns User(id = 920, password = "OaH1Su")
@@ -25,17 +30,20 @@ class `given a user` {
             )
         }
 
+        private lateinit var response: ResponseEntity<Any?>
         private var addedPictures = ArrayList<Picture>()
 
         @BeforeAll
         fun act() {
-            services.addPictures(
-                arrayOf(
-                    MockMultipartFile("files", "KEDSlros", null, byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
-                    MockMultipartFile("files", "sight", null, byteArrayOf(661.toByte(), 64.toByte(), 318.toByte(), 590.toByte())),
-                ),
+            response = services.addPictures(
+                MockMultipartFile("file", "KEDSlros", null, byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
                 AuthenticatedCatEmployee("8N8k", "OaH1Su"),
             )
+        }
+
+        @Test
+        fun `then response is correct`() {
+            response.statusCode `should be` HttpStatus.ACCEPTED
         }
 
         @Test fun `then the pictures have the correct user`() {
@@ -45,13 +53,59 @@ class `given a user` {
         }
 
         @Test fun `then the picture has the correct path`() {
-            addedPictures.map { it.fileName } `should be equal to` listOf("KEDSlros", "sight")
+            addedPictures.map { it.fileName } `should be equal to` listOf("KEDSlros")
         }
 
         @Test fun `then the picture bytes are correct`() {
             addedPictures.flatMap { it.file.toList() } `should be equal to` listOf(
-                247.toByte(), 761.toByte(), 879.toByte(), 11.toByte(), 661.toByte(), 64.toByte(), 318.toByte(), 590.toByte()
+                247.toByte(), 761.toByte(), 879.toByte(), 11.toByte(),
             )
+        }
+    }
+
+    class `and the user has pictures` {
+        class `when adding the same pictures` {
+            private val services by lazy {
+                PictureController(
+                    mockk {
+                        every { save(any()) } answers {
+                            addedPictures.add(firstArg())
+                            firstArg()
+                        }
+
+                        every { findByUserIdAndFileName(920, "gzF0") } returns Picture(fileName = "gzF0")
+                    },
+                    mockk {
+                        every { findByEmail("8N8k") } returns User(id = 920, password = "OaH1Su")
+                    }
+                )
+            }
+
+            private lateinit var response: ResponseEntity<Any?>
+            private var addedPictures = ArrayList<Picture>()
+
+            @BeforeAll
+            fun act() {
+                response = services.addPictures(
+                    MockMultipartFile(
+                        "file",
+                        "gzF0",
+                        null,
+                        byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
+                    ),
+                    AuthenticatedCatEmployee("8N8k", "OaH1Su"),
+                )
+            }
+
+            @Test
+            fun `then response is correct`() {
+                response.statusCode `should be` HttpStatus.CONFLICT
+            }
+
+            @Test
+            fun `then the picture is not added`() {
+                addedPictures `should be equal to` emptyList()
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.users.UserRepository
 import info.davidvedvick.seis739.catpics.value
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -16,16 +18,22 @@ class PictureController(private val pictureRepository: PictureRepository, privat
     fun getPicture(@PathVariable id: Long): Picture? = pictureRepository.findById(id).value
 
     @PostMapping("/")
-    fun addPictures(@RequestParam("files") files: Array<MultipartFile>, authentication: Authentication?) {
-        val email = authentication?.name ?: return
-        val user = userRepository.findByEmail(email) ?: return
+    fun addPictures(@RequestParam("file") file: MultipartFile, authentication: Authentication?) : ResponseEntity<Any?> {
+        val email = authentication?.name ?: return ResponseEntity.badRequest().build()
+        val user = userRepository.findByEmail(email) ?: return ResponseEntity.badRequest().build()
+        val fileName = file.originalFilename ?: return ResponseEntity.badRequest().build()
 
-        pictureRepository.saveAll(files.map { file ->
+        val existingPicture = pictureRepository.findByUserIdAndFileName(user.id, fileName)
+        if (existingPicture != null) return ResponseEntity.status(HttpStatus.CONFLICT).build()
+
+        pictureRepository.save(
             Picture(
                 file = file.bytes,
                 fileName = file.originalFilename ?: file.name,
                 user = user
             )
-        })
+        )
+
+        return ResponseEntity.accepted().build()
     }
 }
