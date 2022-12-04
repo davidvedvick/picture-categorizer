@@ -13,7 +13,7 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager, priv
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication? =
         request
             ?.inputStream
-            ?.let { ObjectMapper().readValue(it, cls<UserRequest>())}
+            ?.let { ObjectMapper().readValue(it, cls<UserLoginRequest>())}
             ?.let {
                 authenticationManager.authenticate(UnauthenticatedCatEmployee(it.email, it.password))
             }
