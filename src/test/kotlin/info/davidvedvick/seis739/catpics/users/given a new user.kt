@@ -1,8 +1,8 @@
 package info.davidvedvick.seis739.catpics.users
 
-import info.davidvedvick.seis739.catpics.users.authorization.AuthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.users.authorization.UnauthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.users.authorization.UserAuthenticationManager
+import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be equal to`

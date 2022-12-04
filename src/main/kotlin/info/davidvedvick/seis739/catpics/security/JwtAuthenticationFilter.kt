@@ -1,4 +1,4 @@
-package info.davidvedvick.seis739.catpics.users.authorization
+package info.davidvedvick.seis739.catpics.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import info.davidvedvick.seis739.catpics.cls

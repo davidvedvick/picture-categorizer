@@ -1,8 +1,5 @@
-package info.davidvedvick.seis739.catpics
+package info.davidvedvick.seis739.catpics.security
 
-import info.davidvedvick.seis739.catpics.users.authorization.BuildJwtTokens
-import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthenticationFilter
-import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthorizationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod

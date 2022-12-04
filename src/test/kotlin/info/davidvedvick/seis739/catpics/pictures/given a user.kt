@@ -1,7 +1,7 @@
 package info.davidvedvick.seis739.catpics.pictures
 
+import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.users.User
-import info.davidvedvick.seis739.catpics.users.authorization.AuthenticatedCatEmployee
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be`

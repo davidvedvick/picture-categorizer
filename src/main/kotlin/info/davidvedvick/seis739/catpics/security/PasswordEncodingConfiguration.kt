@@ -1,4 +1,4 @@
-package info.davidvedvick.seis739.catpics
+package info.davidvedvick.seis739.catpics.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
