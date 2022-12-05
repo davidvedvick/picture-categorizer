@@ -7,11 +7,10 @@ const pageSize = 20;
 export function PictureList() {
 
     const pageNumberRef = React.useRef(0)
-    const { current: pageNumber } = pageNumberRef;
     const [pictures, setItemPictures] = React.useState<Picture[]>([]);
 
     function loadingThreshold() {
-        const fifthLastNote = document.querySelector('div.pictures:nth-last-child(5)');
+        const fifthLastNote = document.querySelector('div.pictures div.picture:nth-last-child(5)');
         if (!fifthLastNote) return -1;
 
         const rect = fifthLastNote.getBoundingClientRect();
@@ -25,11 +24,12 @@ export function PictureList() {
 
         let isFinished = false;
         try {
-            const response = await fetch(`/api/pictures?sort=id,desc&page=${pageNumber}&size=${pageSize}`);
+            const response = await fetch(`/api/pictures?sort=id,desc&page=${pageNumberRef.current}&size=${pageSize}`);
             if (response.ok) {
                 const page = await response.json() as Page<Picture>;
-                setItemPictures(pictures.concat(page.content));
+                setItemPictures(prev => prev.concat(page.content));
                 pageNumberRef.current += 1;
+                isFinished = page.last;
             }
         } catch (error) {
             console.error("There was an error getting item pictures", error);
@@ -48,7 +48,7 @@ export function PictureList() {
     return (
         <div className="pictures">
             {pictures.map(p => (
-                <div className="card">
+                <div className="picture card">
                     <img src={`/api/pictures/${p.id}/file`} alt={p.fileName} title={p.fileName} className="card-img-top"/>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
