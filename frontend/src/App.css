@@ -18,6 +18,10 @@
   padding: 40px 40px;
 }
 
+.modal.show {
+  display: block;
+}
+
 .card {
   background-color: #f7f7f7;
   padding: 20px 25px 30px;

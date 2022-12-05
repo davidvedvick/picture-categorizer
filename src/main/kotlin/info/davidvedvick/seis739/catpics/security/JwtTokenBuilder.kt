@@ -1,7 +1,6 @@
-package info.davidvedvick.seis739.catpics.users.authorization
+package info.davidvedvick.seis739.catpics.security
 
 import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -12,6 +11,6 @@ class JwtTokenBuilder : BuildJwtTokens {
             .withSubject(authenticatedEmployee.name)
             .withClaim("simple", "simple")
             .withExpiresAt(Date(System.currentTimeMillis() + AuthenticationConstants.ExpirationDuration))
-            .sign(Algorithm.HMAC512(AuthenticationConstants.Secret.toByteArray()))
+            .sign(AuthenticationConstants.JwtSigningAlgorithm)
             .let(::JwtToken)
 }

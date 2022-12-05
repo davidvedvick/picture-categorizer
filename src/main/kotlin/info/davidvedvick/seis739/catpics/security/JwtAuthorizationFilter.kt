@@ -1,10 +1,7 @@
-package info.davidvedvick.seis739.catpics.users.authorization
+package info.davidvedvick.seis739.catpics.security
 
 import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import javax.servlet.FilterChain
@@ -16,20 +13,15 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager) : Bas
         request.getHeader(AuthenticationConstants.AuthHeaderKey)
             ?.takeIf { it.startsWith(AuthenticationConstants.TokenPrefix) }
             ?.let {
-                JWT.require(Algorithm.HMAC512(AuthenticationConstants.Secret))
+                JWT.require(AuthenticationConstants.JwtSigningAlgorithm)
                     .build()
                     .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
             }
             ?.let { jwt ->
                 val username = jwt.subject
-                val role = jwt.getClaim("simple").asString()
                 username
                     ?.let {
-                        UsernamePasswordAuthenticationToken(
-                            it,
-                            null,
-                            mutableListOf(SimpleGrantedAuthority(role))
-                        )
+                        AuthenticatedCatEmployee(it, null)
                     }
                     ?.also {
                         SecurityContextHolder.getContext().authentication = it

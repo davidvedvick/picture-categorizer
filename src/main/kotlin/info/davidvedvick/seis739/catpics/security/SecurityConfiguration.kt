@@ -1,8 +1,5 @@
-package info.davidvedvick.seis739.catpics
+package info.davidvedvick.seis739.catpics.security
 
-import info.davidvedvick.seis739.catpics.users.authorization.BuildJwtTokens
-import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthenticationFilter
-import info.davidvedvick.seis739.catpics.users.authorization.JwtAuthorizationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -26,8 +23,6 @@ class SecurityConfiguration(
             // we only really care about protecting picture uploads, everything else is public
             .mvcMatchers(HttpMethod.POST,"/pictures")
             .authenticated()
-//            .mvcMatchers(HttpMethod.POST, "/api/users/")
-//            .authenticated()
             .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager, jwtTokenBuilder))
             .addFilter(JwtAuthorizationFilter(authenticationManager))

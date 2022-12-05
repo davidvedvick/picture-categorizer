@@ -1,43 +1,57 @@
 import React from 'react';
 import './App.css';
 import {UserLogin} from "./Users/UserLogin";
-import {BrowserRouter as Router, NavLink, Route, Routes} from "react-router-dom";
 import {PictureUploads} from "./Pictures/PictureUploads";
+import {PictureList} from "./Pictures/PictureList";
 
 function App() {
+
+    const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
+
+    function showUploads() {
+        setIsUploadDisplayed(true);
+    }
+
+    function hideUploads() {
+        setIsUploadDisplayed(false);
+    }
+
+    const authHeader = localStorage.getItem("auth")
+
     return (
-        <Router>
-            <div>
-                <nav className="navbar navbar-expand navbar-dark bg-dark">
-                    <div className="container-fluid">
-                        <NavLink className="navbar-brand" to="/">Cat Pics!</NavLink>
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li className="nav-item">
-                                    <NavLink className="navbar-brand nav-link" to="/">Home</NavLink>
-                                </li>
-                                <li className="nav-item">
-                                    <NavLink className="nav-link" to="/pictures">Browse Pictures</NavLink>
-                                </li>
-                                <li>
-                                    <NavLink className="nav-link" to="/user">User Management</NavLink>
-                                </li>
-                            </ul>
-                        </div>
+        <div>
+            <nav className="navbar navbar-expand navbar-dark bg-dark">
+                <div className="container-fluid">
+                    <a className="navbar-brand" href="/">Cat Pics!</a>
+                </div>
+            </nav>
+            <div className="container mt-3">
+                <div className="row">
+                    <div className="col-md-8">
+                        <PictureList />
                     </div>
-                </nav>
-
-
-                <div className="container mt-3">
-                    <Routes>
-                        <Route path="/" />
-                        <Route path="/pictures" element={<PictureUploads />} />
-                        <Route path="/user" element={<UserLogin/>} />
-                    </Routes>
+                    <div className="col-md-2">
+                        <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
+                    </div>
                 </div>
             </div>
-        </Router>
-    );
+            <div className={`modal fade ${isUploadDisplayed && "show"}`} id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden={!isUploadDisplayed} aria-modal={isUploadDisplayed}>
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Upload Cat Pics!</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={hideUploads} />
+                        </div>
+                        <div className="modal-body">
+                            {
+                                authHeader ? <PictureUploads /> : <UserLogin />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default App;

@@ -1,4 +1,4 @@
-package info.davidvedvick.seis739.catpics.users.authorization
+package info.davidvedvick.seis739.catpics.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import info.davidvedvick.seis739.catpics.cls
@@ -13,7 +13,7 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager, priv
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication? =
         request
             ?.inputStream
-            ?.let { ObjectMapper().readValue(it, cls<UserRequest>())}
+            ?.let { ObjectMapper().readValue(it, cls<UserLoginRequest>())}
             ?.let {
                 authenticationManager.authenticate(UnauthenticatedCatEmployee(it.email, it.password))
             }
