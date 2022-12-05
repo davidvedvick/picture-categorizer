@@ -40,7 +40,6 @@ export function PictureList() {
             }
         }
 
-        window.addEventListener('scroll', loadMorePicturesIfNecessary);
         loadMorePicturesIfNecessary();
         return () => window.removeEventListener('scroll', loadMorePicturesIfNecessary);
     }, [])
