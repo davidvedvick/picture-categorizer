@@ -7,6 +7,7 @@ const pageSize = 20;
 export function PictureList() {
 
     const pageNumberRef = React.useRef(0)
+    const loadedPictures = React.useRef(new Set())
     const [pictures, setItemPictures] = React.useState<Picture[]>([]);
 
     useEffect(() => {
@@ -28,7 +29,11 @@ export function PictureList() {
                 const response = await fetch(`/api/pictures?sort=id,desc&page=${pageNumberRef.current}&size=${pageSize}`);
                 if (response.ok) {
                     const page = await response.json() as Page<Picture>;
-                    setItemPictures(prev => prev.concat(page.content));
+                    setItemPictures(prev => prev.concat(page.content.filter(p => {
+                        if (loadedPictures.current.has(p.id)) return false;
+                        loadedPictures.current.add(p.id);
+                        return true;
+                    })));
                     pageNumberRef.current += 1;
                     isFinished = page.last;
                 }
