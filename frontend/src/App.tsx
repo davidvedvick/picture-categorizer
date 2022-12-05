@@ -3,20 +3,26 @@ import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
+import {instance as auth} from "./Security/AuthorizationService";
 
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
-    function showUploads() {
+    function handleUnauthenticated() {
+        setIsLoggedIn(false);
+    }
+
+    async function showUploads() {
+        const isLoggedIn = auth().isLoggedIn();
+        setIsLoggedIn(isLoggedIn);
         setIsUploadDisplayed(true);
     }
 
     function hideUploads() {
         setIsUploadDisplayed(false);
     }
-
-    const authHeader = localStorage.getItem("auth")
 
     return (
         <div>
@@ -44,7 +50,7 @@ function App() {
                         </div>
                         <div className="modal-body">
                             {
-                                authHeader ? <PictureUploads /> : <UserLogin />
+                               isLoggedIn ? <PictureUploads onUploadCompleted={hideUploads} onUnauthenticated={handleUnauthenticated} /> : <UserLogin onLoggedIn={showUploads} />
                             }
                         </div>
                     </div>

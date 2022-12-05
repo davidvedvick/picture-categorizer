@@ -19,8 +19,9 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager, priv
             }
 
     override fun successfulAuthentication(request: HttpServletRequest?, response: HttpServletResponse?, chain: FilterChain?, authResult: Authentication?) {
-        val token = jwtTokenBuilder.generateToken(authResult as AuthenticatedCatEmployee)
-
-        response?.addHeader(AuthenticationConstants.AuthHeaderKey, "${AuthenticationConstants.TokenPrefix} ${token.token}")
+        response?.writer?.apply {
+            val token = jwtTokenBuilder.generateToken(authResult as? AuthenticatedCatEmployee ?: return)
+            print(ObjectMapper().writeValueAsString(token))
+        }
     }
 }

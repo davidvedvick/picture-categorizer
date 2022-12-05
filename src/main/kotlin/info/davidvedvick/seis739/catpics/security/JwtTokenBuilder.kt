@@ -12,5 +12,5 @@ class JwtTokenBuilder : BuildJwtTokens {
             .withClaim("simple", "simple")
             .withExpiresAt(Date(System.currentTimeMillis() + AuthenticationConstants.ExpirationDuration))
             .sign(AuthenticationConstants.JwtSigningAlgorithm)
-            .let(::JwtToken)
+            .let { JwtToken("${AuthenticationConstants.TokenPrefix} $it", AuthenticationConstants.ExpirationDuration) }
 }
