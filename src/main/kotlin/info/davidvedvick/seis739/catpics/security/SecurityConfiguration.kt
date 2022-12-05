@@ -1,5 +1,6 @@
 package info.davidvedvick.seis739.catpics.security
 
+import info.davidvedvick.seis739.catpics.ApiConfigurationConstants
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -21,7 +22,7 @@ class SecurityConfiguration(
         httpSecurity.cors().and().csrf().disable()
             .authorizeRequests()
             // we only really care about protecting picture uploads, everything else is public
-            .mvcMatchers(HttpMethod.POST,"/pictures")
+            .mvcMatchers(HttpMethod.POST,"${ApiConfigurationConstants.pathPrefix}/pictures")
             .authenticated()
             .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager, jwtTokenBuilder))
