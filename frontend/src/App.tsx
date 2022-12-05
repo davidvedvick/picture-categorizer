@@ -3,8 +3,22 @@ import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {BrowserRouter as Router, NavLink, Route, Routes} from "react-router-dom";
 import {PictureUploads} from "./Pictures/PictureUploads";
+import {PictureGallery} from "./Pictures/PictureGallery";
 
 function App() {
+    return (
+        <div>
+            <nav className="navbar navbar-expand navbar-dark bg-dark">
+                <div className="container-fluid">
+                    <a className="navbar-brand" href="/">Cat Pics!</a>
+                </div>
+            </nav>
+            <div className="container mt-3">
+                <PictureGallery />
+            </div>
+        </div>
+    )
+
     return (
         <Router>
             <div>
