@@ -1,8 +1,9 @@
 import {ChangeEvent, FormEvent, useState} from "react";
 import {instance as auth} from "../Security/AuthorizationService";
+import {Picture} from "./Picture";
 
 interface PictureUploadsProps {
-    onUploadCompleted: () => void;
+    onUploadCompleted: (uploadedPictures: Picture[]) => void;
     onUnauthenticated: () => void;
 }
 
@@ -45,7 +46,10 @@ export function PictureUploads(props: PictureUploadsProps) {
 
         const responses = await Promise.all(promisedUploads);
         if (responses.findIndex(r => r.status === 403) > -1) props.onUnauthenticated();
-        else props.onUploadCompleted();
+        else props.onUploadCompleted(
+            await Promise.all(responses
+                .filter(r => r.status === 202)
+                .map(r => r.json())));
     }
 
     return (
