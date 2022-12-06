@@ -4,11 +4,15 @@ import {Page} from "../Page";
 
 const pageSize = 20;
 
-export function PictureList() {
+interface PictureListProperties {
+    initialPictureList?: Picture[]
+}
+
+export function PictureList(props: PictureListProperties) {
 
     const pageNumberRef = React.useRef(0)
     const loadedPictures = React.useRef(new Set())
-    const [pictures, setItemPictures] = React.useState<Picture[]>([]);
+    const [pictures, setItemPictures] = React.useState(props.initialPictureList || []);
 
     useEffect(() => {
         function loadingThreshold() {
@@ -45,9 +49,13 @@ export function PictureList() {
             }
         }
 
+        const initialPictures = props.initialPictureList;
+        if (initialPictures)
+            setItemPictures(prev => initialPictures.concat(prev));
+
         loadMorePicturesIfNecessary();
         return () => window.removeEventListener('scroll', loadMorePicturesIfNecessary);
-    }, [])
+    }, [props.initialPictureList])
 
     return (
         <div className="pictures">

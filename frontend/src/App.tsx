@@ -3,20 +3,33 @@ import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
+import {instance as auth} from "./Security/AuthorizationService";
+import {Picture} from "./Pictures/Picture";
 
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [initialPictures, setInitialPictures] = React.useState<Picture[]>([])
 
-    function showUploads() {
+    function handleUnauthenticated() {
+        setIsLoggedIn(false);
+    }
+
+    async function showUploads() {
+        const isLoggedIn = auth().isLoggedIn();
+        setIsLoggedIn(isLoggedIn);
         setIsUploadDisplayed(true);
+    }
+
+    function handlePicturesUploaded(pictures: Picture[]) {
+        hideUploads();
+        setInitialPictures(pictures);
     }
 
     function hideUploads() {
         setIsUploadDisplayed(false);
     }
-
-    const authHeader = localStorage.getItem("auth")
 
     return (
         <div>
@@ -28,7 +41,7 @@ function App() {
             <div className="container mt-3">
                 <div className="row">
                     <div className="col-md-8">
-                        <PictureList />
+                        <PictureList initialPictureList={initialPictures} />
                     </div>
                     <div className="col-md-2">
                         <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
@@ -44,7 +57,9 @@ function App() {
                         </div>
                         <div className="modal-body">
                             {
-                                authHeader ? <PictureUploads /> : <UserLogin />
+                               isLoggedIn
+                                   ? <PictureUploads onUploadCompleted={handlePicturesUploaded} onUnauthenticated={handleUnauthenticated} />
+                                   : <UserLogin onLoggedIn={showUploads} />
                             }
                         </div>
                     </div>

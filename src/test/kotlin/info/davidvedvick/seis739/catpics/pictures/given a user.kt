@@ -30,7 +30,7 @@ class `given a user` {
             )
         }
 
-        private lateinit var response: ResponseEntity<Any?>
+        private lateinit var response: ResponseEntity<PictureResponse?>
         private var addedPictures = ArrayList<Picture>()
 
         @BeforeAll
@@ -61,6 +61,10 @@ class `given a user` {
                 247.toByte(), 761.toByte(), 879.toByte(), 11.toByte(),
             )
         }
+
+        @Test fun `then the response data is correct`() {
+            response.body?.fileName `should be equal to` addedPictures.first().fileName
+        }
     }
 
     class `and the user has pictures` {
@@ -81,7 +85,7 @@ class `given a user` {
                 )
             }
 
-            private lateinit var response: ResponseEntity<Any?>
+            private lateinit var response: ResponseEntity<PictureResponse?>
             private var addedPictures = ArrayList<Picture>()
 
             @BeforeAll
@@ -100,6 +104,11 @@ class `given a user` {
             @Test
             fun `then response is correct`() {
                 response.statusCode `should be` HttpStatus.CONFLICT
+            }
+
+            @Test
+            fun `then the response data is null`() {
+                response.body `should be` null
             }
 
             @Test

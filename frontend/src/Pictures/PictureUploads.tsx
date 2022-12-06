@@ -1,6 +1,13 @@
 import {ChangeEvent, FormEvent, useState} from "react";
+import {instance as auth} from "../Security/AuthorizationService";
+import {Picture} from "./Picture";
 
-export function PictureUploads() {
+interface PictureUploadsProps {
+    onUploadCompleted: (uploadedPictures: Picture[]) => void;
+    onUnauthenticated: () => void;
+}
+
+export function PictureUploads(props: PictureUploadsProps) {
     const [files, setFiles] = useState<FileList>()
 
     function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -15,8 +22,9 @@ export function PictureUploads() {
         const localFiles = files;
         if (!localFiles) return;
 
-        const authHeader = localStorage.getItem("auth")
-        if (!authHeader) return;
+        if (!auth().isLoggedIn()) return;
+        const jwtToken = auth().getUserToken()
+        if (!jwtToken) return;
 
         const promisedUploads: Promise<Response>[] = []
         for (let i = 0; i < localFiles.length; i++) {
@@ -30,13 +38,18 @@ export function PictureUploads() {
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': authHeader
+                    'Authorization': jwtToken.token
                 },
                 body: formData
-            }))
+            }));
         }
 
-        await Promise.all(promisedUploads)
+        const responses = await Promise.all(promisedUploads);
+        if (responses.findIndex(r => r.status === 403) > -1) props.onUnauthenticated();
+        else props.onUploadCompleted(
+            await Promise.all(responses
+                .filter(r => r.status === 202)
+                .map(r => r.json())));
     }
 
     return (

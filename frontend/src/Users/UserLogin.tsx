@@ -1,6 +1,12 @@
 import {FormEvent, useState} from "react";
+import {instance as auth} from "../Security/AuthorizationService";
+import {User} from "../Security/User";
 
-export function UserLogin() {
+export interface UserLoginProperties {
+    onLoggedIn: () => void;
+}
+
+export function UserLogin({ onLoggedIn }: UserLoginProperties) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
@@ -8,24 +14,9 @@ export function UserLogin() {
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
 
-        const response = await fetch(
-            "/api/login",
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(
-                    {
-                        email: email,
-                        password: password
-                    }
-                )
-            });
-
-        const authHeader = response.headers.get("authorization")
-        if (authHeader)
-            localStorage.setItem("auth", authHeader)
+        const result = await auth().authenticate(new User(email, password));
+        if (result)
+            onLoggedIn();
     }
 
     return (

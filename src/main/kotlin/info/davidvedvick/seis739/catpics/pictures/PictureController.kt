@@ -38,7 +38,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
         } ?: ResponseEntity.notFound().build()
 
     @PostMapping("/")
-    fun addPictures(@RequestParam("file") file: MultipartFile, authentication: Authentication?) : ResponseEntity<Any?> {
+    fun addPictures(@RequestParam("file") file: MultipartFile, authentication: Authentication?) : ResponseEntity<PictureResponse?> {
         val email = authentication?.name ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         val fileName = file.originalFilename ?: return ResponseEntity.badRequest().build()
         val user = userRepository.findByEmail(email) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
@@ -46,7 +46,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
         val existingPicture = pictureRepository.findByUserIdAndFileName(user.id, fileName)
         if (existingPicture != null) return ResponseEntity.status(HttpStatus.CONFLICT).build()
 
-        pictureRepository.save(
+        val picture = pictureRepository.save(
             Picture(
                 file = file.bytes,
                 fileName = file.originalFilename ?: file.name,
@@ -54,6 +54,6 @@ class PictureController(private val pictureRepository: PictureRepository, privat
             )
         )
 
-        return ResponseEntity.accepted().build()
+        return ResponseEntity.accepted().body(picture.toPictureResponse())
     }
 }
