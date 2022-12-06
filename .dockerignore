@@ -7,3 +7,5 @@ docker-compose.yml
 Dockerfile
 build.sh
 .env
+frontend/build
+frontend/node_modules
