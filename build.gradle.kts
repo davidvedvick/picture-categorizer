@@ -25,7 +25,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.flywaydb:flyway-core")
-	implementation("org.postgresql:postgresql:42.5.0")
+	implementation("org.postgresql:postgresql:42.5.1")
 	implementation("com.auth0:java-jwt:4.2.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.13.2")
@@ -47,10 +47,11 @@ tasks.withType<Test> {
 frontend {
 	nodeVersion.set("18.12.1")
 	packageJsonDirectory.set(File("frontend"))
-	assembleScript.set("run build")
+	assembleScript.set("run publish")
 	cleanScript.set("run clean")
+//	publishScript.set("run build")
 }
 
-copy {
-	from("frontend/build").into("src/main/resources/static")
-}
+//copy {
+//	from("frontend/build").into("src/main/resources/static")
+//}
