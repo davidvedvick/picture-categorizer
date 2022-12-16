@@ -10,9 +10,9 @@ interface PictureListProperties {
 
 export function PictureList(props: PictureListProperties) {
 
-    const pageNumberRef = React.useRef(0)
-    const loadedPictures = React.useRef(new Set())
-    const [pictures, setItemPictures] = React.useState(props.initialPictureList || []);
+    const pageNumberRef = React.useRef(0);
+    const loadedPictures = React.useRef(new Set());
+    const [pictures, setItemPictures] = React.useState<Picture[]>([]);
 
     useEffect(() => {
         function loadingThreshold() {
@@ -50,8 +50,10 @@ export function PictureList(props: PictureListProperties) {
         }
 
         const initialPictures = props.initialPictureList;
-        if (initialPictures)
-            setItemPictures(prev => initialPictures.concat(prev));
+        if (initialPictures && initialPictures.length > 0) {
+            setItemPictures(initialPictures);
+            pageNumberRef.current = 0;
+        }
 
         loadMorePicturesIfNecessary();
         return () => window.removeEventListener('scroll', loadMorePicturesIfNecessary);
