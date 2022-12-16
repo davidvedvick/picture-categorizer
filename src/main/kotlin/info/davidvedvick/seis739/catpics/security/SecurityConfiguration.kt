@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableWebSecurity
 class SecurityConfiguration(
     private val authenticationManager: AuthenticationManager,
-    private val jwtTokenBuilder: BuildJwtTokens,
+    private val jwtTokenBuilder: ManageJwtTokens,
 ) {
 
     @Bean
@@ -26,7 +26,7 @@ class SecurityConfiguration(
             .authenticated()
             .and()
             .addFilter(JwtAuthenticationFilter(authenticationManager, jwtTokenBuilder))
-            .addFilter(JwtAuthorizationFilter(authenticationManager))
+            .addFilter(JwtAuthorizationFilter(authenticationManager, jwtTokenBuilder))
             // this disables session creation on Spring Security
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 

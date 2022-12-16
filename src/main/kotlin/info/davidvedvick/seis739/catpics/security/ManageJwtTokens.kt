@@ -1,5 +1,7 @@
 package info.davidvedvick.seis739.catpics.security
 
-interface BuildJwtTokens {
+interface ManageJwtTokens {
     fun generateToken(authenticatedEmployee: AuthenticatedCatEmployee): JwtToken
+
+    fun decodeToken(token: String): AuthenticatedCatEmployee?
 }

@@ -13,6 +13,6 @@ class UserAuthenticationManager(private val userRepository: UserRepository, priv
         val user = userRepository.findByEmail(email) ?: userRepository.save(User(email = email, password = passwordEncoder.encode(password)))
         user
             .takeIf { passwordEncoder.matches(password, it.password) }
-            ?.let { AuthenticatedCatEmployee(email, it.password) }
+            ?.let { AuthenticatedCatEmployee(email, password) }
     }
 }
