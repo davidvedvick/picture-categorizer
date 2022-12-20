@@ -20,7 +20,7 @@ class JwtTokenManagement(private val authenticationConfiguration: Authentication
     override fun decodeToken(token: String): AuthenticatedCatEmployee? =
         token.takeIf { it.startsWith(AuthenticationConstants.TokenPrefix) }
             ?.let {
-                JWT.require(AuthenticationConstants.JwtSigningAlgorithm)
+                JWT.require(signingAlgorithm)
                     .build()
                     .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
             }

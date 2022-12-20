@@ -6,47 +6,30 @@ import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
-import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
-class `given a new user` {
+class `given an existing user without a password` {
     class `when logging the user in` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail(any()) } returns null
-
-                    every { save(any()) } answers {
-                        addedUser = firstArg()
-                        firstArg()
-                    }
+                    every { findByEmail("ZtyPVt") } returns User(315, "ZtyPVt", "")
                 },
                 mockk(),
             )
         }
 
-        private var addedUser: User? = null
         private var user: AuthenticatedCatEmployee? = null
 
         @BeforeAll
         fun act() {
-            user = services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI")) as? AuthenticatedCatEmployee
-        }
-
-        @Test
-        fun `then the email is correct`() {
-            addedUser?.email `should be equal to` "4Z00cpZ"
-        }
-
-        @Test
-        fun `then the password is correct`() {
-            addedUser?.password `should be equal to` ""
+            user = services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
         }
 
         @Test
         fun `then the user is not authenticated`() {
-            user?.name `should be` null
+            user `should be` null
         }
     }
 }

@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 @Component
 class UserAuthenticationManager(private val userRepository: UserRepository, private val passwordEncoder: PasswordEncoder) : AuthenticationManager {
     override fun authenticate(authentication: Authentication?): Authentication? = (authentication as? UnauthenticatedCatEmployee)?.run {
-        val user = userRepository.findByEmail(email) ?: userRepository.save(User(email = email, password = passwordEncoder.encode(password)))
+        val user = userRepository.findByEmail(email) ?: userRepository.save(User(email = email))
         user
-            .takeIf { passwordEncoder.matches(password, it.password) }
+            .takeIf { it.password.isNotBlank() && passwordEncoder.matches(password, it.password) }
             ?.let { AuthenticatedCatEmployee(email, password) }
     }
 }

@@ -37,7 +37,7 @@ class `given an existing user` {
 
         @Test
         fun `then the password is correct`() {
-            user?.credentials `should be equal to` "MobWbSRg"
+            user?.credentials `should be equal to` "zc89"
         }
     }
 }
