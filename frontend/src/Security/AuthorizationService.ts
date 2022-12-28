@@ -18,6 +18,8 @@ export class AuthorizationService {
                 body: JSON.stringify(user)
             });
 
+        if (!response.ok) return null;
+
         const jwtToken = await response.json() as JwtToken;
         if (!jwtToken) return null;
 

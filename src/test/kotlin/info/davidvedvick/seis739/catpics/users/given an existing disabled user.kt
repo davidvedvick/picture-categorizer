@@ -5,9 +5,10 @@ import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.every
 import io.mockk.mockk
-import org.amshove.kluent.`should be`
+import org.amshove.kluent.`should not be`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.springframework.security.authentication.DisabledException
 
 class `given an existing disabled user` {
     class `when logging the user in` {
@@ -20,16 +21,20 @@ class `given an existing disabled user` {
             )
         }
 
-        private var user: AuthenticatedCatEmployee? = null
+        private lateinit var exception: DisabledException
 
         @BeforeAll
         fun act() {
-            user = services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
+            try {
+                services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
+            } catch (e: DisabledException) {
+                exception = e
+            }
         }
 
         @Test
         fun `then the user is not authenticated`() {
-            user `should be` null
+            exception `should not be` null
         }
     }
 }

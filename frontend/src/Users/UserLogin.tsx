@@ -8,8 +8,9 @@ export interface UserLoginProperties {
 
 export function UserLogin({ onLoggedIn }: UserLoginProperties) {
 
+    const [isLoginError, setIsLoginError] = useState(false);
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("")
+    const [password, setPassword] = useState("");
 
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
@@ -17,6 +18,17 @@ export function UserLogin({ onLoggedIn }: UserLoginProperties) {
         const result = await auth().authenticate(new User(email, password));
         if (result)
             onLoggedIn();
+        setIsLoginError(!result);
+    }
+
+    function LoginError() {
+        return isLoginError
+            ? (
+                <div className="alert alert-danger" role="alert">
+                    There was an error logging in!
+                </div>
+            )
+            : null;
     }
 
     return (
@@ -32,6 +44,7 @@ export function UserLogin({ onLoggedIn }: UserLoginProperties) {
                         <label htmlFor="password">Password</label>
                     </div>
                     <p><button type="submit" className="btn btn-primary mb-3">Login</button></p>
+                    <LoginError />
                 </form>
             </div>
         </div>
