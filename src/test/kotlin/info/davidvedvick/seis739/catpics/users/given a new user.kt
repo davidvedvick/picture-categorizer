@@ -22,7 +22,10 @@ class `given a new user` {
                         firstArg()
                     }
                 },
-                mockk(),
+                mockk {
+                    every { encode("SOyRfcI") } returns "eOLdjk"
+                    every { matches("SOyRfcI", "eOLdjk") } returns true
+                },
             )
         }
 
@@ -41,7 +44,7 @@ class `given a new user` {
 
         @Test
         fun `then the password is correct`() {
-            addedUser?.password `should be equal to` ""
+            addedUser?.password `should be equal to` "eOLdjk"
         }
 
         @Test
