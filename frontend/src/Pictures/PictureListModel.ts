@@ -19,7 +19,7 @@ class PictureListViewModel implements PictureListModel {
 
     private readonly picturesSubject;
 
-    constructor(private readonly document: Document, private readonly window: Window, initialPictures: Picture[] = []) {
+    constructor(private readonly document: Document, initialPictures: Picture[] = []) {
         this.picturesSubject = new BehaviorSubject<Picture[]>(initialPictures);
     }
 
@@ -64,7 +64,7 @@ class PictureListViewModel implements PictureListModel {
                         if (!fifthLastNote) return false;
 
                         const rect = fifthLastNote.getBoundingClientRect();
-                        return rect.top - this.window.scrollY <= 0;
+                        return rect.top <= 0;
                     }),
                 );
 
@@ -73,6 +73,6 @@ class PictureListViewModel implements PictureListModel {
     }
 }
 
-export function newPictureListModel(document: Document, window: Window, initialPictures: Picture[] = []): PictureListModel {
-    return new PictureListViewModel(document, window, initialPictures);
+export function newPictureListModel(document: Document, initialPictures: Picture[] = []): PictureListModel {
+    return new PictureListViewModel(document, initialPictures);
 }

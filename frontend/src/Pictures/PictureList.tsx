@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Picture} from "./Picture";
 import {newPictureListModel} from "./PictureListModel";
 import {cancellationToken} from "../CancellationToken";
@@ -12,9 +12,9 @@ export function PictureList(props: PictureListProperties) {
     const [pictures, setItemPictures] = React.useState<Picture[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const token = cancellationToken();
-        const viewModel = newPictureListModel(document, window, props.initialPictureList);
+        const viewModel = newPictureListModel(document, props.initialPictureList);
         const picturesSub = viewModel.pictures.subscribe(setItemPictures);
         const isLoadingSub = viewModel.isLoading.subscribe(setIsLoading);
         viewModel.watchFromScrollState(token).catch(err => console.error("An unrecoverable error occurred watching the scroll state.", err));
@@ -23,7 +23,7 @@ export function PictureList(props: PictureListProperties) {
             picturesSub.unsubscribe();
             isLoadingSub.unsubscribe();
         };
-    }, [props.initialPictureList])
+    }, [props.initialPictureList]);
 
     return (
         <div className="pictures">
