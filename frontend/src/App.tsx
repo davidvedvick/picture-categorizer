@@ -36,15 +36,13 @@ function App() {
             <nav className="navbar navbar-expand navbar-dark bg-dark">
                 <div className="container-fluid">
                     <a className="navbar-brand" href="/">Cat Pics!</a>
+                    <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
                 </div>
             </nav>
             <div className="container mt-3">
                 <div className="row">
                     <div className="col-md-8">
                         <PictureList initialPictureList={initialPictures} />
-                    </div>
-                    <div className="col-md-2">
-                        <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
                     </div>
                 </div>
             </div>

@@ -27,6 +27,7 @@ dependencies {
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.postgresql:postgresql:42.5.1")
 	implementation("com.auth0:java-jwt:4.2.1")
+	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.13.2")
 	testImplementation("org.amshove.kluent:kluent:1.72")

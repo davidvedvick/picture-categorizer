@@ -14,7 +14,7 @@ class `given an existing user` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail("2l9L") } returns User(822, "2l9L", "MobWbSRg")
+                    every { findByEmail("2l9L") } returns User(822, "2l9L", "MobWbSRg", true)
                 },
                 mockk {
                     every { encode("zc89") } returns "MobWbSRg"
@@ -37,7 +37,7 @@ class `given an existing user` {
 
         @Test
         fun `then the password is correct`() {
-            user?.credentials `should be equal to` "MobWbSRg"
+            user?.credentials `should be equal to` "zc89"
         }
     }
 }

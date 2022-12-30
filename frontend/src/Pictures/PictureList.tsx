@@ -1,8 +1,7 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Picture} from "./Picture";
-import {Page} from "../Page";
-
-const pageSize = 20;
+import {newPictureListModel} from "./PictureListModel";
+import {cancellationToken} from "../CancellationToken";
 
 interface PictureListProperties {
     initialPictureList?: Picture[]
@@ -10,63 +9,35 @@ interface PictureListProperties {
 
 export function PictureList(props: PictureListProperties) {
 
-    const pageNumberRef = React.useRef(0)
-    const loadedPictures = React.useRef(new Set())
-    const [pictures, setItemPictures] = React.useState(props.initialPictureList || []);
+    const [pictures, setItemPictures] = React.useState<Picture[]>([]);
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    useEffect(() => {
-        function loadingThreshold() {
-            const fifthLastNote = document.querySelector('div.pictures div.picture:nth-last-child(5)');
-            if (!fifthLastNote) return -1;
-
-            const rect = fifthLastNote.getBoundingClientRect();
-            return rect.top + window.scrollY;
-        }
-
-        async function loadMorePicturesIfNecessary() {
-            if (window.scrollY < loadingThreshold()) return;
-
-            window.removeEventListener('scroll', loadMorePicturesIfNecessary);
-
-            let isFinished = false;
-            try {
-                const response = await fetch(`/api/pictures?sort=id,desc&page=${pageNumberRef.current}&size=${pageSize}`);
-                if (response.ok) {
-                    const page = await response.json() as Page<Picture>;
-                    setItemPictures(prev => prev.concat(page.content.filter(p => {
-                        if (loadedPictures.current.has(p.id)) return false;
-                        loadedPictures.current.add(p.id);
-                        return true;
-                    })));
-                    pageNumberRef.current += 1;
-                    isFinished = page.last;
-                }
-            } catch (error) {
-                console.error("There was an error getting item pictures", error);
-            } finally {
-                if (!isFinished)
-                    window.addEventListener('scroll', loadMorePicturesIfNecessary);
-            }
-        }
-
-        const initialPictures = props.initialPictureList;
-        if (initialPictures)
-            setItemPictures(prev => initialPictures.concat(prev));
-
-        loadMorePicturesIfNecessary();
-        return () => window.removeEventListener('scroll', loadMorePicturesIfNecessary);
-    }, [props.initialPictureList])
+    React.useEffect(() => {
+        const token = cancellationToken();
+        const viewModel = newPictureListModel(document, props.initialPictureList);
+        const picturesSub = viewModel.pictures.subscribe(setItemPictures);
+        const isLoadingSub = viewModel.isLoading.subscribe(setIsLoading);
+        viewModel.watchFromScrollState(token).catch(err => console.error("An unrecoverable error occurred watching the scroll state.", err));
+        return () => {
+            token.cancel();
+            picturesSub.unsubscribe();
+            isLoadingSub.unsubscribe();
+        };
+    }, [props.initialPictureList]);
 
     return (
         <div className="pictures">
             {pictures.map(p => (
-                <div className="picture card">
+                <div key={p.id} className="picture card">
                     <img src={`/api/pictures/${p.id}/file`} alt={p.fileName} title={p.fileName} className="card-img-top"/>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
                     </div>
                 </div>
             ))}
+            {isLoading && <div className="spinner-border text-center" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>}
         </div>
     );
 }
