@@ -37,7 +37,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "1.8"
 	}
 }
 
@@ -50,9 +50,4 @@ frontend {
 	packageJsonDirectory.set(File("frontend"))
 	assembleScript.set("run publish")
 	cleanScript.set("run clean")
-//	publishScript.set("run build")
 }
-
-//copy {
-//	from("frontend/build").into("src/main/resources/static")
-//}

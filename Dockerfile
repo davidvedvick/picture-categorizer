@@ -6,7 +6,7 @@ COPY . .
 RUN --mount=type=cache,target=/root/.gradle ./gradlew assemble build
 RUN cd build/libs; cp *[!plain].jar catpics.jar
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:8-jdk-alpine
 VOLUME /tmp
 ARG DEPENDENCY=/workspace/app/build/libs
 COPY --from=build ${DEPENDENCY} /app

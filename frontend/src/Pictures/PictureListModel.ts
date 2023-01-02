@@ -6,7 +6,7 @@ import {CancellationToken} from "../CancellationToken";
 
 const pageSize = 20;
 
-export interface PictureListModel {
+interface PictureListModel {
     get isLoading(): ReadonlyBehaviorSubject<boolean>;
     get pictures(): ReadonlyBehaviorSubject<Picture[]>;
 
@@ -26,6 +26,7 @@ class PictureListViewModel implements PictureListModel {
     get isLoading(): ReadonlyBehaviorSubject<boolean> {
         return this.isLoadingSubject;
     }
+
     get pictures(): ReadonlyBehaviorSubject<Picture[]> {
         return this.picturesSubject;
     }
