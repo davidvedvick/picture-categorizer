@@ -1,7 +1,7 @@
 package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.users.User
+import info.davidvedvick.seis739.catpics.users.CatEmployee
 import io.mockk.every
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
@@ -22,10 +22,10 @@ class `given a user` {
                         firstArg()
                     }
 
-                    every { findByUserIdAndFileName(any(), any()) } returns null
+                    every { findByCatEmployeeIdAndFileName(any(), any()) } returns null
                 },
                 mockk {
-                    every { findByEmail("8N8k") } returns User(id = 920, password = "OaH1Su")
+                    every { findByEmail("8N8k") } returns CatEmployee(id = 920, password = "OaH1Su")
                 }
             )
         }
@@ -47,8 +47,8 @@ class `given a user` {
         }
 
         @Test fun `then the pictures have the correct user`() {
-            addedPictures.map { it.user }.distinctBy { it?.id } `should be equal to` listOf(
-                User(id = 920),
+            addedPictures.map { it.catEmployee }.distinctBy { it?.id } `should be equal to` listOf(
+                CatEmployee(id = 920),
             )
         }
 
@@ -77,10 +77,10 @@ class `given a user` {
                             firstArg()
                         }
 
-                        every { findByUserIdAndFileName(920, "gzF0") } returns Picture(fileName = "gzF0")
+                        every { findByCatEmployeeIdAndFileName(920, "gzF0") } returns Picture(fileName = "gzF0")
                     },
                     mockk {
-                        every { findByEmail("8N8k") } returns User(id = 920, password = "OaH1Su")
+                        every { findByEmail("8N8k") } returns CatEmployee(id = 920, password = "OaH1Su")
                     }
                 )
             }

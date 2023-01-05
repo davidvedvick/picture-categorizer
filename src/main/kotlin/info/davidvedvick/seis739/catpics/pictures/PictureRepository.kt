@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.PagingAndSortingRepository
 
 interface PictureRepository : JpaRepository<Picture, Long>, PagingAndSortingRepository<Picture, Long> {
-    fun findByUserIdAndFileName(userId: Long, fileName: String): Picture?
+    fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture?
 
 }
