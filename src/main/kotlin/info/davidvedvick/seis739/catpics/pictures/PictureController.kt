@@ -5,6 +5,7 @@ import info.davidvedvick.seis739.catpics.value
 import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
 import java.net.URLConnection
+import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/pictures")
@@ -32,6 +34,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
                     val contentType = URLConnection.guessContentTypeFromStream(inputStream).split("/")
 
                     ResponseEntity.ok()
+                        .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
                         .contentType(MediaType(contentType[0], contentType[1]))
                         .body(InputStreamResource(inputStream))
                 }
