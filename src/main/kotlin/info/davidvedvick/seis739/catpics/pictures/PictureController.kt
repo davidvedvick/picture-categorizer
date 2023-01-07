@@ -52,7 +52,7 @@ class PictureController(private val pictureRepository: PictureRepository, privat
         val picture = pictureRepository.save(
             Picture(
                 file = file.bytes,
-                fileName = file.originalFilename ?: file.name,
+                fileName = fileName,
                 catEmployee = employee
             )
         )
