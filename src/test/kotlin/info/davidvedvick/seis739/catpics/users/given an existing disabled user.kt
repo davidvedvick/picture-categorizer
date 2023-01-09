@@ -15,7 +15,7 @@ class `given an existing disabled user` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail("ZtyPVt") } returns User(315, "ZtyPVt", "T1B")
+                    every { findByEmail("ZtyPVt") } returns CatEmployee(315, "ZtyPVt", "T1B")
                 },
                 mockk(),
             )

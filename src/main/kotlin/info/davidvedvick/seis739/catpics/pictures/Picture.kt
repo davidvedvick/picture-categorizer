@@ -1,15 +1,15 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import info.davidvedvick.seis739.catpics.users.User
+import info.davidvedvick.seis739.catpics.users.CatEmployee
 import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
 class Picture(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = 0,
-    @Column(length = 1_024) var fileName: String = "",
+    @Column(length = 255) var fileName: String = "",
     var file: ByteArray = ByteArray(0),
-    @ManyToOne var user: User? = null,
+    @ManyToOne var catEmployee: CatEmployee? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -23,6 +23,6 @@ class Picture(
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , path = $fileName , user = $user )"
+        return this::class.simpleName + "(id = $id , path = $fileName , user = $catEmployee )"
     }
 }

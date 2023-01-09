@@ -19,7 +19,7 @@ class `given a new user` {
                     every { findByEmail(any()) } returns null
 
                     every { save(any()) } answers {
-                        addedUser = firstArg()
+                        addedCatEmployee = firstArg()
                         firstArg()
                     }
                 },
@@ -29,7 +29,7 @@ class `given a new user` {
                 },
             )
         }
-        private var addedUser: User? = null
+        private var addedCatEmployee: CatEmployee? = null
 
         private lateinit var exception: DisabledException
 
@@ -44,12 +44,12 @@ class `given a new user` {
 
         @Test
         fun `then the email is correct`() {
-            addedUser?.email `should be equal to` "4Z00cpZ"
+            addedCatEmployee?.email `should be equal to` "4Z00cpZ"
         }
 
         @Test
         fun `then the password is correct`() {
-            addedUser?.password `should be equal to` "eOLdjk"
+            addedCatEmployee?.password `should be equal to` "eOLdjk"
         }
 
         @Test

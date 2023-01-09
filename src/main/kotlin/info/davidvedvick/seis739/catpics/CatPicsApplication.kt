@@ -1,11 +1,14 @@
 package info.davidvedvick.seis739.catpics
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import org.springframework.boot.builder.SpringApplicationBuilder
 
 @SpringBootApplication
-class CatPicsApplication()
+class CatPicsApplication
 
 fun main(args: Array<String>) {
-	runApplication<CatPicsApplication>(*args)
+	SpringApplicationBuilder(cls<CatPicsApplication>())
+		.lazyInitialization(true)
+		.build(*args)
+		.run()
 }

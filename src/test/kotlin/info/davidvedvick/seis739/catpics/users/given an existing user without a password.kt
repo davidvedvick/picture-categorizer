@@ -15,7 +15,7 @@ class `given an existing user without a password` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail("ZtyPVt") } returns User(315, "ZtyPVt", "", true)
+                    every { findByEmail("ZtyPVt") } returns CatEmployee(315, "ZtyPVt", "", true)
                 },
                 mockk(),
             )

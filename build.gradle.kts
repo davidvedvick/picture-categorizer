@@ -24,8 +24,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.flywaydb:flyway-core")
-	implementation("org.postgresql:postgresql:42.5.1")
+	implementation("org.flywaydb:flyway-mysql")
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
 	implementation("com.auth0:java-jwt:4.2.1")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -37,7 +37,7 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "1.8"
 	}
 }
 
@@ -50,9 +50,4 @@ frontend {
 	packageJsonDirectory.set(File("frontend"))
 	assembleScript.set("run publish")
 	cleanScript.set("run clean")
-//	publishScript.set("run build")
 }
-
-//copy {
-//	from("frontend/build").into("src/main/resources/static")
-//}

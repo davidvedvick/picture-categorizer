@@ -9,3 +9,4 @@ build.sh
 .env
 frontend/build
 frontend/node_modules
+deploy-to-nfsn.sh

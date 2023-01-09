@@ -4,14 +4,15 @@ version: '3.1'
 services:
 
   db:
-    image: postgres
+    image: mariadb:10.6
     restart: always
     ports:
-      - "5432:5432"
+      - "3306:3306"
     environment:
-      POSTGRES_DB: catpics
-      POSTGRES_USER: ${DB_USER:-cat}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-scratch}
+      MARIADB_DATABASE: catpics
+      MARIADB_USER: ${DB_USER:-cat}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-scratch}
+      MARIADB_ROOT_PASSWORD: root
 
   web:
     build:
@@ -20,7 +21,7 @@ services:
     ports:
       - "3000:5000"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/catpics
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/catpics
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-cat}
       SPRING_DATASOURCE_PASSWORD: ${DB_USER:-scratch}
       APP_AUTHENTICATION_SECRET: ${APP_AUTHENTICATION_SECRET:-5037723c-f5f8-49c4-b161-d29733d034ff}
