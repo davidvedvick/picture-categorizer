@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/pictures")
-class PictureController(private val pictureRepository: PictureRepository, private val catEmployeeRepository: CatEmployeeRepository) {
+class PictureController(private val pictureRepository: HavePictures, private val catEmployeeRepository: CatEmployeeRepository) {
     @GetMapping
     fun get(pageable: Pageable): Page<PictureResponse> = pictureRepository.findAll(pageable).map { p -> p.toPictureResponse() }
 
