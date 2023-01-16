@@ -23,7 +23,7 @@ SELECT
 FROM picture
 """
 
-class PictureRepository(private val connection: SuspendingConnection) : HavePictures {
+class PictureRepository(private val connection: SuspendingConnection) : ManagePictures {
     override suspend fun findById(id: Long): Picture? {
         val result = connection.sendPreparedStatement(
             "$selectFromPictures WHERE id = ?",

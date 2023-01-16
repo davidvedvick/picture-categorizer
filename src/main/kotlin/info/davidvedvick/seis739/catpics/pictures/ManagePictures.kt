@@ -1,6 +1,6 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-interface HavePictures {
+interface ManagePictures {
 
     suspend fun findById(id: Long): Picture?
     suspend fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture?

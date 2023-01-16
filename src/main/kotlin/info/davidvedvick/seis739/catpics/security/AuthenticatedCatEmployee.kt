@@ -1,7 +1,6 @@
 package info.davidvedvick.seis739.catpics.security
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.authority.SimpleGrantedAuthority
+import io.ktor.server.auth.*
 
-class AuthenticatedCatEmployee(email: String, password: String?)
-    : UsernamePasswordAuthenticationToken(email, password, mutableListOf(SimpleGrantedAuthority("simple")))
+class AuthenticatedCatEmployee(val email: String, val password: String?)
+    : Credential

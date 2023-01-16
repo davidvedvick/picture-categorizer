@@ -26,6 +26,9 @@ dependencies {
 	implementation("io.ktor:ktor-server-netty:$ktorVersion")
 	implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
 	implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+	implementation("io.ktor:ktor-server-caching-headers:$ktorVersion")
+	implementation("io.ktor:ktor-server-auth:$ktorVersion")
+	implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 //	implementation("ch.qos.logback:logback-classic:$logback_version")
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -38,7 +41,6 @@ dependencies {
 	implementation("org.jetbrains.exposed:exposed-core:0.41.1")
 	implementation("org.flywaydb:flyway-mysql")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
-	implementation("com.auth0:java-jwt:4.2.1")
 	// Koin for Ktor
 	implementation("io.insert-koin:koin-ktor:$koinKtor")
 // SLF4J Logger

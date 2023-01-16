@@ -4,11 +4,13 @@ import com.github.jasync.sql.db.asSuspending
 import com.github.jasync.sql.db.mysql.MySQLConnection
 import com.github.jasync.sql.db.mysql.MySQLConnectionBuilder
 import com.github.jasync.sql.db.pool.ConnectionPool
-import info.davidvedvick.seis739.catpics.pictures.HavePictures
+import info.davidvedvick.seis739.catpics.pictures.ManagePictures
 import info.davidvedvick.seis739.catpics.pictures.PictureRepository
 import info.davidvedvick.seis739.catpics.pictures.pictureRoutes
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -26,7 +28,7 @@ fun appModule(environment: ApplicationEnvironment) = module {
 	factory {
 		get<ConnectionPool<MySQLConnection>>().asSuspending
 	}
-	singleOf(::PictureRepository) { bind<HavePictures>() }
+	singleOf(::PictureRepository) { bind<ManagePictures>() }
 }
 
 fun main(args: Array<String>) {
@@ -40,6 +42,12 @@ fun Application.main() {
 	install(Koin) {
 		slf4jLogger()
 		modules(appModule(environment))
+	}
+
+	install(Authentication) {
+		jwt {
+			// Configure jwt authentication
+		}
 	}
 
 	configureRouting()

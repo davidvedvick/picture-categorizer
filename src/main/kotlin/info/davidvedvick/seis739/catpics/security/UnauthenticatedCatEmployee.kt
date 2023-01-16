@@ -1,6 +1,5 @@
 package info.davidvedvick.seis739.catpics.security
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import io.ktor.server.auth.*
 
-class UnauthenticatedCatEmployee(val email: String, val password: String)
-    : UsernamePasswordAuthenticationToken(email, password)
+class UnauthenticatedCatEmployee(val email: String, val password: String) : Credential
