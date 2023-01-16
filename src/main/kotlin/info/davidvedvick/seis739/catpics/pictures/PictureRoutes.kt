@@ -20,8 +20,8 @@ fun Application.pictureRoutes() {
 
     routing {
         get("/api/pictures") {
-            val pageNumber: Int? by call.request.queryParameters
-            val pageSize: Int? by call.request.queryParameters
+            val pageNumber = call.request.queryParameters["pageNumber"]?.toIntOrNull()
+            val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull()
 
             val pictures = pageNumber
                 ?.let { number -> pageSize?.let { size -> pictureRepository.findAll(number, size) } }
