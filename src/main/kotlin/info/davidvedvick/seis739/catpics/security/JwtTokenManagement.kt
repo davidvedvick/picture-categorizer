@@ -12,11 +12,11 @@ class JwtTokenManagement(private val authenticationConfiguration: Authentication
             .withSubject(authenticatedEmployee.email)
             .withExpiresAt(Date(System.currentTimeMillis() + AuthenticationConstants.ExpirationDuration))
             .sign(signingAlgorithm)
-            .let { JwtToken("${AuthenticationConstants.TokenPrefix} $it", AuthenticationConstants.ExpirationDuration) }
+            .let { JwtToken(it, AuthenticationConstants.ExpirationDuration) }
 
     override fun decodeToken(token: String): AuthenticatedCatEmployee? =
-        token.takeIf { it.startsWith(AuthenticationConstants.TokenPrefix) }
-            ?.let {
+        token
+            .let {
                 JWT.require(signingAlgorithm)
                     .build()
                     .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
