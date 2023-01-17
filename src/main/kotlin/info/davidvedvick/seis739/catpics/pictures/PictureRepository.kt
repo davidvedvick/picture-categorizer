@@ -1,18 +1,11 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import com.github.jasync.sql.db.RowData
 import com.github.jasync.sql.db.SuspendingConnection
+import info.davidvedvick.seis739.catpics.toEntity
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
 private val mutableProperties by lazy { Picture::class.memberProperties.filterIsInstance<KMutableProperty<*>>() }
-
-private fun RowData.toPicture() = Picture()
-    .also { p ->
-        for (prop in mutableProperties) {
-            prop.setter.call(p, this[prop.name])
-        }
-    }
 
 private const val selectFromPictures =
 """
@@ -30,7 +23,7 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
             listOf(id)
         )
 
-        return result.rows.firstOrNull()?.toPicture()
+        return result.rows.firstOrNull()?.toEntity()
     }
 
     override suspend fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture? {
@@ -41,7 +34,7 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
             listOf(catEmployeeId, fileName)
         )
 
-        return result.rows.firstOrNull()?.toPicture()
+        return result.rows.firstOrNull()?.toEntity()
     }
 
     override suspend fun findAll(pageNumber: Int, pageSize: Int): List<Picture> {
@@ -50,12 +43,12 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
             listOf(pageNumber * pageSize - 1, pageSize)
         )
 
-        return result.rows.map { row -> row.toPicture() }
+        return result.rows.map { row -> row.toEntity() }
     }
 
     override suspend fun findAll(): List<Picture> {
         val result = connection.sendQuery(selectFromPictures)
-        return result.rows.map { row -> row.toPicture() }
+        return result.rows.map { row -> row.toEntity() }
     }
 
     override suspend fun save(picture: Picture): Picture {
@@ -64,7 +57,7 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
             VALUES (?, ?, ?);
             SELECT LAST_INSERT_ID() as id;
         """.trimIndent(),
-            listOf(picture.catEmployee, picture.fileName, picture.file)
+            listOf(picture.catEmployee?.id, picture.fileName, picture.file)
         )
 
         picture.id = result.rows.first().getLong(0) ?: 0

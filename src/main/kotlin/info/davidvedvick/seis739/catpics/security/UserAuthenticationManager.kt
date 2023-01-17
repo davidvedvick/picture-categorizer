@@ -1,16 +1,16 @@
 package info.davidvedvick.seis739.catpics.security
 
 import info.davidvedvick.seis739.catpics.users.CatEmployee
-import info.davidvedvick.seis739.catpics.users.CatEmployeeRepository
+import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
 import org.springframework.security.crypto.password.PasswordEncoder
 
-class UserAuthenticationManager(private val catEmployeeRepository: CatEmployeeRepository, private val passwordEncoder: PasswordEncoder) : AuthenticateCatEmployees {
+class UserAuthenticationManager(private val manageCatEmployees: ManageCatEmployees, private val passwordEncoder: PasswordEncoder) : AuthenticateCatEmployees {
 
     override suspend fun authenticate(unauthenticatedCatEmployee: UnauthenticatedCatEmployee): AuthenticatedCatEmployee =
         with (unauthenticatedCatEmployee) {
-            val catEmployee = catEmployeeRepository.findByEmail(email) ?: catEmployeeRepository.save(
+            val catEmployee = manageCatEmployees.findByEmail(email) ?: manageCatEmployees.save(
                 CatEmployee(
                     email = email,
                     password = passwordEncoder.encode(password)

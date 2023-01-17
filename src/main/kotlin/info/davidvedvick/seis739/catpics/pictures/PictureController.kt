@@ -1,6 +1,6 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import info.davidvedvick.seis739.catpics.users.CatEmployeeRepository
+import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import info.davidvedvick.seis739.catpics.value
 import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Page
@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/pictures")
-class PictureController(private val pictureRepository: ManagePictures, private val catEmployeeRepository: CatEmployeeRepository) {
+class PictureController(private val pictureRepository: ManagePictures, private val manageCatEmployees: ManageCatEmployees) {
     @GetMapping
     fun get(pageable: Pageable): Page<PictureResponse> {
         throw NotImplementedError()

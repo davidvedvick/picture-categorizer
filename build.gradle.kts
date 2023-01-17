@@ -6,6 +6,7 @@ plugins {
 	id("org.siouan.frontend-jdk11") version "6.0.0"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.spring") version "1.6.21"
+	kotlin("plugin.serialization") version "1.4.32"
 }
 
 group = "com.example"

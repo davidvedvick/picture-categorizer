@@ -7,9 +7,9 @@ import com.github.jasync.sql.db.pool.ConnectionPool
 import info.davidvedvick.seis739.catpics.pictures.ManagePictures
 import info.davidvedvick.seis739.catpics.pictures.PictureRepository
 import info.davidvedvick.seis739.catpics.pictures.pictureRoutes
-import info.davidvedvick.seis739.catpics.security.AuthenticationConfiguration
-import info.davidvedvick.seis739.catpics.security.JwtTokenManagement
-import info.davidvedvick.seis739.catpics.security.ManageJwtTokens
+import info.davidvedvick.seis739.catpics.security.*
+import info.davidvedvick.seis739.catpics.users.CatEmployeeRepository
+import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import info.davidvedvick.seis739.catpics.users.catEmployeeRoutes
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -25,6 +25,8 @@ import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 
 fun appModule(environment: ApplicationEnvironment) = module {
 	single {
@@ -42,8 +44,12 @@ fun appModule(environment: ApplicationEnvironment) = module {
 			secret = authenticationSecret
 		}
 	}
+
 	factoryOf(::JwtTokenManagement) { bind<ManageJwtTokens>() }
+	factoryOf(::UserAuthenticationManager) { bind<AuthenticateCatEmployees>() }
 	singleOf(::PictureRepository) { bind<ManagePictures>() }
+	singleOf(::CatEmployeeRepository) { bind<ManageCatEmployees>() }
+	single<PasswordEncoder> { BCryptPasswordEncoder() }
 }
 
 fun main(args: Array<String>) {
