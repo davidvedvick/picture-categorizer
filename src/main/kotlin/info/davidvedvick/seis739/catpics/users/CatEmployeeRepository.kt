@@ -1,7 +1,8 @@
 package info.davidvedvick.seis739.catpics.users
 
 import com.github.jasync.sql.db.SuspendingConnection
-import info.davidvedvick.seis739.catpics.toEntity
+import info.davidvedvick.seis739.catpics.entityFactory
+import info.davidvedvick.seis739.catpics.toEntities
 
 private const val selectFromCatEmployees =
     """
@@ -13,14 +14,16 @@ SELECT
 FROM cat_employee
 """
 
+private val employeeFactory by lazy { entityFactory<CatEmployee>() }
+
 class CatEmployeeRepository(private val connection: SuspendingConnection) : ManageCatEmployees {
     override suspend fun findByEmail(email: String): CatEmployee? {
-        val result = connection.sendPreparedStatement(
+        val results = connection.sendPreparedStatement(
             "$selectFromCatEmployees WHERE email = ?",
             listOf(email)
         )
 
-        return result.rows.firstOrNull()?.toEntity()
+        return employeeFactory.toEntities(results).firstOrNull()
     }
 
     override suspend fun save(catEmployee: CatEmployee): CatEmployee {
@@ -31,7 +34,7 @@ class CatEmployeeRepository(private val connection: SuspendingConnection) : Mana
             listOf(catEmployee.email, catEmployee.password, catEmployee.isEnabled)
         )
 
-        val lastInsertedId = connection.sendQuery("SELECT LAST_INSERT_ID() as id");
+        val lastInsertedId = connection.sendQuery("SELECT LAST_INSERT_ID() as id")
 
         catEmployee.id = lastInsertedId.rows.first().getLong(0) ?: 0
 

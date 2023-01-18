@@ -2,6 +2,7 @@ package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.Page
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -18,6 +19,7 @@ import kotlin.time.Duration.Companion.days
 
 fun Application.pictureRoutes() {
     val pictureRepository by inject<ManagePictures>()
+    val employeeRepository by inject<ManageCatEmployees>()
 
     routing {
         get("/api/pictures") {
@@ -54,16 +56,25 @@ fun Application.pictureRoutes() {
         authenticate {
             post("/api/pictures") {
                 val part = call.receiveMultipart().readPart() as? PartData.FileItem
-                if (part == null) call.respond(HttpStatusCode.BadRequest)
-                else {
-                    val fileName = part.originalFileName ?: return@post
-                    val user = call.principal<AuthenticatedCatEmployee>()
-                    val picture = Picture(
-                        file = part.streamProvider().use { it.readAllBytes() },
-                        fileName = fileName,
-                    )
+                val fileName = part?.originalFileName
+                val user = call.principal<AuthenticatedCatEmployee>()
+                when {
+                    part == null -> call.respond(HttpStatusCode.BadRequest)
+                    fileName == null -> call.respond(HttpStatusCode.BadRequest)
+                    user == null -> call.respond(HttpStatusCode.Unauthorized)
+                    else -> {
+                        val employee = employeeRepository.findByEmail(user.email)
+                        if (employee == null) call.respond(HttpStatusCode.Unauthorized)
+                        else {
+                            val picture = Picture(
+                                file = part.streamProvider().use { it.readAllBytes() },
+                                fileName = fileName,
+                                catEmployeeId = employee.id
+                            )
 
-                    call.respond(pictureRepository.save(picture).toPictureResponse())
+                            call.respond(pictureRepository.save(picture).toPictureResponse())
+                        }
+                    }
                 }
             }
         }

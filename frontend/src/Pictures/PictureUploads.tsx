@@ -34,11 +34,11 @@ export function PictureUploads(props: PictureUploadsProps) {
             const formData = new FormData();
             formData.set("file", file)
             promisedUploads.push(fetch(
-            "/api/pictures/",
+            "/api/pictures",
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': jwtToken.token
+                    'Authorization': `Bearer ${jwtToken.token}`
                 },
                 body: formData
             }));
