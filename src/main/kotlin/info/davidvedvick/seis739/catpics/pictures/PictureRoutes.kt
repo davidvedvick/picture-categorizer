@@ -1,5 +1,6 @@
 package info.davidvedvick.seis739.catpics.pictures
 
+import info.davidvedvick.seis739.catpics.Page
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -23,11 +24,17 @@ fun Application.pictureRoutes() {
             val pageNumber = call.request.queryParameters["pageNumber"]?.toIntOrNull()
             val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull()
 
-            val pictures = pageNumber
+            pageNumber
                 ?.let { number -> pageSize?.let { size -> pictureRepository.findAll(number, size) } }
-                ?: pictureRepository.findAll()
-
-            call.respond(pictures.map { it.toPictureResponse() })
+                ?.also { pictures ->
+                    call.respond(
+                        Page(
+                            pictures.map { it.toPictureResponse() },
+                            false,
+                        )
+                    )
+                }
+                ?: call.respond(pictureRepository.findAll().map { it.toPictureResponse() })
         }
 
         get("/api/pictures/{id}/file") {
