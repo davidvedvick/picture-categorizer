@@ -13,8 +13,10 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.routing.*
 import org.flywaydb.core.Flyway
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
@@ -25,6 +27,7 @@ import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.io.File
 
 fun appModule(environment: ApplicationEnvironment) = module {
 	single {
@@ -89,6 +92,18 @@ fun Application.main() {
 }
 
 fun Application.configureRouting() {
+
+	routing {
+		val configuredStaticPath = environment?.config?.propertyOrNull("static-content")?.getString()
+
+		if (configuredStaticPath != null) {
+			static("/") {
+				staticRootFolder = File(configuredStaticPath)
+				files(".")
+			}
+		}
+	}
+
 	pictureRoutes()
 	catEmployeeRoutes()
 }
