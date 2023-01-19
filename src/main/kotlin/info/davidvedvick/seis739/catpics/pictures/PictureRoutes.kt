@@ -1,8 +1,6 @@
 package info.davidvedvick.seis739.catpics.pictures
 
-import info.davidvedvick.seis739.catpics.Page
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -13,37 +11,21 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
 import org.koin.ktor.ext.inject
+import org.springframework.security.core.AuthenticationException
 import java.io.ByteArrayInputStream
 import java.net.URLConnection
 import kotlin.time.Duration.Companion.days
 
 fun Application.pictureRoutes() {
+    val pictureService by inject<ServePictures>()
     val pictureRepository by inject<ManagePictures>()
-    val employeeRepository by inject<ManageCatEmployees>()
 
     routing {
         get("/api/pictures") {
             val pageNumber = call.request.queryParameters["page"]?.toIntOrNull()
             val pageSize = call.request.queryParameters["size"]?.toIntOrNull()
 
-            pageNumber
-                ?.let { number ->
-                    pageSize?.let { size ->
-                        Page(
-                            pictureRepository.findAll(number, size),
-                            pictureRepository.countAll() <= number * size,
-                        )
-                    }
-                }
-                ?.also { originalPage ->
-                    call.respond(
-                        Page(
-                            originalPage.content.map { it.toPictureResponse() },
-                            originalPage.isLast,
-                        )
-                    )
-                }
-                ?: call.respond(pictureRepository.findAll().map { it.toPictureResponse() })
+            call.respond(pictureService.getPictures(pageNumber, pageSize))
         }
 
         get("/api/pictures/{id}/file") {
@@ -67,16 +49,17 @@ fun Application.pictureRoutes() {
                     fileName == null -> call.respond(HttpStatusCode.BadRequest)
                     user == null -> call.respond(HttpStatusCode.Unauthorized)
                     else -> {
-                        val employee = employeeRepository.findByEmail(user.email)
-                        if (employee == null) call.respond(HttpStatusCode.Unauthorized)
-                        else {
-                            val picture = Picture(
-                                file = part.streamProvider().use { it.readAllBytes() },
-                                fileName = fileName,
-                                catEmployeeId = employee.id
-                            )
-
-                            call.respond(pictureRepository.save(picture).toPictureResponse())
+                        val pictureFile = PictureFile(
+                            fileName,
+                            part.streamProvider().use { it.readAllBytes() }
+                        )
+                        try {
+                            val picture = pictureService.addPicture(pictureFile, user)
+                            call.respond(HttpStatusCode.Accepted, picture)
+                        } catch (pictureAlreadyExists: PictureAlreadyExistsException) {
+                            call.respond(HttpStatusCode.Conflict)
+                        } catch (authenticationException: AuthenticationException) {
+                            call.respond(HttpStatusCode.Unauthorized)
                         }
                     }
                 }

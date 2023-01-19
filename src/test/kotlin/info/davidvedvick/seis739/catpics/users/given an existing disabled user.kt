@@ -3,8 +3,9 @@ package info.davidvedvick.seis739.catpics.users
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should not be`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -15,7 +16,7 @@ class `given an existing disabled user` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail("ZtyPVt") } returns CatEmployee(315, "ZtyPVt", "T1B")
+                    coEvery { findByEmail("ZtyPVt") } returns CatEmployee(315, "ZtyPVt", "T1B")
                 },
                 mockk(),
             )
@@ -25,10 +26,12 @@ class `given an existing disabled user` {
 
         @BeforeAll
         fun act() {
-            try {
-                services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
-            } catch (e: DisabledException) {
-                exception = e
+            runBlocking {
+                try {
+                    services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
+                } catch (e: DisabledException) {
+                    exception = e
+                }
             }
         }
 

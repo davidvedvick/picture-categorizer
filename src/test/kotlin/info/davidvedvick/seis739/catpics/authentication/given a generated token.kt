@@ -26,7 +26,7 @@ class `given a generated token` {
 
         @Test
         fun `then the user is correct`() {
-            authenticatedUser?.name `should be equal to` "y8enGif"
+            authenticatedUser?.email `should be equal to` "y8enGif"
         }
     }
 }

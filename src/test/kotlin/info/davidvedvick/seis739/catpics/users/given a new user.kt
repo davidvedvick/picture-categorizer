@@ -3,8 +3,10 @@ package info.davidvedvick.seis739.catpics.users
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should not be`
 import org.junit.jupiter.api.BeforeAll
@@ -16,9 +18,9 @@ class `given a new user` {
         private val services by lazy {
             UserAuthenticationManager(
                 mockk {
-                    every { findByEmail(any()) } returns null
+                    coEvery { findByEmail(any()) } returns null
 
-                    every { save(any()) } answers {
+                    coEvery { save(any()) } answers {
                         addedCatEmployee = firstArg()
                         firstArg()
                     }
@@ -35,10 +37,12 @@ class `given a new user` {
 
         @BeforeAll
         fun act() {
-            try {
-                services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI")) as? AuthenticatedCatEmployee
-            } catch (e: DisabledException) {
-                exception = e
+            runBlocking {
+                try {
+                    services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI")) as? AuthenticatedCatEmployee
+                } catch (e: DisabledException) {
+                    exception = e
+                }
             }
         }
 

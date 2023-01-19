@@ -4,9 +4,7 @@ import com.github.jasync.sql.db.asSuspending
 import com.github.jasync.sql.db.mysql.MySQLConnection
 import com.github.jasync.sql.db.mysql.MySQLConnectionBuilder
 import com.github.jasync.sql.db.pool.ConnectionPool
-import info.davidvedvick.seis739.catpics.pictures.ManagePictures
-import info.davidvedvick.seis739.catpics.pictures.PictureRepository
-import info.davidvedvick.seis739.catpics.pictures.pictureRoutes
+import info.davidvedvick.seis739.catpics.pictures.*
 import info.davidvedvick.seis739.catpics.security.*
 import info.davidvedvick.seis739.catpics.users.CatEmployeeRepository
 import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
@@ -47,6 +45,7 @@ fun appModule(environment: ApplicationEnvironment) = module {
 
 	factoryOf(::JwtTokenManagement) { bind<ManageJwtTokens>() }
 	factoryOf(::UserAuthenticationManager) { bind<AuthenticateCatEmployees>() }
+	factoryOf(::PictureService) { bind<ServePictures>() }
 	singleOf(::PictureRepository) { bind<ManagePictures>() }
 	singleOf(::CatEmployeeRepository) { bind<ManageCatEmployees>() }
 	single<PasswordEncoder> { BCryptPasswordEncoder() }
