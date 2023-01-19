@@ -16,7 +16,7 @@ inline fun <reified T : Any> entityFactory(): ProduceEntities<T> {
         override fun toEntity(rowData: ArrayRowData) =
             kClass.createInstance().also {
                 for (prop in mutableProperties) {
-                    if (!rowData.mapping.containsKey(prop.name)) continue;
+                    if (!rowData.mapping.containsKey(prop.name)) continue
                     val rowValue = rowData[prop.name]
                     val parsedValue = when (prop.returnType) {
                         boolType -> rowValue != 0
@@ -28,7 +28,7 @@ inline fun <reified T : Any> entityFactory(): ProduceEntities<T> {
     }
 }
 
-inline fun <T : Any> ProduceEntities<T>.toEntities(results: QueryResult) =
+fun <T : Any> ProduceEntities<T>.toEntities(results: QueryResult) =
     results.rows.filterIsInstance<ArrayRowData>().map(::toEntity)
 
 interface ProduceEntities<T> {

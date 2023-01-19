@@ -1,6 +1,7 @@
 package info.davidvedvick.seis739.catpics.pictures
 
 import com.github.jasync.sql.db.SuspendingConnection
+import com.github.jasync.sql.db.mysql.MySQLQueryResult
 import info.davidvedvick.seis739.catpics.entityFactory
 import info.davidvedvick.seis739.catpics.toEntities
 
@@ -26,6 +27,15 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
         return pictureFactory.toEntities(results).firstOrNull()
     }
 
+    override suspend fun findFileById(id: Long): ByteArray? {
+        val results = connection.sendPreparedStatement(
+            "SELECT file FROM picture WHERE id = ?",
+            listOf(id)
+        )
+
+        return results.rows.map { it[0] as? ByteArray }.firstOrNull()
+    }
+
     override suspend fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture? {
         val results = connection.sendPreparedStatement(
             """$selectFromPictures 
@@ -40,7 +50,7 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
     override suspend fun findAll(pageNumber: Int, pageSize: Int): List<Picture> {
         val result = connection.sendPreparedStatement(
             "$selectFromPictures ORDER BY id DESC LIMIT ?,?",
-            listOf(pageNumber * pageSize - 1, pageSize)
+            listOf(pageNumber * pageSize, pageSize)
         )
 
         return pictureFactory.toEntities(result)
@@ -51,17 +61,20 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
         return pictureFactory.toEntities(result)
     }
 
+    override suspend fun countAll(): Int {
+        val result = connection.sendQuery("SELECT COUNT(*) FROM picture")
+        return result.rows.first().getLong(0)?.toInt() ?: -1
+    }
+
     override suspend fun save(picture: Picture): Picture {
         val result = connection.sendPreparedStatement("""
             INSERT INTO picture (cat_employee_id, file_name, file)
             VALUES (?, ?, ?);
         """.trimIndent(),
             listOf(picture.catEmployeeId, picture.fileName, picture.file)
-        )
+        ) as? MySQLQueryResult
 
-        val lastInsertedId = connection.sendQuery("SELECT LAST_INSERT_ID() as id")
-
-        picture.id = lastInsertedId.rows.first().getLong(0) ?: 0
+        picture.id = result?.lastInsertId ?: 0
 
         return picture
     }

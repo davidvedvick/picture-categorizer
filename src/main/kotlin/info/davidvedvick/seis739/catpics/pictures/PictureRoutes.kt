@@ -23,16 +23,23 @@ fun Application.pictureRoutes() {
 
     routing {
         get("/api/pictures") {
-            val pageNumber = call.request.queryParameters["pageNumber"]?.toIntOrNull()
-            val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull()
+            val pageNumber = call.request.queryParameters["page"]?.toIntOrNull()
+            val pageSize = call.request.queryParameters["size"]?.toIntOrNull()
 
             pageNumber
-                ?.let { number -> pageSize?.let { size -> pictureRepository.findAll(number, size) } }
-                ?.also { pictures ->
+                ?.let { number ->
+                    pageSize?.let { size ->
+                        Page(
+                            pictureRepository.findAll(number, size),
+                            pictureRepository.countAll() <= number * size,
+                        )
+                    }
+                }
+                ?.also { originalPage ->
                     call.respond(
                         Page(
-                            pictures.map { it.toPictureResponse() },
-                            false,
+                            originalPage.content.map { it.toPictureResponse() },
+                            originalPage.isLast,
                         )
                     )
                 }
@@ -41,14 +48,11 @@ fun Application.pictureRoutes() {
 
         get("/api/pictures/{id}/file") {
             val id: Long by call.parameters
-            val picture = pictureRepository.findById(id)
-            picture?.apply {
-                file.let(::ByteArrayInputStream).use { inputStream ->
-                    val contentType = URLConnection.guessContentTypeFromStream(inputStream).split("/")
-                    call.caching = CachingOptions(CacheControl.MaxAge(30.days.inWholeSeconds.toInt()))
-                    call.respondOutputStream(contentType = ContentType(contentType[0], contentType[1])) {
-                        inputStream.copyTo(this)
-                    }
+            pictureRepository.findFileById(id)?.let(::ByteArrayInputStream)?.use { inputStream ->
+                val contentType = URLConnection.guessContentTypeFromStream(inputStream).split("/")
+                call.caching = CachingOptions(CacheControl.MaxAge(30.days.inWholeSeconds.toInt()))
+                call.respondOutputStream(contentType = ContentType(contentType[0], contentType[1])) {
+                    inputStream.copyTo(this)
                 }
             }
         }

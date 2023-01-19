@@ -1,6 +1,7 @@
 package info.davidvedvick.seis739.catpics.users
 
 import com.github.jasync.sql.db.SuspendingConnection
+import com.github.jasync.sql.db.mysql.MySQLQueryResult
 import info.davidvedvick.seis739.catpics.entityFactory
 import info.davidvedvick.seis739.catpics.toEntities
 
@@ -32,11 +33,9 @@ class CatEmployeeRepository(private val connection: SuspendingConnection) : Mana
             VALUES (?, ?, ?);
         """.trimIndent(),
             listOf(catEmployee.email, catEmployee.password, catEmployee.isEnabled)
-        )
+        ) as? MySQLQueryResult
 
-        val lastInsertedId = connection.sendQuery("SELECT LAST_INSERT_ID() as id")
-
-        catEmployee.id = lastInsertedId.rows.first().getLong(0) ?: 0
+        catEmployee.id = result?.lastInsertId ?: 0
 
         return catEmployee
     }
