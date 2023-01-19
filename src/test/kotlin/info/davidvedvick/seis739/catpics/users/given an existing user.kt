@@ -30,7 +30,7 @@ class `given an existing user` {
         @BeforeAll
         fun act() {
             runBlocking {
-                user = services.authenticate(UnauthenticatedCatEmployee("2l9L", "zc89")) as? AuthenticatedCatEmployee
+                user = services.authenticate(UnauthenticatedCatEmployee("2l9L", "zc89"))
             }
         }
 

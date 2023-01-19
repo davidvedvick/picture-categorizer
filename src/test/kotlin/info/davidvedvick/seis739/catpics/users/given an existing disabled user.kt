@@ -1,6 +1,5 @@
 package info.davidvedvick.seis739.catpics.users
 
-import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.coEvery
@@ -28,7 +27,7 @@ class `given an existing disabled user` {
         fun act() {
             runBlocking {
                 try {
-                    services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875")) as? AuthenticatedCatEmployee
+                    services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875"))
                 } catch (e: DisabledException) {
                     exception = e
                 }

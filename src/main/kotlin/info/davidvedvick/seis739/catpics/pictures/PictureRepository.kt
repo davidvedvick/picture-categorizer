@@ -36,6 +36,17 @@ class PictureRepository(private val connection: SuspendingConnection) : ManagePi
         return results.rows.map { it[0] as? ByteArray }.firstOrNull()
     }
 
+    override suspend fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture? {
+        val results = connection.sendPreparedStatement(
+            """$selectFromPictures 
+                |WHERE cat_employee_id = ?
+                |AND file_name = ?""".trimMargin(),
+            listOf(catEmployeeId, fileName)
+        )
+
+        return pictureFactory.toEntities(results).firstOrNull()
+    }
+
     override suspend fun findAll(pageNumber: Int, pageSize: Int): List<Picture> {
         val result = connection.sendPreparedStatement(
             "$selectFromPictures ORDER BY id DESC LIMIT ?,?",

@@ -5,12 +5,11 @@ import info.davidvedvick.seis739.catpics.users.CatEmployee
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should not be`
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class `given a user` {
     class `when adding the users pictures` {
@@ -21,6 +20,8 @@ class `given a user` {
                         addedPictures.add(firstArg())
                         firstArg()
                     }
+
+                    coEvery { findByCatEmployeeIdAndFileName(any(), any()) } returns null
                 },
                 mockk {
                     coEvery { findByEmail("8N8k") } returns CatEmployee(id = 920, password = "OaH1Su")
@@ -28,22 +29,17 @@ class `given a user` {
             )
         }
 
-        private lateinit var response: ResponseEntity<PictureResponse?>
+        private lateinit var response: PictureResponse
         private var addedPictures = ArrayList<Picture>()
 
         @BeforeAll
         fun act() {
             runBlocking {
-                services.addPicture(
+                response = services.addPicture(
                     PictureFile("KEDSlros", byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())),
                     AuthenticatedCatEmployee("8N8k", "OaH1Su"),
                 )
             }
-        }
-
-        @Test
-        fun `then response is correct`() {
-            response.statusCode `should be` HttpStatus.ACCEPTED
         }
 
         @Test
@@ -65,7 +61,7 @@ class `given a user` {
 
         @Test
         fun `then the response data is correct`() {
-            response.body?.fileName `should be equal to` addedPictures.first().fileName
+            response.fileName `should be equal to` addedPictures.first().fileName
         }
     }
 
@@ -78,6 +74,8 @@ class `given a user` {
                             addedPictures.add(firstArg())
                             firstArg()
                         }
+
+                        coEvery { findByCatEmployeeIdAndFileName(920, "gzF0") } returns Picture(fileName = "gzF0")
                     },
                     mockk {
                         coEvery { findByEmail("8N8k") } returns CatEmployee(id = 920, password = "OaH1Su")
@@ -85,30 +83,79 @@ class `given a user` {
                 )
             }
 
-            private lateinit var response: ResponseEntity<PictureResponse?>
+            private lateinit var exception: PictureAlreadyExistsException
             private var addedPictures = ArrayList<Picture>()
 
             @BeforeAll
             fun act() {
                 runBlocking {
-                    services.addPicture(
-                        PictureFile(
-                            "gzF0",
-                            byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
-                        ),
-                        AuthenticatedCatEmployee("8N8k", "OaH1Su"),
-                    )
+                    try {
+                        services.addPicture(
+                            PictureFile(
+                                "gzF0",
+                                byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
+                            ),
+                            AuthenticatedCatEmployee("8N8k", "OaH1Su"),
+                        )
+                    } catch (e: PictureAlreadyExistsException) {
+                        exception = e
+                    }
                 }
             }
 
             @Test
-            fun `then response is correct`() {
-                response.statusCode `should be` HttpStatus.CONFLICT
+            fun `then an exception is thrown`() {
+                exception.message `should be equal to` "Picture \"gzF0\" already exists for user `920`."
             }
 
             @Test
-            fun `then the response data is null`() {
-                response.body `should be` null
+            fun `then the picture is not added`() {
+                addedPictures `should be equal to` emptyList()
+            }
+        }
+    }
+
+    class `and the user doesn't exist` {
+        class `when adding pictures` {
+            private val services by lazy {
+                PictureService(
+                    mockk {
+                        coEvery { save(any()) } answers {
+                            addedPictures.add(firstArg())
+                            firstArg()
+                        }
+
+                        coEvery { findByCatEmployeeIdAndFileName(any(), any()) } returns null
+                    },
+                    mockk {
+                        coEvery { findByEmail("8N8k") } returns null
+                    }
+                )
+            }
+
+            private lateinit var exception: UsernameNotFoundException
+            private val addedPictures = ArrayList<Picture>()
+
+            @BeforeAll
+            fun act() {
+                runBlocking {
+                    try {
+                        services.addPicture(
+                            PictureFile(
+                                "gzF0",
+                                byteArrayOf(247.toByte(), 761.toByte(), 879.toByte(), 11.toByte())
+                            ),
+                            AuthenticatedCatEmployee("8N8k", "OaH1Su"),
+                        )
+                    } catch (e: UsernameNotFoundException) {
+                        exception = e
+                    }
+                }
+            }
+
+            @Test
+            fun `then an exception is thrown`() {
+                exception `should not be` null
             }
 
             @Test

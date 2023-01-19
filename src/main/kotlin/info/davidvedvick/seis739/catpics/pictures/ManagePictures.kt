@@ -6,6 +6,8 @@ interface ManagePictures {
 
     suspend fun findFileById(id: Long): ByteArray?
 
+    suspend fun findByCatEmployeeIdAndFileName(catEmployeeId: Long, fileName: String): Picture?
+
     suspend fun findAll(pageNumber: Int, pageSize: Int): List<Picture>
 
     suspend fun findAll(): List<Picture>

@@ -32,6 +32,10 @@ class PictureService(private val pictureRepository: ManagePictures, private val 
         val employee = employeeRepository.findByEmail(authenticatedCatEmployee.email)
             ?: throw UsernameNotFoundException("Not found")
 
+        if (pictureRepository.findByCatEmployeeIdAndFileName(employee.id, pictureFile.fileName) != null) {
+            throw PictureAlreadyExistsException(pictureFile, employee)
+        }
+
         val picture = Picture(
             file = pictureFile.file,
             fileName = pictureFile.fileName,
