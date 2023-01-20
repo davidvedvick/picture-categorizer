@@ -28,6 +28,8 @@ import org.koin.logger.slf4jLogger
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.io.File
+import java.lang.Long.min
+import kotlin.time.Duration.Companion.seconds
 
 fun appModule(environment: ApplicationEnvironment) = module {
 	single {
@@ -81,14 +83,27 @@ fun Application.main() {
 	configureSerialization()
 
 	val dataSourceConfiguration = environment.config.config("datasource")
-	Flyway
-		.configure()
-		.dataSource(
-			dataSourceConfiguration.property("url").getString(),
-			dataSourceConfiguration.property("user").getString(),
-			dataSourceConfiguration.property("password").getString())
-		.load()
-		.migrate()
+
+	var sleepTime = 1.seconds.inWholeMilliseconds
+	for (i in 1..30) {
+		try {
+			Flyway
+				.configure()
+				.dataSource(
+					dataSourceConfiguration.property("url").getString(),
+					dataSourceConfiguration.property("user").getString(),
+					dataSourceConfiguration.property("password").getString()
+				)
+				.load()
+				.migrate()
+			break
+		} catch(e: Exception) {
+			// ignored
+		}
+
+		Thread.sleep(sleepTime)
+		sleepTime = min(sleepTime * 2, 30.seconds.inWholeMilliseconds)
+	}
 }
 
 fun Application.configureRouting() {

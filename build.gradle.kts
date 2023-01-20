@@ -5,7 +5,6 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.13.RELEASE"
 	id("org.siouan.frontend-jdk11") version "6.0.0"
 	kotlin("jvm") version "1.6.21"
-	kotlin("plugin.spring") version "1.6.21"
 	kotlin("plugin.serialization") version "1.4.32"
 }
 
@@ -31,12 +30,7 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth:$ktorVersion")
 	implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 //	implementation("ch.qos.logback:logback-classic:$logback_version")
-	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.data:spring-data-commons:2.7.2")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.exposed:exposed-core:0.41.1")
@@ -48,12 +42,11 @@ dependencies {
 	implementation("io.insert-koin:koin-logger-slf4j:$koinKtor")
 	implementation("com.github.jasync-sql:jasync-common:2.1.8")
 	implementation("com.github.jasync-sql:jasync-mysql:2.1.8")
-	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.mockk:mockk:1.13.2")
 	testImplementation("org.amshove.kluent:kluent:1.72")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.7.21")
+	implementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 
 tasks.withType<KotlinCompile> {
