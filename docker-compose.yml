@@ -20,6 +20,11 @@ services:
     image: catpics
     ports:
       - "3000:5000"
+    command:
+      - "-P:datasource.url=jdbc:mariadb://db:3306/catpics"
+      - "-P:datasource.user=${DB_USER:-cat}"
+      - "-P:datasource.password=${DB_PASSWORD:-scratch}"
+      - "-P:authentication.secret=${APP_AUTHENTICATION_SECRET:-5037723c-f5f8-49c4-b161-d29733d034ff}"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/catpics
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-cat}

@@ -109,10 +109,13 @@ fun Application.main() {
 fun Application.configureRouting() {
 
 	routing {
-		val configuredStaticPath = environment?.config?.propertyOrNull("static-content")?.getString()
+		static("/") {
+			staticBasePackage = "static"
+			resources(".")
+			defaultResource("index.html")
 
-		if (configuredStaticPath != null) {
-			static("/") {
+			val configuredStaticPath = environment?.config?.propertyOrNull("static-content")?.getString()
+			if (configuredStaticPath != null) {
 				staticRootFolder = File(configuredStaticPath)
 				files(".")
 			}
