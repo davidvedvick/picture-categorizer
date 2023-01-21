@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.7.3"
-	id("io.spring.dependency-management") version "1.0.13.RELEASE"
+	application
 	id("org.siouan.frontend-jdk11") version "6.0.0"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.serialization") version "1.4.32"
+	id("io.ktor.plugin") version "2.2.2"
 }
 
 group = "com.example"
@@ -16,11 +16,14 @@ repositories {
 	mavenCentral()
 }
 
+application {
+	mainClass.set("info.davidvedvick.seis739.catpics.ApplicationKt")
+}
+
 dependencies {
 	val ktorVersion = "2.2.2"
-	val koinKtor= "3.3.0"
-
-	runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
+	val koinKtor = "3.3.0"
+	val logbackVersion = "1.3.5"
 
 	implementation("io.ktor:ktor-server-core:$ktorVersion")
 	implementation("io.ktor:ktor-server-netty:$ktorVersion")
@@ -29,16 +32,13 @@ dependencies {
 	implementation("io.ktor:ktor-server-caching-headers:$ktorVersion")
 	implementation("io.ktor:ktor-server-auth:$ktorVersion")
 	implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-//	implementation("ch.qos.logback:logback-classic:$logback_version")
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("ch.qos.logback:logback-classic:$logbackVersion")
+	implementation("org.springframework.boot:spring-boot-starter-security:2.7.8")
+	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.jetbrains.exposed:exposed-core:0.41.1")
-	implementation("org.flywaydb:flyway-mysql")
+	implementation("org.flywaydb:flyway-mysql:9.12.0")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
-	// Koin for Ktor
 	implementation("io.insert-koin:koin-ktor:$koinKtor")
-// SLF4J Logger
 	implementation("io.insert-koin:koin-logger-slf4j:$koinKtor")
 	implementation("com.github.jasync-sql:jasync-common:2.1.8")
 	implementation("com.github.jasync-sql:jasync-mysql:2.1.8")
@@ -58,6 +58,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.withType<Jar> {
+	manifest {
+		attributes["Main-Class"] = "info.davidvedvick.seis739.catpics.ApplicationKt"
+	}
 }
 
 frontend {
