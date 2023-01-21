@@ -10,6 +10,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.util.*
+import io.ktor.util.*
+import io.ktor.utils.io.jvm.javaio.*
 import org.koin.ktor.ext.inject
 import org.springframework.security.core.AuthenticationException
 import java.io.ByteArrayInputStream
@@ -51,7 +53,7 @@ fun Application.pictureRoutes() {
                     else -> {
                         val pictureFile = PictureFile(
                             fileName,
-                            part.streamProvider().use { it.readAllBytes() }
+                            part.streamProvider().use { it.toByteReadChannel().toByteArray() }
                         )
                         try {
                             val picture = pictureService.addPicture(pictureFile, user)
