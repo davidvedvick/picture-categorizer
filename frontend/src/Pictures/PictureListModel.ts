@@ -15,12 +15,13 @@ interface PictureListModel {
 
 class PictureListViewModel implements PictureListModel {
 
+    private readonly loadedPictures;
     private readonly isLoadingSubject = new BehaviorSubject(false);
-
     private readonly picturesSubject;
 
     constructor(private readonly document: Document, initialPictures: Picture[] = []) {
-        this.picturesSubject = new BehaviorSubject<Picture[]>(initialPictures);
+        this.loadedPictures = new Set<number>(initialPictures.map(p => p.id))
+        this.picturesSubject = new BehaviorSubject<Picture[]>(initialPictures.sort((a, b) => b.id - a.id));
     }
 
     get isLoading(): ReadonlyBehaviorSubject<boolean> {
@@ -32,7 +33,6 @@ class PictureListViewModel implements PictureListModel {
     }
 
     async watchFromScrollState(cancellationToken: CancellationToken) {
-        const loadedPictures = new Set<number>();
         let nextPageNumber = 0;
         while (!cancellationToken.isCancelled) {
             this.isLoadingSubject.next(true);
@@ -46,8 +46,8 @@ class PictureListViewModel implements PictureListModel {
 
                 const page = await response.json() as Page<Picture>;
                 this.picturesSubject.next(this.pictures.value.concat(page.content.filter(p => {
-                    if (loadedPictures.has(p.id)) return false;
-                    loadedPictures.add(p.id);
+                    if (this.loadedPictures.has(p.id)) return false;
+                    this.loadedPictures.add(p.id);
                     return true;
                 })));
                 if (page.last) return;

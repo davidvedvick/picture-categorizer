@@ -11,4 +11,6 @@ frontend/build
 frontend/node_modules
 deploy-to-nfsn.sh
 _artifacts
-deploy-to-nfsn.sh
+.gitignore
+.github
+.git
