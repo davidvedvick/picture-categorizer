@@ -21,7 +21,8 @@ application {
 }
 
 dependencies {
-	val ktorVersion = "2.2.2"
+	implementation("io.ktor:ktor-server-caching-headers-jvm:2.2.2")
+    val ktorVersion = "2.2.2"
 	val koinKtor = "3.3.0"
 	val logbackVersion = "1.3.5"
 
