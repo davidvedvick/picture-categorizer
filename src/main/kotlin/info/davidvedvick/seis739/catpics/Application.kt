@@ -35,8 +35,10 @@ fun appModule(environment: ApplicationEnvironment) = module {
 	single {
 		val dataSourceConfiguration = environment.config.config("datasource")
 		val url = dataSourceConfiguration.property("url").getString().replace("mariadb", "mysql")
-		val connectionString = "${url}?user=${dataSourceConfiguration.property("user").getString()}&password=${dataSourceConfiguration.property("password").getString()}"
-		MySQLConnectionBuilder.createConnectionPool(connectionString)
+		MySQLConnectionBuilder.createConnectionPool(url) {
+			username = dataSourceConfiguration.property("user").getString()
+			password = dataSourceConfiguration.property("password").getString()
+		}
 	}
 	factory {
 		get<ConnectionPool<MySQLConnection>>().asSuspending
