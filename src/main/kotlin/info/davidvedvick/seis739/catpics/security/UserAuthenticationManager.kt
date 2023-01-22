@@ -4,22 +4,21 @@ import info.davidvedvick.seis739.catpics.users.CatEmployee
 import info.davidvedvick.seis739.catpics.users.ManageCatEmployees
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.DisabledException
-import org.springframework.security.crypto.password.PasswordEncoder
 
-class UserAuthenticationManager(private val manageCatEmployees: ManageCatEmployees, private val passwordEncoder: PasswordEncoder) : AuthenticateCatEmployees {
+class UserAuthenticationManager(private val manageCatEmployees: ManageCatEmployees, private val passwordEncoder: Encoder) : AuthenticateCatEmployees {
 
     override suspend fun authenticate(unauthenticatedCatEmployee: UnauthenticatedCatEmployee): AuthenticatedCatEmployee =
         with (unauthenticatedCatEmployee) {
             val catEmployee = manageCatEmployees.findByEmail(email) ?: manageCatEmployees.save(
                 CatEmployee(
                     email = email,
-                    password = passwordEncoder.encode(password)
+                    password = passwordEncoder.encode(password.toCharArray())
                 )
             )
             if (!catEmployee.isEnabled) throw DisabledException("Account disabled")
             if (catEmployee.password.isBlank()) throw BadCredentialsException("No password")
             if (!passwordEncoder.matches(
-                    password,
+                    password.toCharArray(),
                     catEmployee.password
                 )
             ) throw BadCredentialsException("Invalid password")

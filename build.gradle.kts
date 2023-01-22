@@ -43,6 +43,7 @@ dependencies {
 	implementation("io.insert-koin:koin-logger-slf4j:$koinKtor")
 	implementation("com.github.jasync-sql:jasync-common:2.1.8")
 	implementation("com.github.jasync-sql:jasync-mysql:2.1.8")
+	implementation("at.favre.lib:bcrypt:0.9.0")
 	testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 	testImplementation("io.mockk:mockk:1.13.2")
 	testImplementation("org.amshove.kluent:kluent:1.72")

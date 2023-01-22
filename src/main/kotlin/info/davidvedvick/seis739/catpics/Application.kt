@@ -26,8 +26,6 @@ import org.koin.dsl.module
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import java.io.File
 import kotlin.math.min
 import kotlin.time.Duration.Companion.seconds
@@ -56,7 +54,7 @@ fun appModule(environment: ApplicationEnvironment) = module {
     factoryOf(::PictureService) { bind<ServePictures>() }
     singleOf(::PictureRepository) { bind<ManagePictures>() }
     singleOf(::CatEmployeeRepository) { bind<ManageCatEmployees>() }
-    single<PasswordEncoder> { BCryptPasswordEncoder() }
+    singleOf(::BCryptEncoder) { bind<Encoder>() }
 }
 
 fun main(args: Array<String>) {
