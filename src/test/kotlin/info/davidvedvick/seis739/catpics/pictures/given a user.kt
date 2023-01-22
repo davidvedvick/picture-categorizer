@@ -2,17 +2,19 @@ package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
 import info.davidvedvick.seis739.catpics.users.CatEmployee
+import info.davidvedvick.seis739.catpics.users.UnknownCatEmployeeException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should not be`
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class `given a user` {
-    class `when adding the users pictures` {
+    @Nested
+    inner class `when adding the users pictures` {
         private val services by lazy {
             PictureService(
                 mockk {
@@ -65,8 +67,10 @@ class `given a user` {
         }
     }
 
-    class `and the user has pictures` {
-        class `when adding the same pictures` {
+    @Nested
+    inner class `and the user has pictures` {
+        @Nested
+        inner class `when adding the same pictures` {
             private val services by lazy {
                 PictureService(
                     mockk {
@@ -115,8 +119,10 @@ class `given a user` {
         }
     }
 
-    class `and the user doesn't exist` {
-        class `when adding pictures` {
+    @Nested
+    inner class `and the user doesn't exist` {
+        @Nested
+        inner class `when adding pictures` {
             private val services by lazy {
                 PictureService(
                     mockk {
@@ -133,7 +139,7 @@ class `given a user` {
                 )
             }
 
-            private lateinit var exception: UsernameNotFoundException
+            private lateinit var exception: UnknownCatEmployeeException
             private val addedPictures = ArrayList<Picture>()
 
             @BeforeAll
@@ -147,7 +153,7 @@ class `given a user` {
                             ),
                             AuthenticatedCatEmployee("8N8k", "OaH1Su"),
                         )
-                    } catch (e: UsernameNotFoundException) {
+                    } catch (e: UnknownCatEmployeeException) {
                         exception = e
                     }
                 }

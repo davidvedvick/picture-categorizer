@@ -2,5 +2,5 @@ package info.davidvedvick.seis739.catpics.security
 
 import io.ktor.server.auth.*
 
-class AuthenticatedCatEmployee(val email: String, val password: String?)
-    : Credential, Principal
+class AuthenticatedCatEmployee(email: String, password: String)
+    : CatEmployeeCredentials(email, password), Principal

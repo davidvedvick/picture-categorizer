@@ -7,11 +7,13 @@ import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class `given cat pictures` {
 
-    class `when getting the first page` {
+    @Nested
+    inner class `when getting the first page` {
         private val services by lazy {
             PictureService(
                 mockk {
@@ -42,7 +44,8 @@ class `given cat pictures` {
         }
     }
 
-    class `when getting the last page` {
+    @Nested
+    inner class `when getting the last page` {
         private val services by lazy {
             PictureService(
                 mockk {

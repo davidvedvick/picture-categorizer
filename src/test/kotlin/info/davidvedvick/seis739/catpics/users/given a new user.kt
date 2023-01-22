@@ -1,21 +1,24 @@
 package info.davidvedvick.seis739.catpics.users
 
+import info.davidvedvick.seis739.catpics.security.CatEmployeeCredentials
+import info.davidvedvick.seis739.catpics.security.CatEmployeeEntry
+import info.davidvedvick.seis739.catpics.security.DisabledCatEmployee
 import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should not be`
+import org.amshove.kluent.`should be instance of`
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.security.authentication.DisabledException
 
 class `given a new user` {
-    class `when logging the user in` {
+    @Nested
+    inner class `when logging the user in` {
         private val services by lazy {
-            UserAuthenticationManager(
+            CatEmployeeEntry(
                 mockk {
                     coEvery { findByEmail(any()) } returns null
 
@@ -30,18 +33,14 @@ class `given a new user` {
                 },
             )
         }
-        private var addedCatEmployee: CatEmployee? = null
 
-        private lateinit var exception: DisabledException
+        private var addedCatEmployee: CatEmployee? = null
+        private lateinit var catEmployeeCredentials: CatEmployeeCredentials
 
         @BeforeAll
         fun act() {
             runBlocking {
-                try {
-                    services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI"))
-                } catch (e: DisabledException) {
-                    exception = e
-                }
+                catEmployeeCredentials = services.authenticate(UnauthenticatedCatEmployee("4Z00cpZ", "SOyRfcI"))
             }
         }
 
@@ -57,7 +56,7 @@ class `given a new user` {
 
         @Test
         fun `then the user is not authenticated`() {
-            exception `should not be` null
+            catEmployeeCredentials `should be instance of` DisabledCatEmployee::class
         }
     }
 }

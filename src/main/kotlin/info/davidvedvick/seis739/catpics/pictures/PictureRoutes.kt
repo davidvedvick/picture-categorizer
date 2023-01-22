@@ -1,6 +1,7 @@
 package info.davidvedvick.seis739.catpics.pictures
 
 import info.davidvedvick.seis739.catpics.security.AuthenticatedCatEmployee
+import info.davidvedvick.seis739.catpics.users.UnknownCatEmployeeException
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
@@ -13,7 +14,6 @@ import io.ktor.server.util.*
 import io.ktor.util.*
 import io.ktor.utils.io.jvm.javaio.*
 import org.koin.ktor.ext.inject
-import org.springframework.security.core.AuthenticationException
 import kotlin.time.Duration.Companion.days
 
 private val imageCachingOptions = CachingOptions(CacheControl.MaxAge(30.days.inWholeSeconds.toInt()))
@@ -57,7 +57,7 @@ fun Application.pictureRoutes() {
                             call.respond(HttpStatusCode.Accepted, picture)
                         } catch (pictureAlreadyExists: PictureAlreadyExistsException) {
                             call.respond(HttpStatusCode.Conflict)
-                        } catch (authenticationException: AuthenticationException) {
+                        } catch (authenticationException: UnknownCatEmployeeException) {
                             call.respond(HttpStatusCode.Unauthorized)
                         }
                     }

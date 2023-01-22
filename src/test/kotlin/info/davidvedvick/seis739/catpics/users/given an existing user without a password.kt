@@ -1,19 +1,22 @@
 package info.davidvedvick.seis739.catpics.users
 
+import info.davidvedvick.seis739.catpics.security.BadCatEmployeeCredentials
+import info.davidvedvick.seis739.catpics.security.CatEmployeeCredentials
+import info.davidvedvick.seis739.catpics.security.CatEmployeeEntry
 import info.davidvedvick.seis739.catpics.security.UnauthenticatedCatEmployee
-import info.davidvedvick.seis739.catpics.security.UserAuthenticationManager
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import org.amshove.kluent.`should be`
+import org.amshove.kluent.`should be instance of`
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.security.authentication.BadCredentialsException
 
 class `given an existing user without a password` {
-    class `when logging the user in` {
+    @Nested
+    inner class `when logging the user in` {
         private val services by lazy {
-            UserAuthenticationManager(
+            CatEmployeeEntry(
                 mockk {
                     coEvery { findByEmail("ZtyPVt") } returns CatEmployee(315, "ZtyPVt", "", true)
                 },
@@ -21,22 +24,18 @@ class `given an existing user without a password` {
             )
         }
 
-        private lateinit var exception: BadCredentialsException
+        private lateinit var catEmployeeCredentials: CatEmployeeCredentials
 
         @BeforeAll
         fun act() {
             runBlocking {
-                try {
-                    services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875"))
-                } catch (e: BadCredentialsException) {
-                    exception = e
-                }
+                catEmployeeCredentials = services.authenticate(UnauthenticatedCatEmployee("ZtyPVt", "MnI875"))
             }
         }
 
         @Test
         fun `then the user is not authenticated`() {
-            exception.message `should be` "No password"
+            catEmployeeCredentials `should be instance of` BadCatEmployeeCredentials::class
         }
     }
 }

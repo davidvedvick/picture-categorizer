@@ -5,10 +5,12 @@ import info.davidvedvick.seis739.catpics.security.AuthenticationConfiguration
 import info.davidvedvick.seis739.catpics.security.JwtTokenManagement
 import org.amshove.kluent.`should be equal to`
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class `given a generated token` {
-    class `when decoding it` {
+    @Nested
+    inner class `when decoding it` {
 
         private val services by lazy {
             JwtTokenManagement(AuthenticationConfiguration().apply {
@@ -20,7 +22,7 @@ class `given a generated token` {
 
         @BeforeAll
         fun act() {
-            val token = services.generateToken(AuthenticatedCatEmployee("y8enGif", null))
+            val token = services.generateToken(AuthenticatedCatEmployee("y8enGif", ""))
             authenticatedUser = services.decodeToken(token.token)
         }
 

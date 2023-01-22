@@ -50,7 +50,7 @@ fun appModule(environment: ApplicationEnvironment) = module {
     }
 
     factoryOf(::JwtTokenManagement) { bind<ManageJwtTokens>() }
-    factoryOf(::UserAuthenticationManager) { bind<AuthenticateCatEmployees>() }
+    factoryOf(::CatEmployeeEntry) { bind<AuthenticateCatEmployees>() }
     factoryOf(::PictureService) { bind<ServePictures>() }
     singleOf(::PictureRepository) { bind<ManagePictures>() }
     singleOf(::CatEmployeeRepository) { bind<ManageCatEmployees>() }

@@ -34,7 +34,6 @@ dependencies {
 	implementation("io.ktor:ktor-server-auth:$ktorVersion")
 	implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
 	implementation("ch.qos.logback:logback-classic:$logbackVersion")
-	implementation("org.springframework.boot:spring-boot-starter-security:2.7.8")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.flywaydb:flyway-mysql:9.12.0")
@@ -48,6 +47,7 @@ dependencies {
 	testImplementation("io.mockk:mockk:1.13.2")
 	testImplementation("org.amshove.kluent:kluent:1.72")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.7.21")
+	testImplementation(platform("org.junit:junit-bom:5.9.2"))
 	implementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 

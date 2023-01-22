@@ -9,9 +9,9 @@ class BCryptEncoder : Encoder {
     private val bcrypt by lazy { BCrypt.with(version) }
     private val verifier by lazy { BCrypt.verifyer(version) }
 
-    override fun encode(rawPassword: CharArray): String =
-        bcrypt.hashToString(STRENGTH, rawPassword)
+    override fun encode(rawPassword: String): String =
+        bcrypt.hashToString(STRENGTH, rawPassword.toCharArray())
 
-    override fun matches(rawPassword: CharArray, encodedPassword: String): Boolean =
-        verifier.verify(rawPassword, encodedPassword).verified
+    override fun matches(rawPassword: String, encodedPassword: String): Boolean =
+        verifier.verify(rawPassword.toCharArray(), encodedPassword).verified
 }

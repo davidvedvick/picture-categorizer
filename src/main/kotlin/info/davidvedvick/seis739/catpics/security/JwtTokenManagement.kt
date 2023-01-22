@@ -22,5 +22,5 @@ class JwtTokenManagement(private val authenticationConfiguration: Authentication
                     .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
             }
             ?.subject
-            ?.let { AuthenticatedCatEmployee(it, null) }
+            ?.let { AuthenticatedCatEmployee(it, "") }
 }
