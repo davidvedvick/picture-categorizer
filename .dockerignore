@@ -10,3 +10,7 @@ build.sh
 frontend/build
 frontend/node_modules
 deploy-to-nfsn.sh
+_artifacts
+.gitignore
+.github
+.git

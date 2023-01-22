@@ -2,28 +2,25 @@ package info.davidvedvick.seis739.catpics.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import org.springframework.stereotype.Component
 import java.util.*
 
-@Component
 class JwtTokenManagement(private val authenticationConfiguration: AuthenticationConfiguration) : ManageJwtTokens {
     private val signingAlgorithm by lazy { Algorithm.HMAC512(authenticationConfiguration.secret) }
 
     override fun generateToken(authenticatedEmployee: AuthenticatedCatEmployee): JwtToken =
         JWT.create()
-            .withSubject(authenticatedEmployee.name)
-            .withClaim("simple", "simple")
+            .withSubject(authenticatedEmployee.email)
             .withExpiresAt(Date(System.currentTimeMillis() + AuthenticationConstants.ExpirationDuration))
             .sign(signingAlgorithm)
-            .let { JwtToken("${AuthenticationConstants.TokenPrefix} $it", AuthenticationConstants.ExpirationDuration) }
+            .let { JwtToken(it, AuthenticationConstants.ExpirationDuration) }
 
     override fun decodeToken(token: String): AuthenticatedCatEmployee? =
-        token.takeIf { it.startsWith(AuthenticationConstants.TokenPrefix) }
-            ?.let {
+        token
+            .let {
                 JWT.require(signingAlgorithm)
                     .build()
                     .verify(it.replace(AuthenticationConstants.TokenPrefix, "").trim())
             }
             ?.subject
-            ?.let { AuthenticatedCatEmployee(it, null) }
+            ?.let { AuthenticatedCatEmployee(it, "") }
 }
