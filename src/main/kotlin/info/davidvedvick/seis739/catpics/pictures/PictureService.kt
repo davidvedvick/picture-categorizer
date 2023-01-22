@@ -12,7 +12,7 @@ class PictureService(private val pictureRepository: ManagePictures, private val 
                 pageSize?.let { size ->
                     Page(
                         pictureRepository.findAll(number, size),
-                        pictureRepository.countAll() <= number * size,
+                        pictureRepository.countAll() <= (number + 1) * size,
                     )
                 }
             }

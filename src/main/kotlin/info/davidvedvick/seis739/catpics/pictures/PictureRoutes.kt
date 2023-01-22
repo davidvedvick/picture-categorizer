@@ -14,9 +14,9 @@ import io.ktor.util.*
 import io.ktor.utils.io.jvm.javaio.*
 import org.koin.ktor.ext.inject
 import org.springframework.security.core.AuthenticationException
-import java.io.ByteArrayInputStream
-import java.net.URLConnection
 import kotlin.time.Duration.Companion.days
+
+private val imageCachingOptions = CachingOptions(CacheControl.MaxAge(30.days.inWholeSeconds.toInt()))
 
 fun Application.pictureRoutes() {
     val pictureService by inject<ServePictures>()
@@ -32,12 +32,9 @@ fun Application.pictureRoutes() {
 
         get("/api/pictures/{id}/file") {
             val id: Long by call.parameters
-            pictureRepository.findFileById(id)?.let(::ByteArrayInputStream)?.use { inputStream ->
-                val contentType = URLConnection.guessContentTypeFromStream(inputStream).split("/")
-                call.caching = CachingOptions(CacheControl.MaxAge(30.days.inWholeSeconds.toInt()))
-                call.respondOutputStream(contentType = ContentType(contentType[0], contentType[1])) {
-                    inputStream.copyTo(this)
-                }
+            pictureRepository.findFileById(id)?.also { bytes ->
+                call.caching = imageCachingOptions
+                call.respondBytes(bytes)
             }
         }
 
