@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	application
 	id("org.siouan.frontend-jdk11") version "6.0.0"
-	kotlin("jvm") version "1.6.21"
+	kotlin("jvm") version "1.9.0"
 	kotlin("plugin.serialization") version "1.4.32"
-	id("io.ktor.plugin") version "2.2.2"
+	id("io.ktor.plugin") version "2.3.2"
 }
 
 group = "com.example"
@@ -21,11 +21,11 @@ application {
 }
 
 dependencies {
-	implementation("io.ktor:ktor-server-caching-headers-jvm:2.2.2")
-    val ktorVersion = "2.2.2"
+    val ktorVersion = "2.3.2"
 	val koinKtor = "3.3.0"
 	val logbackVersion = "1.3.5"
 
+	implementation("io.ktor:ktor-server-caching-headers-jvm:$ktorVersion")
 	implementation("io.ktor:ktor-server-core:$ktorVersion")
 	implementation("io.ktor:ktor-server-netty:$ktorVersion")
 	implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
