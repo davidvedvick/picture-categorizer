@@ -21,7 +21,7 @@ application {
 }
 
 dependencies {
-    val ktorVersion = "2.3.2"
+    val ktorVersion = "2.3.5"
 	val koinKtor = "3.3.0"
 	val logbackVersion = "1.3.5"
 
@@ -36,15 +36,15 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:$logbackVersion")
 	implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.flywaydb:flyway-mysql:9.12.0")
-	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
+	implementation("org.flywaydb:flyway-mysql:9.16.0")
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
 	implementation("io.insert-koin:koin-ktor:$koinKtor")
 	implementation("io.insert-koin:koin-logger-slf4j:$koinKtor")
-	implementation("com.github.jasync-sql:jasync-common:2.1.8")
-	implementation("com.github.jasync-sql:jasync-mysql:2.1.8")
-	implementation("at.favre.lib:bcrypt:0.9.0")
+	implementation("com.github.jasync-sql:jasync-common:2.1.23")
+	implementation("com.github.jasync-sql:jasync-mysql:2.1.23")
+	implementation("at.favre.lib:bcrypt:0.10.2")
 	testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-	testImplementation("io.mockk:mockk:1.13.2")
+	testImplementation("io.mockk:mockk:1.13.4")
 	testImplementation("org.amshove.kluent:kluent:1.72")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.7.21")
 	testImplementation(platform("org.junit:junit-bom:5.9.2"))
