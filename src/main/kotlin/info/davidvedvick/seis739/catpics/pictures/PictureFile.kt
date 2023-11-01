@@ -7,9 +7,7 @@ data class PictureFile(val fileName: String, val file: ByteArray) {
 
         other as PictureFile
 
-        if (fileName != other.fileName) return false
-
-        return true
+        return fileName == other.fileName
     }
 
     override fun hashCode(): Int {

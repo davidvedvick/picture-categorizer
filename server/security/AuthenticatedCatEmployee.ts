@@ -1,0 +1,1 @@
+export interface AuthenticatedCatEmployee extends CatEmployeeCredentials {}
