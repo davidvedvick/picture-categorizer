@@ -1,10 +1,9 @@
 import {Picture} from "./Picture.js";
-import {Blob} from "buffer";
 
 export interface ManagePictures {
     findById(id: number): Promise<Picture | null>
 
-    findFileById(id: number): Promise<Blob>
+    findFileById(id: number): Promise<Uint8Array>
 
     findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: String): Promise<Picture | null>
 
