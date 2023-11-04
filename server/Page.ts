@@ -15,13 +15,5 @@ interface Pageable {
 
 export interface Page<T> {
     content: T[],
-    pageable: Pageable,
-    first: boolean,
     last: boolean,
-    totalPages: number,
-    numberOfElements: number,
-    totalElements: number,
-    size: number,
-    number: number,
-    sort: Sort,
 }

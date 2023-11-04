@@ -1,5 +1,5 @@
 interface PictureFile {
     fileName: string
 
-    file: Blob
+    file: Uint8Array
 }
