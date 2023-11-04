@@ -3,6 +3,7 @@ import {PictureResponse} from "./PictureResponse.js";
 import {AuthenticatedCatEmployee} from "../security/AuthenticatedCatEmployee.js";
 import {Page} from "../Page.js";
 import {ManagePictures} from "./ManagePictures.js";
+import PictureFile from "./PictureFile.js";
 
 export class PictureService implements ServePictures {
 
@@ -17,13 +18,13 @@ export class PictureService implements ServePictures {
         });
     }
 
-    async getPictures(pageNumber: Number | null = null, pageSize: Number | null = null): Promise<Page<PictureResponse>> {
+    async getPictures(pageNumber: number | null = null, pageSize: number | null = null): Promise<Page<PictureResponse>> {
         const pictures = await this.pictureManagement.findAll(pageNumber, pageSize);
         const count = this.pictureManagement.countAll();
 
         return {
             content: pictures,
-            last: (await count) <= (pageNumber + 1) * pageSize
+            last: !pageNumber || !pageSize || (await count) <= (pageNumber + 1) * pageSize
         }
     }
 }
