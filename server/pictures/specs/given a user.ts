@@ -3,6 +3,8 @@ import {PictureService} from "../PictureService.js";
 import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
 import {PictureResponse} from "../PictureResponse.js";
+import CatEmployee from "../../users/CatEmployee.js";
+import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 
 describe("given a user", () => {
     describe("when adding the users pictures", () => {
@@ -16,7 +18,18 @@ describe("given a user", () => {
                     addedPictures.push(picture);
                     return Promise.resolve(picture);
                 }
-            } as ManagePictures);
+            } as ManagePictures, {
+                findByEmail(email: string): Promise<CatEmployee | null> {
+                    if (email != "8N8k") return Promise.resolve(null);
+
+                    return Promise.resolve({
+                        id: 920,
+                        password: "OaH1Su",
+                        isEnabled: true,
+                        email: email,
+                    });
+                }
+            } as ManageCatEmployees);
 
             response = await pictureService.addPicture({
                 fileName: "KEDSlros",
@@ -28,7 +41,7 @@ describe("given a user", () => {
         })
 
         test("then the pictures have the correct user", () => {
-            expect(addedPictures.map(p => p.catEmployeeId)).toBe([920]);
+            expect(addedPictures.map(p => p.catEmployeeId)).toStrictEqual([920]);
         });
 
         test("then the picture has the correct path", () => {

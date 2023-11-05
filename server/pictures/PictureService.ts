@@ -5,6 +5,7 @@ import {Page} from "../Page.js";
 import {ManagePictures} from "./ManagePictures.js";
 import PictureFile from "./PictureFile.js";
 import {Picture} from "./Picture.js";
+import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 
 function toPictureResponse(picture: Picture): PictureResponse {
     return {
@@ -16,11 +17,23 @@ function toPictureResponse(picture: Picture): PictureResponse {
 
 export class PictureService implements ServePictures {
 
-    constructor(private readonly pictureManagement: ManagePictures) {}
+    constructor(
+        private readonly pictureManagement: ManagePictures,
+        private readonly catEmployees: ManageCatEmployees) {}
 
     async addPicture(pictureFile: PictureFile, authenticatedCatEmployee: AuthenticatedCatEmployee): Promise<PictureResponse> {
+        const employee = await this.catEmployees.findByEmail(authenticatedCatEmployee.email);
+
+        if (!employee) {
+            return {
+                id: 0,
+                fileName: "",
+                userId: 0,
+            };
+        }
+
         const picture = await this.pictureManagement.save({
-            catEmployeeId: 0,
+            catEmployeeId: employee.id,
             id: 0,
             file: pictureFile.file,
             fileName: pictureFile.fileName,
