@@ -49,7 +49,7 @@ export class PictureService implements ServePictures {
         const promisedPictures = this.pictureManagement.findAll(pageNumber, pageSize);
 
         let isLast = true;
-        if (pageNumber && pageSize) {
+        if (pageNumber != null && pageSize != null) {
             const count = await this.pictureManagement.countAll();
             isLast = count <= (pageNumber + 1) * pageSize;
         }
@@ -59,6 +59,6 @@ export class PictureService implements ServePictures {
         return {
             content: pictures.map(toPictureResponse),
             last: isLast,
-        }
+        };
     }
 }
