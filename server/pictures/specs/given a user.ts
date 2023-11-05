@@ -32,11 +32,11 @@ describe("given a user", () => {
         });
 
         test("then the picture has the correct path", () => {
-           expect(addedPictures.map(p => p.fileName)).toBe(["KEDSlros"]);
+           expect(addedPictures.map(p => p.fileName)).toStrictEqual(["KEDSlros"]);
         });
 
         test("then the picture bytes are correct", () => {
-           expect(addedPictures.map(p => p.file)).toBe([Buffer.of(247, 761, 879, 11)]);
+           expect(addedPictures.map(p => p.file)).toStrictEqual([Buffer.of(247, 761, 879, 11)]);
         });
 
         test("then the response data is correct", () => {
