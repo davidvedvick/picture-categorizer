@@ -7,6 +7,7 @@ import PictureFile from "./PictureFile.js";
 import {Picture} from "./Picture.js";
 import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
+import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 
 function toPictureResponse(picture: Picture): PictureResponse {
     return {
@@ -26,11 +27,7 @@ export class PictureService implements ServePictures {
         const employee = await this.catEmployees.findByEmail(authenticatedCatEmployee.email);
 
         if (!employee) {
-            return {
-                id: 0,
-                fileName: "",
-                userId: 0,
-            };
+            throw new UnknownCatEmployeeException(authenticatedCatEmployee.email)
         }
 
         const existingPicture = await this.pictureManagement.findByCatEmployeeIdAndFileName(employee.id, pictureFile.fileName);
