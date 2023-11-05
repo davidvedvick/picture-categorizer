@@ -6,6 +6,7 @@ import {ManagePictures} from "./ManagePictures.js";
 import PictureFile from "./PictureFile.js";
 import {Picture} from "./Picture.js";
 import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
+import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 
 function toPictureResponse(picture: Picture): PictureResponse {
     return {
@@ -30,6 +31,11 @@ export class PictureService implements ServePictures {
                 fileName: "",
                 userId: 0,
             };
+        }
+
+        const existingPicture = await this.pictureManagement.findByCatEmployeeIdAndFileName(employee.id, pictureFile.fileName);
+        if (existingPicture) {
+            throw new PictureAlreadyExistsException(pictureFile, employee);
         }
 
         const picture = await this.pictureManagement.save({

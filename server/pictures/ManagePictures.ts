@@ -5,7 +5,7 @@ export interface ManagePictures {
 
     findFileById(id: number): Promise<Uint8Array>
 
-    findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: String): Promise<Picture | null>
+    findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<Picture | null>
 
     findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]>
 
