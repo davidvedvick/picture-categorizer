@@ -57,7 +57,7 @@ export class PictureRepository implements ManagePictures {
         const [result, _] = await this.pool.execute<ResultSetHeader>(
             `INSERT INTO picture (cat_employee_id, file_name, file)
              VALUES (?, ?, ?)`,
-            [picture.userId, picture.fileName, picture.file]);
+            [picture.catEmployeeId, picture.fileName, picture.file]);
 
         picture.id = result.insertId;
 

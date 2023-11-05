@@ -11,7 +11,7 @@ export class PictureService implements ServePictures {
 
     addPicture(pictureFile: PictureFile, authenticatedCatEmployee: AuthenticatedCatEmployee): Promise<PictureResponse> {
         return this.pictureManagement.save({
-            userId: 0,
+            catEmployeeId: 0,
             id: 0,
             file: pictureFile.file,
             fileName: pictureFile.fileName,
@@ -19,12 +19,17 @@ export class PictureService implements ServePictures {
     }
 
     async getPictures(pageNumber: number | null = null, pageSize: number | null = null): Promise<Page<PictureResponse>> {
-        const pictures = await this.pictureManagement.findAll(pageNumber, pageSize);
-        const count = this.pictureManagement.countAll();
+        const promisedPictures = this.pictureManagement.findAll(pageNumber, pageSize);
+
+        let isLast = true;
+        if (pageNumber && pageSize) {
+            const count = await this.pictureManagement.countAll();
+            isLast = count <= (pageNumber + 1) * pageSize;
+        }
 
         return {
-            content: pictures,
-            last: !pageNumber || !pageSize || (await count) <= (pageNumber + 1) * pageSize
+            content: await promisedPictures,
+            last: isLast,
         }
     }
 }

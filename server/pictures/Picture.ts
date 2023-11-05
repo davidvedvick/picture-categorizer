@@ -1,6 +1,6 @@
 export interface Picture {
     id: number,
     fileName: string,
-    userId: number,
+    catEmployeeId: number,
     file: Uint8Array,
 }
