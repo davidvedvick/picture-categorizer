@@ -5,10 +5,11 @@ import {PictureService} from "./pictures/PictureService.js";
 import mysql from 'mysql2/promise';
 
 const app = express();
-const port = 5000;
+const port = 8888;
 
 const pool = await mysql.createPool({
     host: 'localhost',
+    database: 'catpics',
     port: 3306,
     user: 'cat',
     password: 'scratch',

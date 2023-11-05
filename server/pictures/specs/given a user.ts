@@ -1,26 +1,31 @@
-import {describe, expect, test} from "@jest/globals";
+import {beforeAll, describe, expect, test} from "@jest/globals";
 import {PictureService} from "../PictureService.js";
 import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
-import e from "express";
+import {PictureResponse} from "../PictureResponse.js";
 
 describe("given a user", () => {
-    test("when adding the users pictures", async () => {
-        const addedPictures: Picture[] = [];
-        const pictureService = new PictureService({
-            save: (picture) => {
-                addedPictures.push(picture);
-                return Promise.resolve(picture);
-            }
-        } as ManagePictures);
+    describe("when adding the users pictures", () => {
 
-        const response = await pictureService.addPicture({
-            fileName: "KEDSlros",
-            file: Buffer.of(247, 761, 879, 11)
-        }, {
-            email: "8N8k",
-            password: "OaH1Su"
-        });
+        const addedPictures: Picture[] = [];
+        let response: PictureResponse;
+
+        beforeAll(async () => {
+            const pictureService = new PictureService({
+                save: (picture) => {
+                    addedPictures.push(picture);
+                    return Promise.resolve(picture);
+                }
+            } as ManagePictures);
+
+            response = await pictureService.addPicture({
+                fileName: "KEDSlros",
+                file: Buffer.of(247, 761, 879, 11)
+            }, {
+                email: "8N8k",
+                password: "OaH1Su"
+            });
+        })
 
         test("then the pictures have the correct user", () => {
             expect(addedPictures.map(p => p.catEmployeeId)).toBe([920]);
@@ -31,7 +36,7 @@ describe("given a user", () => {
         });
 
         test("then the picture bytes are correct", () => {
-           expect(addedPictures.flatMap(p => p.file)).toBe([247, 761, 879, 11]);
+           expect(addedPictures.map(p => p.file)).toBe([Buffer.of(247, 761, 879, 11)]);
         });
 
         test("then the response data is correct", () => {
