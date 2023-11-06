@@ -4,6 +4,7 @@ import {CatEmployeeCredentials} from "./CatEmployeeCredentials.js";
 import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 import Encoder from "./Encoder.js";
 import DisabledCatEmployee from "./DisabledCatEmployee.js";
+import {AuthenticatedCatEmployee} from "./AuthenticatedCatEmployee.js";
 
 export default class CatEmployeeEntry implements AuthenticateCatEmployees {
 
@@ -20,11 +21,8 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
             });
         }
 
-        return new DisabledCatEmployee(
-            catEmployee.id,
-            catEmployee.email,
-            catEmployee.password,
-            catEmployee.isEnabled,
-        );
+        return catEmployee.isEnabled
+            ? new AuthenticatedCatEmployee(catEmployee.email, catEmployee.password)
+            : new DisabledCatEmployee(catEmployee.email, catEmployee.password);
     }
 }

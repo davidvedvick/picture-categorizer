@@ -14,12 +14,15 @@ const pool = await mysql.createPool({
     port: 3306,
     user: 'cat',
     password: 'scratch',
-})
+});
 
 const pictureRepository = new PictureRepository(pool);
 const catEmployeeRepository = new CatEmployeeRepository(pool);
 
-PictureRoutes(app, new PictureService(pictureRepository, catEmployeeRepository), pictureRepository);
+PictureRoutes(
+    app,
+    new PictureService(pictureRepository, catEmployeeRepository),
+    pictureRepository);
 
 app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}/`);

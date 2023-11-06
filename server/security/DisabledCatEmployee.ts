@@ -1,10 +1,5 @@
-import CatEmployee from "../users/CatEmployee.js";
+import {CatEmployeeCredentials} from "./CatEmployeeCredentials.js";
 
-export default class DisabledCatEmployee implements CatEmployee {
-    constructor(
-        readonly id: number,
-        readonly email: string,
-        readonly password: string,
-        readonly isEnabled: boolean) {
-    }
+export default class DisabledCatEmployee implements CatEmployeeCredentials {
+    constructor(readonly email: string, readonly password: string) {}
 }
