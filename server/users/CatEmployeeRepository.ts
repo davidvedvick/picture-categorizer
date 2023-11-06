@@ -25,8 +25,7 @@ export default class CatEmployeeRepository implements ManageCatEmployees {
 
     async save(catEmployee: CatEmployee): Promise<CatEmployee> {
         const [results, _] = await this.pool.execute<ResultSetHeader>(
-            `INSERT INTO cat_employee (email, password, is_enabled)
-            VALUES (?, ?, ?);`,
+            `INSERT INTO cat_employee (email, password, is_enabled) VALUES (?, ?, ?);`,
             [catEmployee.email, catEmployee.password, catEmployee.isEnabled]
         );
 
