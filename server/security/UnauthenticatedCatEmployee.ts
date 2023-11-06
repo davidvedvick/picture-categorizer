@@ -1,3 +1,5 @@
 import {CatEmployeeCredentials} from "./CatEmployeeCredentials.js";
 
-export interface UnauthenticatedCatEmployee extends CatEmployeeCredentials {}
+export class UnauthenticatedCatEmployee implements CatEmployeeCredentials {
+    constructor(readonly email: string, readonly password: string) {}
+}

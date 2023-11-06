@@ -21,8 +21,12 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
             });
         }
 
-        return catEmployee.isEnabled
-            ? new AuthenticatedCatEmployee(catEmployee.email, catEmployee.password)
-            : new DisabledCatEmployee(catEmployee.email, catEmployee.password);
+        if (!catEmployee.isEnabled) {
+            return new DisabledCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password);
+        }
+
+        return this.encoder.matches(unauthenticatedCatEmployee.password, catEmployee.password)
+            ? new AuthenticatedCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password)
+            : new UnauthenticatedCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password);
     }
 }
