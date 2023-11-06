@@ -5,28 +5,35 @@ import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 import Encoder from "./Encoder.js";
 import DisabledCatEmployee from "./DisabledCatEmployee.js";
 import {AuthenticatedCatEmployee} from "./AuthenticatedCatEmployee.js";
+import BadCatEmployeeCredentials from "./BadCatEmployeeCredentials.js";
 
 export default class CatEmployeeEntry implements AuthenticateCatEmployees {
 
     constructor(private readonly catEmployees: ManageCatEmployees, private readonly encoder: Encoder) {}
 
     async authenticate(unauthenticatedCatEmployee: UnauthenticatedCatEmployee): Promise<CatEmployeeCredentials> {
-        let catEmployee = await this.catEmployees.findByEmail(unauthenticatedCatEmployee.email);
+        const { email, password: unauthenticatedPassword } = unauthenticatedCatEmployee;
+
+        let catEmployee = await this.catEmployees.findByEmail(email);
         if (!catEmployee) {
             catEmployee = await this.catEmployees.save({
                 id: 0,
-                email: unauthenticatedCatEmployee.email,
-                password: this.encoder.encode(unauthenticatedCatEmployee.password),
+                email: email,
+                password: this.encoder.encode(unauthenticatedPassword),
                 isEnabled: false,
             });
         }
 
-        if (!catEmployee.isEnabled) {
-            return new DisabledCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password);
+        if (!catEmployee.password || catEmployee.password == "") {
+            throw new BadCatEmployeeCredentials(email, unauthenticatedPassword);
         }
 
-        return this.encoder.matches(unauthenticatedCatEmployee.password, catEmployee.password)
-            ? new AuthenticatedCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password)
-            : new UnauthenticatedCatEmployee(catEmployee.email, unauthenticatedCatEmployee.password);
+        if (!catEmployee.isEnabled) {
+            return new DisabledCatEmployee(catEmployee.email, unauthenticatedPassword);
+        }
+
+        return this.encoder.matches(unauthenticatedPassword, catEmployee.password)
+            ? new AuthenticatedCatEmployee(catEmployee.email, unauthenticatedPassword)
+            : new UnauthenticatedCatEmployee(catEmployee.email, unauthenticatedPassword);
     }
 }
