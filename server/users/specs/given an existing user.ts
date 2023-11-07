@@ -1,10 +1,10 @@
 import {beforeAll, describe, expect, test} from "@jest/globals";
 import {AuthenticatedCatEmployee} from "../AuthenticatedCatEmployee.js";
 import CatEmployeeEntry from "../CatEmployeeEntry.js";
-import CatEmployee from "../../users/CatEmployee.js";
-import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
+import CatEmployee from "../CatEmployee.js";
+import {ManageCatEmployees} from "../ManageCatEmployees.js";
 import {UnauthenticatedCatEmployee} from "../UnauthenticatedCatEmployee.js";
-import Encoder from "../Encoder.js";
+import Encoder from "../../security/Encoder.js";
 
 describe("given an existing user", () => {
     describe("when logging the user in", () => {
@@ -37,7 +37,7 @@ describe("given an existing user", () => {
         });
 
         test("then the password is correct", () => {
-            expect(user.password).toBe("zc89");
+            expect(user.password).toBe("MobWbSRg");
         });
 
         test("then the user is authenticated", () => {
@@ -75,7 +75,7 @@ describe("given an existing user", () => {
         });
 
         test("then the password is correct", () => {
-            expect(user.password).toBe("zc89");
+            expect(user.password).toBe("69FM2Vw");
         });
 
         test("then the user is not authenticated", () => {

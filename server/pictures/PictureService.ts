@@ -1,6 +1,6 @@
 import {ServePictures} from "./ServePictures.js";
 import {PictureResponse} from "./PictureResponse.js";
-import {AuthenticatedCatEmployee} from "../security/AuthenticatedCatEmployee.js";
+import {AuthenticatedCatEmployee} from "../users/AuthenticatedCatEmployee.js";
 import {Page} from "../Page.js";
 import {ManagePictures} from "./ManagePictures.js";
 import PictureFile from "./PictureFile.js";

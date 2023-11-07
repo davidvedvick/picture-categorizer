@@ -1,8 +1,8 @@
 import {beforeAll, describe, expect, test} from "@jest/globals";
 import CatEmployeeEntry from "../CatEmployeeEntry.js";
-import CatEmployee from "../../users/CatEmployee.js";
-import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
-import Encoder from "../Encoder.js";
+import CatEmployee from "../CatEmployee.js";
+import {ManageCatEmployees} from "../ManageCatEmployees.js";
+import Encoder from "../../security/Encoder.js";
 import BadCatEmployeeCredentials from "../BadCatEmployeeCredentials.js";
 
 describe("given an existing user without a password", () => {

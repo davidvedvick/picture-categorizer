@@ -1,6 +1,6 @@
 import {beforeAll, describe, expect, test} from "@jest/globals";
 import {CatEmployeeCredentials} from "../CatEmployeeCredentials.js";
-import CatEmployee from "../../users/CatEmployee.js";
+import CatEmployee from "../CatEmployee.js";
 import CatEmployeeEntry from "../CatEmployeeEntry.js";
 import DisabledCatEmployee from "../DisabledCatEmployee.js";
 

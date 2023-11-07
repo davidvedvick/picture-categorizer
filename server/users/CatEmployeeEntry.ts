@@ -1,8 +1,8 @@
 import AuthenticateCatEmployees from "./AuthenticateCatEmployees.js";
 import {UnauthenticatedCatEmployee} from "./UnauthenticatedCatEmployee.js";
 import {CatEmployeeCredentials} from "./CatEmployeeCredentials.js";
-import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
-import Encoder from "./Encoder.js";
+import {ManageCatEmployees} from "./ManageCatEmployees.js";
+import Encoder from "../security/Encoder.js";
 import DisabledCatEmployee from "./DisabledCatEmployee.js";
 import {AuthenticatedCatEmployee} from "./AuthenticatedCatEmployee.js";
 import BadCatEmployeeCredentials from "./BadCatEmployeeCredentials.js";
@@ -28,12 +28,14 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
             throw new BadCatEmployeeCredentials(email, unauthenticatedPassword);
         }
 
+        const hashedPassword = catEmployee.password;
+
         if (!catEmployee.isEnabled) {
-            return new DisabledCatEmployee(catEmployee.email, unauthenticatedPassword);
+            return new DisabledCatEmployee(email, hashedPassword);
         }
 
-        return this.encoder.matches(unauthenticatedPassword, catEmployee.password)
-            ? new AuthenticatedCatEmployee(catEmployee.email, unauthenticatedPassword)
-            : new UnauthenticatedCatEmployee(catEmployee.email, unauthenticatedPassword);
+        return this.encoder.matches(unauthenticatedPassword, hashedPassword)
+            ? new AuthenticatedCatEmployee(email, hashedPassword)
+            : new UnauthenticatedCatEmployee(email, hashedPassword)
     }
 }
