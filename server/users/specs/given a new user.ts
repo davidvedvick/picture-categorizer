@@ -19,11 +19,11 @@ describe("given a new user", () => {
                     return Promise.resolve(catEmployee);
                 }
             }, {
-                encode(rawPassword: string): string {
-                    return rawPassword == "SOyRfcI" ? "eOLdjk" : "";
+                encode(rawPassword: string): Promise<string> {
+                    return Promise.resolve(rawPassword == "SOyRfcI" ? "eOLdjk" : "");
                 },
-                matches(rawPassword: string, encodedPassword: string): boolean {
-                    return rawPassword == "SOyRfcI" && encodedPassword == "eOLdjk";
+                matches(rawPassword: string, encodedPassword: string): Promise<boolean> {
+                    return Promise.resolve(rawPassword == "SOyRfcI" && encodedPassword == "eOLdjk");
                 }
             });
 

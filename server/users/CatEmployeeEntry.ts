@@ -19,7 +19,7 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
             catEmployee = await this.catEmployees.save({
                 id: 0,
                 email: email,
-                password: this.encoder.encode(unauthenticatedPassword),
+                password: await this.encoder.encode(unauthenticatedPassword),
                 isEnabled: false,
             });
         }
@@ -34,7 +34,7 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
             return new DisabledCatEmployee(email, hashedPassword);
         }
 
-        return this.encoder.matches(unauthenticatedPassword, hashedPassword)
+        return await this.encoder.matches(unauthenticatedPassword, hashedPassword)
             ? new AuthenticatedCatEmployee(email, hashedPassword)
             : new UnauthenticatedCatEmployee(email, hashedPassword)
     }

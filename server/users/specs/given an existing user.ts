@@ -21,8 +21,8 @@ describe("given an existing user", () => {
                     } : null);
                 }
             } as ManageCatEmployees, {
-                matches(rawPassword: string, encodedPassword: string): boolean {
-                    return rawPassword == "zc89" && encodedPassword == "MobWbSRg";
+                matches(rawPassword: string, encodedPassword: string): Promise<boolean> {
+                    return Promise.resolve(rawPassword == "zc89" && encodedPassword == "MobWbSRg");
                 }
             } as Encoder);
 
@@ -59,8 +59,8 @@ describe("given an existing user", () => {
                     } : null);
                 }
             } as ManageCatEmployees, {
-                matches(rawPassword: string, encodedPassword: string): boolean {
-                    return rawPassword == "zc89" && encodedPassword == "MobWbSRg";
+                matches(rawPassword: string, encodedPassword: string): Promise<boolean> {
+                    return Promise.resolve(rawPassword == "zc89" && encodedPassword == "MobWbSRg");
                 }
             } as Encoder);
 
