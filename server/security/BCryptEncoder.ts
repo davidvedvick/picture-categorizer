@@ -1,6 +1,8 @@
 import TextEncoder from "./Encoder.js";
-import {compare, genSalt, hash} from "bcryptjs";
 import {EncoderConfig} from "./EncoderConfig.js";
+import pkg from 'bcryptjs';
+
+const { compare, genSalt, hash } = pkg;
 
 export default class BCryptEncoder implements TextEncoder {
 

@@ -2,19 +2,21 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "lib": ["es2017"],
-    /* Language and Environment */
     "target": "es2017",
-    /* Modules */
     "module": "Node16",
     "moduleResolution": "node16",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    /* Type Checking */
-    "strict": true
+    "strict": true,
+    "outDir": "./build"
   },
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node"
-  }
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

@@ -1,5 +1,8 @@
-import config from './app-config.json';
 import type {EncoderConfig} from "./security/EncoderConfig.js";
+import {createRequire} from 'node:module';
+
+const require = createRequire(import.meta.url);
+const config = require('./app-config.json');
 
 export interface AppConfig {
     db: {
