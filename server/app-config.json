@@ -1,0 +1,14 @@
+{
+  "db": {
+      "host": "localhost",
+      "database": "catpics",
+      "port": 3306,
+      "user": "cat",
+      "password": "scratch"
+  },
+  "security": {
+    "encoder": {
+      "saltGenerations": 10
+    }
+  }
+}

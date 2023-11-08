@@ -4,17 +4,15 @@ import {PictureRepository} from "./pictures/PictureRepository.js";
 import {PictureService} from "./pictures/PictureService.js";
 import mysql from 'mysql2/promise';
 import CatEmployeeRepository from "./users/CatEmployeeRepository.js";
+import CatEmployeeRoutes from "./users/CatEmployeeRoutes.js";
+import CatEmployeeEntry from "./users/CatEmployeeEntry.js";
+import BCryptEncoder from "./security/BCryptEncoder.js";
+import config from "./AppConfig.js";
 
 const app = express();
 const port = 8888;
 
-const pool = await mysql.createPool({
-    host: 'localhost',
-    database: 'catpics',
-    port: 3306,
-    user: 'cat',
-    password: 'scratch',
-});
+const pool = mysql.createPool(config.db);
 
 const pictureRepository = new PictureRepository(pool);
 const catEmployeeRepository = new CatEmployeeRepository(pool);
@@ -23,6 +21,8 @@ PictureRoutes(
     app,
     new PictureService(pictureRepository, catEmployeeRepository),
     pictureRepository);
+
+CatEmployeeRoutes(app, new CatEmployeeEntry(catEmployeeRepository, new BCryptEncoder(config.security.encoder)))
 
 app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}/`);

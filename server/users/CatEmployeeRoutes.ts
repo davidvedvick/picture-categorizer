@@ -34,14 +34,5 @@ export default function(app: Express, authenticationManager: AuthenticateCatEmpl
             res.status(500).send("An unexpected error occurred!");
             return;
         }
-
-        // val userLoginRequest = call.receive<UserLoginRequest>()
-        // val unauthenticatedCatEmployee = UnauthenticatedCatEmployee(userLoginRequest.email, userLoginRequest.password)
-        //
-        // when (val catEmployee = authenticationManager.authenticate(unauthenticatedCatEmployee)) {
-        //     is AuthenticatedCatEmployee -> call.respond(manageJwtTokens.generateToken(catEmployee))
-        //     is BadCatEmployeeCredentials -> call.respond(HttpStatusCode.BadRequest)
-        //     else -> res.status(401)
-        // }
     });
 }
