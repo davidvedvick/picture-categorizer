@@ -1,8 +1,13 @@
 import {Express} from "express";
 import {ServePictures} from "./ServePictures.js";
 import {ManagePictures} from "./ManagePictures.js";
+import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
+import {UploadedFile} from "express-fileupload";
+import PictureFile from "./PictureFile.js";
+import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
+import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 
-export default function(app: Express, pictureService: ServePictures, pictureRepository: ManagePictures) {
+export default function(app: Express, pictureService: ServePictures, pictureRepository: ManagePictures, manageJwtTokens: ManageJwtTokens) {
 
     app.get("/api/pictures", async (req, res) => {
         const pageNumberString = req.query["page"];
@@ -28,48 +33,50 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
         res.send(file);
     });
 
-    // authenticate
-    // {
-    //     post("/api/pictures")
-    //     {
-    //         val
-    //         part = call.receiveMultipart().readPart() as ? PartData.FileItem
-    //         val
-    //         fileName = part?.originalFileName
-    //         val
-    //         user = call.principal<AuthenticatedCatEmployee>()
-    //         when
-    //         {
-    //             part == null
-    //         ->
-    //             call.respond(HttpStatusCode.BadRequest)
-    //             fileName == null
-    //         ->
-    //             call.respond(HttpStatusCode.BadRequest)
-    //             user == null
-    //         ->
-    //             call.respond(HttpStatusCode.Unauthorized)
-    //         else ->
-    //             {
-    //                 val
-    //                 pictureFile = PictureFile(
-    //                     fileName,
-    //                     part.streamProvider().use
-    //                 {
-    //                     it.toByteReadChannel().toByteArray()
-    //                 }
-    //             )
-    //                 try {
-    //                     val
-    //                     picture = pictureService.addPicture(pictureFile, user)
-    //                     call.respond(HttpStatusCode.Accepted, picture)
-    //                 } catch (pictureAlreadyExists: PictureAlreadyExistsException) {
-    //                     call.respond(HttpStatusCode.Conflict)
-    //                 } catch (authenticationException: UnknownCatEmployeeException) {
-    //                     call.respond(HttpStatusCode.Unauthorized)
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    app.post("/api/pictures", async (req, res) => {
+        const token = req.get('authorization');
+        if (!token) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const authenticatedUser = await manageJwtTokens.decodeToken(token);
+        if (!authenticatedUser) {
+            res.sendStatus(401);
+            return;
+        }
+
+        const file = req.files?.file;
+
+        if (!file) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const uploadedFile = file as UploadedFile;
+
+        const fileName = uploadedFile.name;
+        if (!fileName) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const pictureFile: PictureFile = {
+            file: uploadedFile.data,
+            fileName: fileName,
+        }
+
+        try {
+            const picture = await pictureService.addPicture(pictureFile, authenticatedUser);
+            res.status(202).send(picture);
+        } catch (e) {
+            if (e instanceof PictureAlreadyExistsException) {
+                res.sendStatus(409);
+            }
+
+            if (e instanceof UnknownCatEmployeeException) {
+                res.sendStatus(401);
+            }
+        }
+    });
 }

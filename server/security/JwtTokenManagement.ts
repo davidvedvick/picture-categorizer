@@ -5,6 +5,7 @@ import jwt, {JwtPayload, Secret, SignOptions, VerifyOptions} from 'jsonwebtoken'
 import {AuthenticationConfiguration} from "./AuthenticationConfiguration.js";
 import * as util from "util";
 
+const bearer = "Bearer";
 const expirationDuration = 86_400_000 // 1 day
 
 const promiseSigning = util.promisify<string | Buffer | object, Secret, SignOptions, string | undefined>(jwt.sign);
@@ -16,7 +17,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
 
     async decodeToken(token: string): Promise<AuthenticatedCatEmployee | null> {
         const decoded = await promiseVerification(
-            token,
+            token.substring(bearer.length).trim(),
             this.configuration.secret,
             {
                 algorithms: [ 'HS512' ]

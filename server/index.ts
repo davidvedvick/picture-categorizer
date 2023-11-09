@@ -9,8 +9,10 @@ import CatEmployeeEntry from "./users/CatEmployeeEntry.js";
 import BCryptEncoder from "./security/BCryptEncoder.js";
 import config from "./AppConfig.js";
 import {JwtTokenManagement} from "./security/JwtTokenManagement.js";
+import fileUpload from 'express-fileupload';
 
 const app = express();
+app.use(fileUpload());
 const port = 8888;
 
 const pool = mysql.createPool(config.db);
@@ -22,7 +24,8 @@ const jwtTokenManagement = new JwtTokenManagement(config.authentication)
 PictureRoutes(
     app,
     new PictureService(pictureRepository, catEmployeeRepository),
-    pictureRepository);
+    pictureRepository,
+    jwtTokenManagement);
 
 CatEmployeeRoutes(
     app,
