@@ -29,5 +29,5 @@ create table if not exists picture_attribute
         FOREIGN KEY (`picture_id`) REFERENCES picture(`id`)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
-    );
+);
 

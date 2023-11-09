@@ -4,8 +4,9 @@ import {UnauthenticatedCatEmployee} from "./UnauthenticatedCatEmployee.js";
 import BadCatEmployeeCredentials from "./BadCatEmployeeCredentials.js";
 import DisabledCatEmployee from "./DisabledCatEmployee.js";
 import {AuthenticatedCatEmployee} from "./AuthenticatedCatEmployee.js";
+import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 
-export default function(app: Express, authenticationManager: AuthenticateCatEmployees) {
+export default function(app: Express, authenticationManager: AuthenticateCatEmployees, manageJwtTokens: ManageJwtTokens) {
     app.post("/api/login", async (req, res) => {
         const unauthenticatedCatEmployee = JSON.parse(req.body) as UnauthenticatedCatEmployee;
 
@@ -13,7 +14,7 @@ export default function(app: Express, authenticationManager: AuthenticateCatEmpl
             const catEmployee = await authenticationManager.authenticate(unauthenticatedCatEmployee);
 
             if (catEmployee instanceof AuthenticatedCatEmployee) {
-                res.json('json token here');
+                res.json(await manageJwtTokens.generateToken(catEmployee));
                 return;
             }
 
