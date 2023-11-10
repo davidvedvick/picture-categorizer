@@ -1,4 +1,5 @@
 import express from "express";
+import {json, urlencoded} from "express";
 import PictureRoutes from "./pictures/PictureRoutes.js";
 import {PictureRepository} from "./pictures/PictureRepository.js";
 import {PictureService} from "./pictures/PictureService.js";
@@ -13,6 +14,9 @@ import fileUpload from 'express-fileupload';
 
 const app = express();
 app.use(fileUpload());
+app.use(json());
+app.use(urlencoded({ extended: true }));
+
 const port = 8888;
 
 const pool = mysql.createPool(config.db);

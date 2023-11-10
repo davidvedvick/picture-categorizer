@@ -8,9 +8,9 @@ import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 
 export default function(app: Express, authenticationManager: AuthenticateCatEmployees, manageJwtTokens: ManageJwtTokens) {
     app.post("/api/login", async (req, res) => {
-        const unauthenticatedCatEmployee = JSON.parse(req.body) as UnauthenticatedCatEmployee;
-
         try {
+            const unauthenticatedCatEmployee = req.body as UnauthenticatedCatEmployee;
+
             const catEmployee = await authenticationManager.authenticate(unauthenticatedCatEmployee);
 
             if (catEmployee instanceof AuthenticatedCatEmployee) {

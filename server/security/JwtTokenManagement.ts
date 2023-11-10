@@ -25,7 +25,11 @@ export class JwtTokenManagement implements ManageJwtTokens {
 
         if (!decoded) return null;
 
-        return new AuthenticatedCatEmployee((decoded as JwtPayload).subject, "");
+        const payload = decoded as JwtPayload;
+
+        if (!payload.sub) return null;
+
+        return new AuthenticatedCatEmployee(decoded.sub as string, "");
     }
 
     async generateToken(authenticatedEmployee: AuthenticatedCatEmployee): Promise<JwtToken | null> {

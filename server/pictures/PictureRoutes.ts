@@ -41,8 +41,8 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
         }
 
         const authenticatedUser = await manageJwtTokens.decodeToken(token);
-        if (!authenticatedUser) {
-            res.sendStatus(401);
+        if (!authenticatedUser || !authenticatedUser.email) {
+            res.sendStatus(403);
             return;
         }
 
@@ -72,11 +72,16 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
         } catch (e) {
             if (e instanceof PictureAlreadyExistsException) {
                 res.sendStatus(409);
+                return;
             }
 
             if (e instanceof UnknownCatEmployeeException) {
                 res.sendStatus(401);
+                return;
             }
+
+            console.error("An error occurred uploading the picture.", e);
+            res.status(500).send("Well that was unexpected.");
         }
     });
 }
