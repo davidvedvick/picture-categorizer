@@ -1,8 +1,6 @@
 {
   "db": {
-      "host": "localhost",
-      "database": "catpics",
-      "port": 3306,
+      "uri": "mysql://localhost:3306/catpics",
       "user": "cat",
       "password": "scratch"
   },
