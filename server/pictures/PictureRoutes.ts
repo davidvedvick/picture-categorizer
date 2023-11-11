@@ -3,7 +3,6 @@ import {ServePictures} from "./ServePictures.js";
 import {ManagePictures} from "./ManagePictures.js";
 import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 import {UploadedFile} from "express-fileupload";
-import PictureFile from "./PictureFile.js";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 
@@ -40,12 +39,6 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
             return;
         }
 
-        const authenticatedUser = await manageJwtTokens.decodeToken(token);
-        if (!authenticatedUser || !authenticatedUser.email) {
-            res.sendStatus(403);
-            return;
-        }
-
         const file = req.files?.file;
 
         if (!file) {
@@ -61,13 +54,19 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
             return;
         }
 
-        const pictureFile: PictureFile = {
-            file: uploadedFile.data,
-            fileName: fileName,
+        const authenticatedUser = await manageJwtTokens.decodeToken(token);
+        if (!authenticatedUser || !authenticatedUser.email) {
+            res.sendStatus(403);
+            return;
         }
 
         try {
-            const picture = await pictureService.addPicture(pictureFile, authenticatedUser);
+            const picture = await pictureService.addPicture(
+                {
+                    file: uploadedFile.data,
+                    fileName: fileName,
+                },
+                authenticatedUser);
             res.status(202).send(picture);
         } catch (e) {
             if (e instanceof PictureAlreadyExistsException) {
@@ -76,12 +75,13 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
             }
 
             if (e instanceof UnknownCatEmployeeException) {
-                res.sendStatus(401);
+                res.sendStatus(403);
+                return;
                 return;
             }
 
             console.error("An error occurred uploading the picture.", e);
-            res.status(500).send("Well that was unexpected.");
+            res.status(500).send("I'm not sure what happened here.");
         }
     });
 }

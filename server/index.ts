@@ -1,5 +1,4 @@
-import express from "express";
-import {json, urlencoded} from "express";
+import express, {json, urlencoded} from "express";
 import PictureRoutes from "./pictures/PictureRoutes.js";
 import {PictureRepository} from "./pictures/PictureRepository.js";
 import {PictureService} from "./pictures/PictureService.js";
@@ -11,13 +10,31 @@ import BCryptEncoder from "./security/BCryptEncoder.js";
 import config from "./AppConfig.js";
 import {JwtTokenManagement} from "./security/JwtTokenManagement.js";
 import fileUpload from 'express-fileupload';
+import path, {dirname} from "path";
+import compression from 'compression';
+import {fileURLToPath} from "url";
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const environmentOpts = {
+    maxAge: 86400 * 1000
+};
 
 const app = express();
+app.set('env', 'production');
+
+const publicDir = path.join(__dirname, 'public');
+const maxAge = environmentOpts.maxAge;
+
+app.use(compression());
+app.use('/', express.static(publicDir, { maxAge: maxAge }));
+
 app.use(fileUpload());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-const port = 8888;
+const port = 5000;
 
 const pool = mysql.createPool(config.db);
 
