@@ -2,13 +2,13 @@
 build
 node
 design
-src/main/resources/static/
 docker-compose.yml
 Dockerfile
 build.sh
 .env
 frontend/build
 frontend/node_modules
+node_modules
 deploy-to-nfsn.sh
 _artifacts
 .gitignore

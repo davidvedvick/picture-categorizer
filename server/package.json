@@ -7,9 +7,9 @@
   "scripts": {
     "build": "rm -rf build && rollup -c",
     "test": "jest",
-    "serve-backend": "npm run build && cp app-config.json build && node ./build/index.js",
+    "serve-backend": "npm run build && cp app-config.json build && node ./build/index.mjs",
     "publish": "npm run build && cd ../frontend && npm run build && cp -r ./build ../server/build/public && cd ../server",
-    "serve": "npm run publish && cp app-config.json build && node ./build/index.js"
+    "serve": "npm run publish && cp app-config.json build && node ./build/index.mjs"
   },
   "author": "",
   "license": "ISC",
