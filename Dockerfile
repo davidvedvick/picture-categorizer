@@ -11,7 +11,7 @@ RUN npm install
 WORKDIR /workspace
 COPY . .
 
-RUN cd server && npm run publish
+RUN cd server && NODE_ENV=production npm run publish
 
 FROM scratch AS staging
 ARG DEPENDENCY=/workspace/server/build

@@ -31,6 +31,10 @@ describe("given cat pictures", () => {
        test("then it is not the last page", () => {
           expect(page.last).toBeFalsy();
        });
+
+       test("then it is the correct page number", () => {
+           expect(page.number).toBe(0);
+       });
    });
 
    describe("when getting the last page", () => {
@@ -56,6 +60,10 @@ describe("given cat pictures", () => {
 
        test("then it is the last page", () => {
            expect(page.last).toBeTruthy();
+       });
+
+       test("then it is the correct page number", () => {
+           expect(page.number).toBe(1);
        });
    });
 
@@ -83,5 +91,9 @@ describe("given cat pictures", () => {
         test("then it is the last page", () => {
             expect(page.last).toBeTruthy();
         });
+
+        test("then it is the correct page number", () => {
+            expect(page.number).toBe(0);
+        })
     });
 });

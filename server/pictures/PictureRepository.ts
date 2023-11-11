@@ -21,7 +21,8 @@ export class PictureRepository implements ManagePictures {
 
     async findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
         let sql = selectFromPictures;
-        if (pageNumber && pageSize) {
+
+        if (pageNumber != null && pageSize != null) {
             sql += `ORDER BY id DESC LIMIT ?,?`;
         }
 

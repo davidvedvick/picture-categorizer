@@ -58,6 +58,7 @@ export class PictureService implements ServePictures {
 
         return {
             content: pictures.map(toPictureResponse),
+            number: pageNumber ?? 0,
             last: isLast,
         };
     }
