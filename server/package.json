@@ -9,7 +9,7 @@
     "test": "jest",
     "serve-backend": "npm run build && cp app-config.json build && node ./build/index.mjs",
     "publish": "npm run test && npm run build && cd ../frontend && npm run build && cp -r ./build ../server/build/public && cd ../server",
-    "serve": "npm run publish && cp app-config.json build && sh ./build/start-server.sh"
+    "serve": "npm run publish && cp app-config.json build && cd build && sh ./start-server.sh"
   },
   "author": "",
   "license": "ISC",

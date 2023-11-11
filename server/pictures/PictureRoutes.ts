@@ -29,7 +29,7 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
 
         const file = await pictureRepository.findFileById(id);
 
-        res.send(file);
+        res.set("cache-control", "public, max-age=31536000, immutable").send(file);
     });
 
     app.post("/api/pictures", async (req, res) => {
@@ -76,7 +76,6 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
 
             if (e instanceof UnknownCatEmployeeException) {
                 res.sendStatus(403);
-                return;
                 return;
             }
 
