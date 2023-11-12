@@ -8,7 +8,8 @@ const env = process.env.NODE_ENV || 'development';
 export default {
   input: './index.ts',
   output: {
-    file: './build/index.mjs',
+    format: 'cjs',
+    file: './build/index.cjs',
     sourcemap: env === 'development',
   },
   plugins: [

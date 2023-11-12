@@ -20,4 +20,4 @@ COPY --from=build ${DEPENDENCY} /
 FROM node:20.9.0
 VOLUME /tmp
 COPY --from=staging / /
-ENTRYPOINT ["node","index.mjs"]
+ENTRYPOINT ["node","index.cjs"]

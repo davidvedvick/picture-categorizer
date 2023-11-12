@@ -1,1 +1,1 @@
-node index.mjs
+node index.cjs
