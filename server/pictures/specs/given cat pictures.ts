@@ -1,5 +1,5 @@
 import {beforeAll, describe, expect, test} from "@jest/globals";
-import {PictureResponse} from "../PictureResponse.js";
+import {PictureTransfer} from "../../../transfer/PictureTransfer.js";
 import {Page} from "../../Page.js";
 import {PictureService} from "../PictureService.js";
 import {Picture} from "../Picture.js";
@@ -8,7 +8,7 @@ import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 
 describe("given cat pictures", () => {
    describe("when getting the first page", () => {
-       let page: Page<PictureResponse>
+       let page: Page<PictureTransfer>
 
        beforeAll(async () => {
            const pictureService = new PictureService({
@@ -38,7 +38,7 @@ describe("given cat pictures", () => {
    });
 
    describe("when getting the last page", () => {
-       let page: Page<PictureResponse>
+       let page: Page<PictureTransfer>
 
        beforeAll(async () => {
            const pictureService = new PictureService({
@@ -68,7 +68,7 @@ describe("given cat pictures", () => {
    });
 
     describe("when getting all pictures", () => {
-        let page: Page<PictureResponse>
+        let page: Page<PictureTransfer>
 
         beforeAll(async () => {
             const pictureService = new PictureService({

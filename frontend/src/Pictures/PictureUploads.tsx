@@ -1,9 +1,9 @@
 import {ChangeEvent, FormEvent, useState} from "react";
 import {instance as auth} from "../Security/AuthorizationService";
-import {Picture} from "./Picture";
+import {PictureTransfer} from "../../../transfer";
 
 interface PictureUploadsProps {
-    onUploadCompleted: (uploadedPictures: Picture[]) => void;
+    onUploadCompleted: (uploadedPictures: PictureTransfer[]) => void;
     onUnauthenticated: () => void;
 }
 

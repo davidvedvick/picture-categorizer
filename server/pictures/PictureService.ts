@@ -1,5 +1,4 @@
 import {ServePictures} from "./ServePictures.js";
-import {PictureResponse} from "./PictureResponse.js";
 import {AuthenticatedCatEmployee} from "../users/AuthenticatedCatEmployee.js";
 import {Page} from "../Page.js";
 import {ManagePictures} from "./ManagePictures.js";
@@ -8,8 +7,9 @@ import {Picture} from "./Picture.js";
 import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
+import {PictureTransfer} from "../../transfer/index.js";
 
-function toPictureResponse(picture: Picture): PictureResponse {
+function toPictureResponse(picture: Picture): PictureTransfer {
     return {
         fileName: picture.fileName,
         id: picture.id,
@@ -23,7 +23,7 @@ export class PictureService implements ServePictures {
         private readonly pictureManagement: ManagePictures,
         private readonly catEmployees: ManageCatEmployees) {}
 
-    async addPicture(pictureFile: PictureFile, authenticatedCatEmployee: AuthenticatedCatEmployee): Promise<PictureResponse> {
+    async addPicture(pictureFile: PictureFile, authenticatedCatEmployee: AuthenticatedCatEmployee): Promise<PictureTransfer> {
         const employee = await this.catEmployees.findByEmail(authenticatedCatEmployee.email);
 
         if (!employee) {
@@ -45,7 +45,7 @@ export class PictureService implements ServePictures {
         return toPictureResponse(picture);
     }
 
-    async getPictures(pageNumber: number | null = null, pageSize: number | null = null): Promise<Page<PictureResponse>> {
+    async getPictures(pageNumber: number | null = null, pageSize: number | null = null): Promise<Page<PictureTransfer>> {
         const promisedPictures = this.pictureManagement.findAll(pageNumber, pageSize);
 
         let isLast = true;
