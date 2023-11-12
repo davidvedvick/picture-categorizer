@@ -4,7 +4,7 @@ catpics is public image gallery software devoted entirely to those animals we mo
 
 # Development
 
-[![Gradle](https://github.com/davidvedvick/picture-categorizer/actions/workflows/gradle.yml/badge.svg)](https://github.com/davidvedvick/picture-categorizer/actions/workflows/gradle.yml)
+[![Gradle](https://github.com/davidvedvick/picture-categorizer/actions/workflows/gradle.yml/badge.svg)](https://github.com/davidvedvick/picture-categorizer/actions/workflows/dockerbuild.yml)
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ and testing purposes.
 
 ### Prerequisites
 
-Java SDK 17+ and NodeJS 16+ is required to develop catpics.
+Docker and NodeJS 16+ is required to develop catpics.
 
 ### Installing
 
@@ -26,7 +26,7 @@ Java SDK 17+ and NodeJS 16+ is required to develop catpics.
 This application was developed with IntelliJ IDEA and will thus likely be easiest to run
 for development with IntelliJ IDEA. To run a development environment locally, do the following:
 
-1. Start Postgres. If you run your Postgres instance without Docker, then adjust `application.properties` as necessary.
+1. Start MariaDB. If you run your MariaDB instance without Docker, then adjust `app-config.json` as necessary.
 To run it **with** Docker, you can just run the following command:
 
 ```shell

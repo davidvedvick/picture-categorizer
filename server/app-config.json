@@ -1,0 +1,15 @@
+{
+  "db": {
+      "uri": "mysql://localhost:3306/catpics",
+      "user": "cat",
+      "password": "scratch"
+  },
+  "security": {
+    "encoder": {
+      "saltGenerations": 10
+    }
+  },
+  "authentication": {
+    "secret": "5037723c-f5f8-49c4-b161-d29733d034ff"
+  }
+}

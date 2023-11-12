@@ -1,16 +1,23 @@
-FROM eclipse-temurin:17-jdk-jammy AS build
+FROM node:20.9.0 AS build
 
-WORKDIR /workspace/app
+WORKDIR /workspace/frontend
+COPY frontend/package*.json .
+RUN npm install
+
+WORKDIR /workspace/server
+COPY server/package*.json .
+RUN npm install
+
+WORKDIR /workspace
 COPY . .
 
-RUN --mount=type=cache,target=/root/.gradle ./gradlew assemble build buildFatJar
-RUN cd build/libs; cp *-all.jar catpics.jar
+RUN cd server && NODE_ENV=production npm run publish
 
 FROM scratch AS staging
-ARG DEPENDENCY=/workspace/app/build/libs/catpics.jar
+ARG DEPENDENCY=/workspace/server/build
 COPY --from=build ${DEPENDENCY} /
 
-FROM eclipse-temurin:8-jdk-alpine
+FROM node:20.9.0
 VOLUME /tmp
-COPY --from=staging / /app
-ENTRYPOINT ["java","-jar","/app/catpics.jar"]
+COPY --from=staging / /
+ENTRYPOINT ["node","index.cjs"]

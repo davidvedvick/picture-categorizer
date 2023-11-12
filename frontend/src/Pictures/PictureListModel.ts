@@ -37,7 +37,7 @@ class PictureListViewModel implements PictureListModel {
         while (!cancellationToken.isCancelled) {
             this.isLoadingSubject.next(true);
             try {
-                const promisedResponse = fetch(`/api/pictures?sort=id,desc&page=${nextPageNumber}&size=${pageSize}`);
+                const promisedResponse = fetch(`/api/pictures?page=${nextPageNumber}&size=${pageSize}`);
                 await Promise.any([promisedResponse, cancellationToken.promisedCancellation]);
                 if (cancellationToken.isCancelled) return;
 
