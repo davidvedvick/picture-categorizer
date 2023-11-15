@@ -33,12 +33,17 @@ function App() {
 
     return (
         <div>
-            <nav className="navbar navbar-expand navbar-dark bg-dark">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="/">Cat Pics!</a>
-                    <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
-                </div>
-            </nav>
+            <header>
+                <nav className="navbar navbar-expand navbar-dark bg-dark">
+                    <div className="container-fluid">
+                        <a className="navbar-brand" href="/">
+                            <img src="cat-logo.svg" alt="Logo of a Smirking Cat" />
+                            Cat Pics!
+                        </a>
+                        <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
+                    </div>
+                </nav>
+            </header>
             <div className="container mt-3">
                 <div className="row">
                     <div className="col-md-8">
