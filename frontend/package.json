@@ -71,7 +71,6 @@
     "clean": "rm -rf build",
     "start": "CI=true && node scripts/start.js",
     "build": "CI=true && node scripts/build.js",
-    "publish": "CI=true && node scripts/build.js && cp -r ./build ../server/public",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {
