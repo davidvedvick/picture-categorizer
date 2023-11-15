@@ -1,15 +1,15 @@
 import React from "react";
-import {Picture} from "./Picture";
 import {newPictureListModel} from "./PictureListModel";
 import {cancellationToken} from "../CancellationToken";
+import {PictureTransfer} from "../../../transfer";
 
 interface PictureListProperties {
-    initialPictureList?: Picture[]
+    initialPictureList?: PictureTransfer[]
 }
 
 export function PictureList(props: PictureListProperties) {
 
-    const [pictures, setItemPictures] = React.useState<Picture[]>([]);
+    const [pictures, setItemPictures] = React.useState<PictureTransfer[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {

@@ -1,5 +1,9 @@
 FROM node:20.9.0 AS build
 
+WORKDIR /workspace/transfer
+COPY transfer/package*.json .
+RUN npm install
+
 WORKDIR /workspace/frontend
 COPY frontend/package*.json .
 RUN npm install

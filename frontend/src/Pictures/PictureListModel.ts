@@ -1,14 +1,14 @@
-import {Picture} from "./Picture";
 import {BehaviorSubject, filter, firstValueFrom, fromEvent} from "rxjs";
 import {Page} from "../Page";
 import {ReadonlyBehaviorSubject} from "../ReadonlyBehaviorSubject";
 import {CancellationToken} from "../CancellationToken";
+import {PictureTransfer} from "../../../transfer";
 
 const pageSize = 20;
 
 interface PictureListModel {
     get isLoading(): ReadonlyBehaviorSubject<boolean>;
-    get pictures(): ReadonlyBehaviorSubject<Picture[]>;
+    get pictures(): ReadonlyBehaviorSubject<PictureTransfer[]>;
 
     watchFromScrollState(cancellationToken: CancellationToken): Promise<void>;
 }
@@ -19,16 +19,16 @@ class PictureListViewModel implements PictureListModel {
     private readonly isLoadingSubject = new BehaviorSubject(false);
     private readonly picturesSubject;
 
-    constructor(private readonly document: Document, initialPictures: Picture[] = []) {
+    constructor(private readonly document: Document, initialPictures: PictureTransfer[] = []) {
         this.loadedPictures = new Set<number>(initialPictures.map(p => p.id))
-        this.picturesSubject = new BehaviorSubject<Picture[]>(initialPictures.sort((a, b) => b.id - a.id));
+        this.picturesSubject = new BehaviorSubject<PictureTransfer[]>(initialPictures.sort((a, b) => b.id - a.id));
     }
 
     get isLoading(): ReadonlyBehaviorSubject<boolean> {
         return this.isLoadingSubject;
     }
 
-    get pictures(): ReadonlyBehaviorSubject<Picture[]> {
+    get pictures(): ReadonlyBehaviorSubject<PictureTransfer[]> {
         return this.picturesSubject;
     }
 
@@ -44,7 +44,7 @@ class PictureListViewModel implements PictureListModel {
                 const response = await promisedResponse;
                 if (!response.ok) return;
 
-                const page = await response.json() as Page<Picture>;
+                const page = await response.json() as Page<PictureTransfer>;
                 this.picturesSubject.next(this.pictures.value.concat(page.content.filter(p => {
                     if (this.loadedPictures.has(p.id)) return false;
                     this.loadedPictures.add(p.id);
@@ -74,6 +74,6 @@ class PictureListViewModel implements PictureListModel {
     }
 }
 
-export function newPictureListModel(document: Document, initialPictures: Picture[] = []): PictureListModel {
+export function newPictureListModel(document: Document, initialPictures: PictureTransfer[] = []): PictureListModel {
     return new PictureListViewModel(document, initialPictures);
 }

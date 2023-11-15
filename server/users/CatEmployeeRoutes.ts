@@ -19,7 +19,7 @@ export default function(app: Express, authenticationManager: AuthenticateCatEmpl
             }
 
             if (catEmployee instanceof UnauthenticatedCatEmployee || catEmployee instanceof DisabledCatEmployee) {
-                res.status(401);
+                res.sendStatus(401);
                 return;
             }
 
@@ -27,7 +27,7 @@ export default function(app: Express, authenticationManager: AuthenticateCatEmpl
             res.status(500).send("Authentication ended in an unexpected state.");
         } catch (error) {
             if (error instanceof BadCatEmployeeCredentials) {
-                res.status(400);
+                res.sendStatus(400);
                 return;
             }
 

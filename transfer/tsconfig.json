@@ -8,7 +8,8 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "outDir": "./build",
-    "sourceMap": true
+    "sourceMap": true,
+    "composite": true
   },
   "ts-node": {
     "esm": true,
@@ -18,9 +19,5 @@
     "dist",
     "node_modules"
   ],
-  "references": [
-    {
-      "path": "../transfer"
-    }
-  ]
+  "references": []
 }

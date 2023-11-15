@@ -4,13 +4,13 @@ import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
 import {instance as auth} from "./Security/AuthorizationService";
-import {Picture} from "./Pictures/Picture";
+import {PictureTransfer} from "../../transfer";
 
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-    const [initialPictures, setInitialPictures] = React.useState<Picture[]>([])
+    const [initialPictures, setInitialPictures] = React.useState<PictureTransfer[]>([])
 
     function handleUnauthenticated() {
         setIsLoggedIn(false);
@@ -22,7 +22,7 @@ function App() {
         setIsUploadDisplayed(true);
     }
 
-    function handlePicturesUploaded(pictures: Picture[]) {
+    function handlePicturesUploaded(pictures: PictureTransfer[]) {
         hideUploads();
         setInitialPictures(pictures);
     }
@@ -33,12 +33,17 @@ function App() {
 
     return (
         <div>
-            <nav className="navbar navbar-expand navbar-dark bg-dark">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="/">Cat Pics!</a>
-                    <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
-                </div>
-            </nav>
+            <header>
+                <nav className="navbar navbar-expand navbar-dark bg-dark">
+                    <div className="container-fluid">
+                        <a className="navbar-brand" href="/">
+                            <img src="cat-logo.svg" alt="Logo of a Smirking Cat" />
+                            Cat Pics!
+                        </a>
+                        <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
+                    </div>
+                </nav>
+            </header>
             <div className="container mt-3">
                 <div className="row">
                     <div className="col-md-8">

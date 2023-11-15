@@ -8,7 +8,7 @@
     "build": "rm -rf build && rollup -c && cp start-server.sh ./build",
     "test": "jest",
     "serve-backend": "npm run build && cp app-config.json build && cd build && sh ./start-server.sh",
-    "publish": "npm run test && npm run build && cd ../frontend && npm run build && cp -r ./build ../server/build/public && cd ../server",
+    "publish": "npm run test && cd ../transfer && npm run build && cd ../server && npm run build && cd ../frontend && npm run build && cp -r ./build ../server/build/public && cd ../server",
     "serve": "NODE_ENV=development npm run publish && cp app-config.json build && cd build && sh ./start-server.sh"
   },
   "author": "",
