@@ -1,16 +1,25 @@
-.App {
-  text-align: center;
+:root {
+  --bs-primary: var(--bs-pink);
+  --bs-primary-rgb: 214, 51, 132;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.bg-light {
+  background-color: teal !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.btn-primary {
+  background-color: salmon;
+  border-color: salmon;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: lightsalmon;
+  border-color: lightsalmon;
+}
+
+:not(.btn-check) .btn-primary:active, .btn-primary.active {
+  background-color: darksalmon;
+  border-color: darksalmon;
 }
 
 .card-container.card {
@@ -38,15 +47,6 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 header {
