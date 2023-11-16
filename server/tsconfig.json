@@ -15,7 +15,7 @@
     "experimentalSpecifierResolution": "node"
   },
   "exclude": [
-    "dist",
+    "build",
     "node_modules"
   ],
   "references": [

@@ -1,4 +1,5 @@
 import React from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
@@ -34,10 +35,10 @@ function App() {
     return (
         <div>
             <header>
-                <nav className="navbar navbar-expand navbar-dark bg-dark">
+                <nav className="navbar navbar-expand navbar-light bg-light">
                     <div className="container-fluid">
                         <a className="navbar-brand" href="/">
-                            <img src="cat-logo.svg" alt="Logo of a Smirking Cat" />
+                            <img src="/cat-logo.png" alt="Logo of a Smirking Cat" />
                             Cat Pics!
                         </a>
                         <button className="btn btn-primary" onClick={showUploads}>Upload More Catpics!</button>
