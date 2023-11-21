@@ -45,12 +45,8 @@ function App() {
                     </div>
                 </nav>
             </header>
-            <div className="container mt-3">
-                <div className="row">
-                    <div className="col-md-8">
-                        <PictureList initialPictureList={initialPictures} />
-                    </div>
-                </div>
+            <div className="mt-3">
+                <PictureList initialPictureList={initialPictures} />
             </div>
             <div className={`modal fade ${isUploadDisplayed && "show"}`} id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden={!isUploadDisplayed} aria-modal={isUploadDisplayed}>
                 <div className="modal-dialog">
