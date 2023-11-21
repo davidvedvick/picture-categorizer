@@ -36,11 +36,7 @@
 .pictures {
   display: flex;
   flex-wrap: wrap;
-  margin-left: 10em;
-  margin-right: 10em;
-}
-
-.pictures .center {
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
   text-align: center;
