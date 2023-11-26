@@ -13,6 +13,7 @@ import fileUpload from 'express-fileupload';
 import path, {dirname} from "path";
 import compression from 'compression';
 import {fileURLToPath} from "url";
+import migrator from "./migrator.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -36,23 +37,27 @@ app.use(urlencoded({ extended: true }));
 
 const port = 5000;
 
-const pool = mysql.createPool(config.db);
+(async () => {
+    await migrator(config.db);
 
-const pictureRepository = new PictureRepository(pool);
-const catEmployeeRepository = new CatEmployeeRepository(pool);
-const jwtTokenManagement = new JwtTokenManagement(config.authentication)
+    const pool = mysql.createPool(config.db);
 
-PictureRoutes(
-    app,
-    new PictureService(pictureRepository, catEmployeeRepository),
-    pictureRepository,
-    jwtTokenManagement);
+    const pictureRepository = new PictureRepository(pool);
+    const catEmployeeRepository = new CatEmployeeRepository(pool);
+    const jwtTokenManagement = new JwtTokenManagement(config.authentication)
 
-CatEmployeeRoutes(
-    app,
-    new CatEmployeeEntry(catEmployeeRepository, new BCryptEncoder(config.security.encoder)),
-    jwtTokenManagement);
+    PictureRoutes(
+        app,
+        new PictureService(pictureRepository, catEmployeeRepository),
+        pictureRepository,
+        jwtTokenManagement);
 
-app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}/`);
-});
+    CatEmployeeRoutes(
+        app,
+        new CatEmployeeEntry(catEmployeeRepository, new BCryptEncoder(config.security.encoder)),
+        jwtTokenManagement);
+
+    app.listen(port, () => {
+        console.log(`Listening on http://localhost:${port}/`);
+    });
+})();

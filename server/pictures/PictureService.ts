@@ -35,12 +35,12 @@ export class PictureService implements ServePictures {
             throw new PictureAlreadyExistsException(pictureFile, employee);
         }
 
-        const picture = await this.pictureManagement.save({
-            catEmployeeId: employee.id,
-            id: 0,
-            file: pictureFile.file,
-            fileName: pictureFile.fileName,
-        });
+        const picture = await this.pictureManagement.save(Object.assign(
+            {
+                catEmployeeId: employee.id,
+                id: 0,
+            },
+            pictureFile));
 
         return toPictureResponse(picture);
     }

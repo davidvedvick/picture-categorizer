@@ -2,7 +2,7 @@ import {beforeAll, describe, expect, test} from "@jest/globals";
 import {PictureService} from "../PictureService.js";
 import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
-import {PictureTransfer} from "../../../transfer/PictureTransfer.js";
+import {PictureTransfer} from "../../../transfer/index.js";
 import CatEmployee from "../../users/CatEmployee.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "../PictureAlreadyExistsException.js";
@@ -38,23 +38,22 @@ describe("given a user", () => {
 
             response = await pictureService.addPicture({
                 fileName: "KEDSlros",
-                file: Buffer.of(247, 761, 879, 11)
+                file: Buffer.of(247, 761, 879, 11),
+                mimeType: "pV9UkazC",
             }, {
                 email: "8N8k",
                 password: "OaH1Su"
             });
         });
 
-        test("then the pictures have the correct user", () => {
-            expect(addedPictures.map(p => p.catEmployeeId)).toStrictEqual([920]);
-        });
-
-        test("then the picture has the correct path", () => {
-           expect(addedPictures.map(p => p.fileName)).toStrictEqual(["KEDSlros"]);
-        });
-
-        test("then the picture bytes are correct", () => {
-           expect(addedPictures.map(p => p.file)).toStrictEqual([Buffer.of(247, 761, 879, 11)]);
+        test("then the added pictures are correct", () => {
+           expect(addedPictures).toStrictEqual([{
+               id: 0,
+               catEmployeeId: 920,
+               fileName: "KEDSlros",
+               file: Buffer.of(247, 761, 879, 11),
+               mimeType: "pV9UkazC",
+           }]);
         });
 
         test("then the response data is correct", () => {
@@ -81,6 +80,7 @@ describe("given a user", () => {
                                 file: Buffer.of(415),
                                 catEmployeeId: catEmployeeId,
                                 id: 527,
+                                mimeType: "sqbVrQo10",
                             });
                     }
                 } as ManagePictures, {
@@ -99,7 +99,8 @@ describe("given a user", () => {
                 try {
                     await pictureService.addPicture({
                         fileName: "gzF0",
-                        file: Buffer.of(247, 761, 879, 11)
+                        file: Buffer.of(247, 761, 879, 11),
+                        mimeType: "qntxhf2N",
                     }, {
                         email: "8N8k",
                         password: "OaH1Su"
@@ -139,6 +140,7 @@ describe("given a user", () => {
                                 file: Buffer.of(415),
                                 catEmployeeId: catEmployeeId,
                                 id: 527,
+                                mimeType: "TyCSkFsQvR",
                             });
                     }
                 } as ManagePictures, {
@@ -150,7 +152,8 @@ describe("given a user", () => {
                 try {
                     await pictureService.addPicture({
                         fileName: "gzF0",
-                        file: Buffer.of(247, 761, 879, 11)
+                        file: Buffer.of(247, 761, 879, 11),
+                        mimeType: "pXuuBlE"
                     }, {
                         email: "8N8k",
                         password: "OaH1Su"
