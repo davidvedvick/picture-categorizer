@@ -6,7 +6,8 @@ const selectFromPictures = `
 SELECT
     id as id,
     cat_employee_id as catEmployeeId,
-    file_name as fileName
+    file_name as fileName,
+    mime_type as mimeType
 FROM picture
 `;
 
@@ -56,9 +57,9 @@ export class PictureRepository implements ManagePictures {
 
     async save(picture: Picture): Promise<Picture> {
         const [result, _] = await this.pool.execute<ResultSetHeader>(
-            `INSERT INTO picture (cat_employee_id, file_name, file)
-             VALUES (?, ?, ?)`,
-            [picture.catEmployeeId, picture.fileName, picture.file]);
+            `INSERT INTO picture (cat_employee_id, file_name, file, mime_type)
+             VALUES (?, ?, ?, ?)`,
+            [picture.catEmployeeId, picture.fileName, picture.file, picture.mimeType]);
 
         picture.id = result.insertId;
 

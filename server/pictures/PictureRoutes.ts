@@ -63,8 +63,9 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
         try {
             const picture = await pictureService.addPicture(
                 {
-                    file: uploadedFile.data,
                     fileName: fileName,
+                    file: uploadedFile.data,
+                    mimeType: uploadedFile.mimetype,
                 },
                 authenticatedUser);
             res.status(202).send(picture);
