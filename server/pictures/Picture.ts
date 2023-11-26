@@ -3,4 +3,5 @@ export interface Picture {
     fileName: string,
     catEmployeeId: number,
     file: Uint8Array,
+    mimeType: string,
 }

@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "rm -rf build && rollup -c && cp start-server.sh ./build",
+    "build": "rm -rf build && rollup -c && (cp start-server.sh ./build & cp -r ./migrations ./build)",
     "test": "jest",
-    "serve-backend": "npm run build && cp app-config.json build && cd build && sh ./start-server.sh",
+    "serve-backend": "NODE_ENV=development npm run build && cp app-config.json build && cd build && sh ./start-server.sh",
     "publish": "npm run test && cd ../transfer && npm run build && cd ../server && npm run build && cd ../frontend && npm run build && cp -r ./build ../server/build/public && cd ../server",
     "serve": "NODE_ENV=development npm run publish && cp app-config.json build && cd build && sh ./start-server.sh"
   },
@@ -16,8 +16,10 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
+    "db-migrate": "^0.11.14",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.2",
+    "fast-glob": "^3.3.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.2"
   },

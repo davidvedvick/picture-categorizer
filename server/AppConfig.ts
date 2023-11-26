@@ -2,7 +2,7 @@ import type {EncoderConfig} from "./security/EncoderConfig.js";
 import {createRequire} from 'node:module';
 import {AuthenticationConfiguration} from "./security/AuthenticationConfiguration.js";
 import * as fs from "fs";
-import {PoolOptions} from "mysql2";
+import {ConnectionOptions} from "mysql2";
 
 function isFileAccessible(file: fs.PathLike) {
     try {
@@ -16,7 +16,7 @@ function isFileAccessible(file: fs.PathLike) {
 
 export interface AppConfig {
     authentication: AuthenticationConfiguration;
-    db: PoolOptions,
+    db: ConnectionOptions,
     security: {
         encoder: EncoderConfig,
     }

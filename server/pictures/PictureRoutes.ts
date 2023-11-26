@@ -21,7 +21,7 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
     app.get("/api/pictures/:id/file", async (req, res) => {
         const idString = req.params.id;
         if (!idString) {
-            res.status(400);
+            res.sendStatus(400);
             return;
         }
 
