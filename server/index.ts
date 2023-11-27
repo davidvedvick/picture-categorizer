@@ -49,7 +49,6 @@ const port = 5000;
     PictureRoutes(
         app,
         new PictureService(pictureRepository, catEmployeeRepository),
-        pictureRepository,
         jwtTokenManagement);
 
     CatEmployeeRoutes(

@@ -5,13 +5,13 @@ import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
 import {instance as auth} from "./Security/AuthorizationService";
-import {PictureTransfer} from "../../transfer";
+import {PictureInformation} from "../../transfer";
 
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-    const [initialPictures, setInitialPictures] = React.useState<PictureTransfer[]>([])
+    const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([])
 
     function handleUnauthenticated() {
         setIsLoggedIn(false);
@@ -23,7 +23,7 @@ function App() {
         setIsUploadDisplayed(true);
     }
 
-    function handlePicturesUploaded(pictures: PictureTransfer[]) {
+    function handlePicturesUploaded(pictures: PictureInformation[]) {
         hideUploads();
         setInitialPictures(pictures);
     }

@@ -1,13 +1,12 @@
 import {Express} from "express";
 import {ServePictures} from "./ServePictures.js";
-import {ManagePictures} from "./ManagePictures.js";
 import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 import {UploadedFile} from "express-fileupload";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 import Jimp from "jimp";
 
-export default function(app: Express, pictureService: ServePictures, pictureRepository: ManagePictures, manageJwtTokens: ManageJwtTokens) {
+export default function(app: Express, pictureService: ServePictures, manageJwtTokens: ManageJwtTokens) {
 
     app.get("/api/pictures", async (req, res) => {
         const pageNumberString = req.query["page"];
@@ -16,7 +15,7 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
         const pageSizeString = req.query["size"];
         const pageSize = pageSizeString ? Number(pageSizeString) : null;
 
-        res.send(await pictureService.getPictures(pageNumber, pageSize))
+        res.send(await pictureService.getPictureInformation(pageNumber, pageSize))
     });
 
     app.get("/api/pictures/:id/file", async (req, res) => {
@@ -28,15 +27,13 @@ export default function(app: Express, pictureService: ServePictures, pictureRepo
 
         const id = Number(idString);
 
-        const picture = await pictureRepository.findById(id);
+        const picture = await pictureService.getPictureFile(id);
         if (!picture) {
             res.sendStatus(404);
             return;
         }
 
-        const file = await pictureRepository.findFileById(id);
-
-        const image = await Jimp.read(Buffer.from(file));
+        const image = await Jimp.read(Buffer.from(picture.file));
 
         res
             .set("cache-control", "public, max-age=31536000, immutable")
