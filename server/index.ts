@@ -14,6 +14,7 @@ import path, {dirname} from "path";
 import compression from 'compression';
 import {fileURLToPath} from "url";
 import migrator from "./migrator.js";
+import {ResizingPictureService} from "./pictures/ResizingPictureService.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -48,7 +49,8 @@ const port = 5000;
 
     PictureRoutes(
         app,
-        new PictureService(pictureRepository, catEmployeeRepository),
+        new ResizingPictureService(
+            new PictureService(pictureRepository, catEmployeeRepository)),
         jwtTokenManagement);
 
     CatEmployeeRoutes(

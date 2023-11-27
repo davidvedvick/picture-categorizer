@@ -4,7 +4,6 @@ import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 import {UploadedFile} from "express-fileupload";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
-import Jimp from "jimp";
 
 export default function(app: Express, pictureService: ServePictures, manageJwtTokens: ManageJwtTokens) {
 
@@ -33,12 +32,10 @@ export default function(app: Express, pictureService: ServePictures, manageJwtTo
             return;
         }
 
-        const image = await Jimp.read(Buffer.from(picture.file));
-
         res
             .set("cache-control", "public, max-age=31536000, immutable")
             .type(picture.mimeType)
-            .send(await image.resize(400, Jimp.AUTO).getBufferAsync(picture.mimeType));
+            .send(picture.file);
     });
 
     app.post("/api/pictures", async (req, res) => {

@@ -64,12 +64,12 @@ export class PictureService implements ServePictures {
 
     async getPictureFile(id: number): Promise<PictureFile | null> {
         const picture = await this.pictureManagement.findById(id);
+        const promisedData = this.pictureManagement.findFileById(id);
+
         if (!picture) return null;
 
-        const data = await this.pictureManagement.findFileById(id);
-
         return {
-            file: data,
+            file: await promisedData,
             mimeType: picture.mimeType,
             fileName: picture.fileName,
         };
