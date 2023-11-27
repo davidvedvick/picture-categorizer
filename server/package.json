@@ -22,7 +22,8 @@
     "fast-glob": "^3.3.2",
     "jimp": "^0.22.10",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.6.2"
+    "mysql2": "^3.6.2",
+    "quick-lru": "^7.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.6",

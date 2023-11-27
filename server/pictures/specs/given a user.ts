@@ -2,7 +2,7 @@ import {beforeAll, describe, expect, test} from "@jest/globals";
 import {PictureService} from "../PictureService.js";
 import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
-import {PictureTransfer} from "../../../transfer/index.js";
+import {PictureInformation} from "../../../transfer/index.js";
 import CatEmployee from "../../users/CatEmployee.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "../PictureAlreadyExistsException.js";
@@ -12,7 +12,7 @@ describe("given a user", () => {
     describe("when adding the users pictures", () => {
 
         const addedPictures: Picture[] = [];
-        let response: PictureTransfer;
+        let response: PictureInformation;
 
         beforeAll(async () => {
             const pictureService = new PictureService({

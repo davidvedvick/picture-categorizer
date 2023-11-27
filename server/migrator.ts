@@ -11,27 +11,34 @@ export default async function(options: ConnectionOptions) {
     migrationOptions.multipleStatements = true;
     const connection = await mysql.createConnection(migrationOptions);
 
-    await connection.execute(`
-create table if not exists migrations
-(
-    id MEDIUMINT AUTO_INCREMENT UNIQUE primary key,
-    file varchar(2000) UNIQUE,
-    executed_on DATETIME
-);`);
+    try {
+        await connection.execute(`
+            create table if not exists migrations
+            (
+                id          MEDIUMINT AUTO_INCREMENT UNIQUE primary key,
+                file        varchar(2000) UNIQUE,
+                executed_on DATETIME
+            );`);
 
-    for (const file of files.sort()) {
-        const fileName = path.basename(file);
-        const [results, _] = await connection.execute<RowDataPacket[]>(
-            `SELECT * FROM migrations WHERE file = ?`, [ fileName ]);
+        for (const file of files.sort()) {
+            const fileName = path.basename(file);
+            const [results, _] = await connection.execute<RowDataPacket[]>(
+                `SELECT *
+                 FROM migrations
+                 WHERE file = ?`, [fileName]);
 
-        if (results.length > 0) continue;
+            if (results.length > 0) continue;
 
-        const buffer = await fs.readFile(file);
-        const sql = buffer.toString();
-        await connection.query(sql);
+            const buffer = await fs.readFile(file);
+            const sql = buffer.toString();
+            await connection.query(sql);
 
-        await connection.execute(
-            `INSERT INTO migrations (file, executed_on) VALUES (?, ?)`,
-            [ fileName, new Date().toISOString().slice(0, 19).replace('T', ' ') ]);
+            await connection.execute(
+                `INSERT INTO migrations (file, executed_on)
+                 VALUES (?, ?)`,
+                [fileName, new Date().toISOString().slice(0, 19).replace('T', ' ')]);
+        }
+    } finally {
+        connection.destroy();
     }
 }
