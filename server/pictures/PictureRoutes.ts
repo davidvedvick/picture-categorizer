@@ -1,17 +1,18 @@
 import {Express} from "express";
-import {ServePictures} from "./ServePictures.js";
+import {ServePictureInformation} from "./ServePictureInformation.js";
 import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 import {UploadedFile} from "express-fileupload";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
+import {ServePictureFiles, ServeResizedPictureFiles} from "./ServePictureFiles.js";
 
-export default function(app: Express, pictureService: ServePictures, manageJwtTokens: ManageJwtTokens) {
+export default function(app: Express, pictureService: ServePictureInformation, pictureFileService: ServePictureFiles, resizedPictureFileService: ServeResizedPictureFiles, manageJwtTokens: ManageJwtTokens) {
 
     app.get("/api/pictures", async (req, res) => {
-        const pageNumberString = req.query["page"];
+        const pageNumberString = req.query.page;
         const pageNumber = pageNumberString ? Number(pageNumberString) : null;
 
-        const pageSizeString = req.query["size"];
+        const pageSizeString = req.query.size;
         const pageSize = pageSizeString ? Number(pageSizeString) : null;
 
         res.send(await pictureService.getPictureInformation(pageNumber, pageSize))
@@ -26,7 +27,10 @@ export default function(app: Express, pictureService: ServePictures, manageJwtTo
 
         const id = Number(idString);
 
-        const picture = await pictureService.getPictureFile(id);
+        const picture = req.query.hasOwnProperty("resize")
+            ? await resizedPictureFileService.getPictureFile(id)
+            : await pictureFileService.getPictureFile(id);
+
         if (!picture) {
             res.sendStatus(404);
             return;

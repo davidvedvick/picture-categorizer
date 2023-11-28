@@ -14,8 +14,8 @@ import path, {dirname} from "path";
 import compression from 'compression';
 import {fileURLToPath} from "url";
 import migrator from "./migrator.js";
-import {ResizingPictureService} from "./pictures/ResizingPictureService.js";
-import {CachingPictureService} from "./pictures/CachingPictureService.js";
+import {ResizingPictureFileService} from "./pictures/ResizingPictureFileService.js";
+import {CachingPictureFileService, CachingResizedPictureFileService} from "./pictures/CachingPictureFileService.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -46,13 +46,14 @@ const port = 5000;
 
     const pictureRepository = new PictureRepository(pool);
     const catEmployeeRepository = new CatEmployeeRepository(pool);
+    const pictureService = new PictureService(pictureRepository, catEmployeeRepository)
     const jwtTokenManagement = new JwtTokenManagement(config.authentication)
 
     PictureRoutes(
         app,
-        new CachingPictureService(
-            new ResizingPictureService(
-                new PictureService(pictureRepository, catEmployeeRepository))),
+        pictureService,
+        new CachingPictureFileService(pictureService),
+        new CachingResizedPictureFileService(new ResizingPictureFileService(pictureService)),
         jwtTokenManagement);
 
     CatEmployeeRoutes(

@@ -1,4 +1,4 @@
-import {ServePictures} from "./ServePictures.js";
+import {ServePictureInformation} from "./ServePictureInformation.js";
 import {AuthenticatedCatEmployee} from "../users/AuthenticatedCatEmployee.js";
 import {Page} from "../Page.js";
 import {ManagePictures} from "./ManagePictures.js";
@@ -8,6 +8,7 @@ import {ManageCatEmployees} from "../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 import {PictureInformation} from "../../transfer/index.js";
+import {ServePictureFiles} from "./ServePictureFiles.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
@@ -16,7 +17,7 @@ function toPictureResponse(picture: Picture): PictureInformation {
     };
 }
 
-export class PictureService implements ServePictures {
+export class PictureService implements ServePictureInformation, ServePictureFiles {
 
     constructor(
         private readonly pictureManagement: ManagePictures,
