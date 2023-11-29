@@ -30,7 +30,7 @@ export function PictureList(props: PictureListProperties) {
             {pictures.map(p => (
                 <div key={p.id} className="picture card">
                     <a target="_blank" href={`/api/pictures/${p.id}/file`} title={p.fileName} rel="noreferrer">
-                        <img src={`/api/pictures/${p.id}/file?resize`} alt={p.fileName} title={p.fileName} className="card-img-top"/>
+                        <img src={`/api/pictures/${p.id}/preview`} alt={p.fileName} title={p.fileName} className="card-img-top"/>
                     </a>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>

@@ -27,9 +27,29 @@ export default function(app: Express, pictureService: ServePictureInformation, p
 
         const id = Number(idString);
 
-        const picture = req.query.hasOwnProperty("resize")
-            ? await resizedPictureFileService.getPictureFile(id)
-            : await pictureFileService.getPictureFile(id);
+        const picture = await pictureFileService.getPictureFile(id);
+
+        if (!picture) {
+            res.sendStatus(404);
+            return;
+        }
+
+        res
+            .set("cache-control", "public, max-age=31536000, immutable")
+            .type(picture.mimeType)
+            .send(picture.file);
+    });
+
+    app.get("/api/pictures/:id/preview", async (req, res) => {
+        const idString = req.params.id;
+        if (!idString) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const id = Number(idString);
+
+        const picture = await resizedPictureFileService.getPictureFile(id);
 
         if (!picture) {
             res.sendStatus(404);
