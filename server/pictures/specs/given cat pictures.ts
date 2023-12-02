@@ -6,6 +6,8 @@ import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import PictureFile from "../PictureFile.js";
+import {ManagePictureTags} from "../tags/ManagePictureTags.js";
+import {PictureTag} from "../tags/PictureTag.js";
 
 describe("given cat pictures", () => {
    describe("when getting the first page", () => {
@@ -14,19 +16,58 @@ describe("given cat pictures", () => {
        beforeAll(async () => {
            const pictureService = new PictureService({
                findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
-                   return Promise.resolve(pageNumber == 0 && pageSize == 5 ? [{} as Picture, {} as Picture] : []);
+                   return Promise.resolve(
+                       pageNumber == 0 && pageSize == 5
+                           ? [
+                               {
+                                   id: 823,
+                                   mimeType: "",
+                                   fileName: "xKLbRIuf",
+                               } as Picture,
+                               {
+                                   id: 437,
+                                   fileName: "jwKJ996Yo",
+                               } as Picture]
+                           : []);
                },
                countAll(): Promise<number> {
                    return Promise.resolve(10);
                }
            } as ManagePictures, {
-           } as ManageCatEmployees);
+           } as ManageCatEmployees, {
+               getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                   switch (pictureId) {
+                       case 823:
+                           return Promise.resolve([{
+                               tag: "QQh9LTd"
+                           } as PictureTag, {
+                               tag: "UsbY0dnDhv"
+                           } as PictureTag]);
+                       case 437:
+                           return Promise.resolve([{
+                               tag: "OTIaxGyHE"
+                           } as PictureTag]);
+                       default:
+                           return Promise.resolve([]);
+                   }
+               }
+           } as ManagePictureTags);
 
            page = await pictureService.getPictureInformation(0, 5);
        });
 
        test("then the returned pictures are correct", () => {
-          expect(page.content).toHaveLength(2);
+          expect(page.content).toStrictEqual([
+              {
+                  id: 823,
+                  fileName: "xKLbRIuf",
+                  tags: ["QQh9LTd", "UsbY0dnDhv"]
+              } as PictureInformation, {
+                  id: 437,
+                  fileName: "jwKJ996Yo",
+                  tags: ["OTIaxGyHE"]
+              } as PictureInformation
+          ]);
        });
 
        test("then it is not the last page", () => {
@@ -50,7 +91,11 @@ describe("given cat pictures", () => {
                    return Promise.resolve(6);
                }
            } as ManagePictures, {
-           } as ManageCatEmployees);
+           } as ManageCatEmployees, {
+               getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                  return Promise.resolve([]);
+               }
+           } as ManagePictureTags);
 
            page = await pictureService.getPictureInformation(1, 3);
        });
@@ -80,7 +125,11 @@ describe("given cat pictures", () => {
                     return Promise.resolve(-638);
                 }
             } as ManagePictures, {
-            } as ManageCatEmployees);
+            } as ManageCatEmployees, {
+                getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                    return Promise.resolve([]);
+                }
+            } as ManagePictureTags);
 
             page = await pictureService.getPictureInformation();
         });
@@ -116,7 +165,8 @@ describe("given cat pictures", () => {
                     return Promise.resolve(id == 644 ? Buffer.of(322, 379, 706) : Buffer.of());
                 }
             } as ManagePictures, {
-            } as ManageCatEmployees);
+            } as ManageCatEmployees, {
+            } as ManagePictureTags);
 
             picture = await pictureService.getPictureFile(644);
         });

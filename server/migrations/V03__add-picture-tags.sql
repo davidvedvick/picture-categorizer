@@ -14,8 +14,9 @@ create table if not exists picture_tag
         FOREIGN KEY (`picture_id`) REFERENCES picture(`id`)
             ON DELETE RESTRICT
             ON UPDATE RESTRICT,
+    CONSTRAINT
         FOREIGN KEY (`tag_id`) REFERENCES tag(`id`)
             ON DELETE RESTRICT
             ON UPDATE RESTRICT,
-        UNIQUE ('picture_id', 'tag_id')
+    UNIQUE(picture_id, tag_id)
 );

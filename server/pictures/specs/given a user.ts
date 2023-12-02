@@ -7,6 +7,8 @@ import CatEmployee from "../../users/CatEmployee.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import {PictureAlreadyExistsException} from "../PictureAlreadyExistsException.js";
 import {UnknownCatEmployeeException} from "../../users/UnknownCatEmployeeException.js";
+import {PictureTag} from "../tags/PictureTag.js";
+import {ManagePictureTags} from "../tags/ManagePictureTags.js";
 
 describe("given a user", () => {
     describe("when adding the users pictures", () => {
@@ -34,7 +36,11 @@ describe("given a user", () => {
                         email: email,
                     });
                 }
-            } as ManageCatEmployees);
+            } as ManageCatEmployees, {
+                getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                    return Promise.resolve([]);
+                }
+            } as ManagePictureTags);
 
             response = await pictureService.addPicture({
                 fileName: "KEDSlros",
@@ -94,7 +100,11 @@ describe("given a user", () => {
                             email: email,
                         });
                     }
-                } as ManageCatEmployees);
+                } as ManageCatEmployees, {
+                    getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                        return Promise.resolve([]);
+                    }
+                } as ManagePictureTags);
 
                 try {
                     await pictureService.addPicture({
@@ -147,7 +157,11 @@ describe("given a user", () => {
                     findByEmail(_: string): Promise<CatEmployee | null> {
                         return Promise.resolve(null);
                     }
-                } as ManageCatEmployees);
+                } as ManageCatEmployees, {
+                    getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                        return Promise.resolve([]);
+                    }
+                } as ManagePictureTags);
 
                 try {
                     await pictureService.addPicture({

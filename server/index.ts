@@ -49,8 +49,9 @@ const port = 5000;
 
     const pictureRepository = new PictureRepository(pool);
     const catEmployeeRepository = new CatEmployeeRepository(pool);
-    const pictureService = new PictureService(pictureRepository, catEmployeeRepository)
-    const jwtTokenManagement = new JwtTokenManagement(config.authentication)
+    const pictureTagRepository = new PictureTagRepository(pool);
+    const pictureService = new PictureService(pictureRepository, catEmployeeRepository, pictureTagRepository);
+    const jwtTokenManagement = new JwtTokenManagement(config.authentication);
 
     PictureRoutes(
         app,
@@ -61,7 +62,7 @@ const port = 5000;
 
     PictureTagRoutes(
         app,
-        new PictureTagService(catEmployeeRepository, pictureRepository, new PictureTagRepository(pool)),
+        new PictureTagService(catEmployeeRepository, pictureRepository, pictureTagRepository),
         jwtTokenManagement);
 
     CatEmployeeRoutes(
