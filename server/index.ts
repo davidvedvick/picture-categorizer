@@ -16,6 +16,9 @@ import {fileURLToPath} from "url";
 import migrator from "./migrator.js";
 import {ResizingPictureFileService} from "./pictures/ResizingPictureFileService.js";
 import {CachingPictureFileService, CachingResizedPictureFileService} from "./pictures/CachingPictureFileService.js";
+import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
+import {PictureTagService} from "./pictures/tags/PictureTagService.js";
+import {PictureTagRepository} from "./pictures/tags/PictureTagRepository.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -54,6 +57,11 @@ const port = 5000;
         pictureService,
         new CachingPictureFileService(pictureService),
         new CachingResizedPictureFileService(new ResizingPictureFileService(pictureService)),
+        jwtTokenManagement);
+
+    PictureTagRoutes(
+        app,
+        new PictureTagService(catEmployeeRepository, pictureRepository, new PictureTagRepository(pool)),
         jwtTokenManagement);
 
     CatEmployeeRoutes(
