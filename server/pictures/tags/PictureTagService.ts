@@ -4,6 +4,8 @@ import {AuthenticatedCatEmployee} from "../../users/AuthenticatedCatEmployee.js"
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import {ManagePictureTags} from "./ManagePictureTags.js";
 import {ManagePictures} from "../ManagePictures.js";
+import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException.js";
+import {PictureNotFoundException} from "../PictureNotFoundException.js";
 
 export class PictureTagService implements ServePictureTags {
 
@@ -12,14 +14,14 @@ export class PictureTagService implements ServePictureTags {
         private readonly pictures: ManagePictures,
         private readonly pictureTags: ManagePictureTags) {}
 
-    async addTag(pictureId: number, tag: string, authenticatedUser: AuthenticatedCatEmployee): Promise<PictureTag | null> {
+    async addTag(pictureId: number, tag: string, authenticatedUser: AuthenticatedCatEmployee): Promise<PictureTag> {
         const picture = await this.pictures.findById(pictureId);
 
-        if (!picture) return null;
+        if (!picture) throw new PictureNotFoundException(pictureId);
 
         const employee = await this.catEmployees.findByEmail(authenticatedUser.email);
 
-        if (!employee || picture.catEmployeeId != employee.id) return null;
+        if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
 
         return await this.pictureTags.addTag(pictureId, tag);
     }

@@ -6,6 +6,8 @@ import {PictureTag} from "../PictureTag.js";
 import {PictureTagService} from "../PictureTagService.js";
 import {ManagePictureTags} from "../ManagePictureTags.js";
 import CatEmployee from "../../../users/CatEmployee.js";
+import {IncorrectEmployeeException} from "../../../users/IncorrectEmployeeException.js";
+import {PictureNotFoundException} from "../../PictureNotFoundException.js";
 
 describe("given cat pictures", () => {
    describe("when adding a picture tag", () => {
@@ -63,6 +65,7 @@ describe("given cat pictures", () => {
        describe("when adding a picture tag", () => {
            const addedTags: [number, string][] = [];
            let addedPictureTag: PictureTag | null = null;
+           let missingPictureException: PictureNotFoundException;
 
            beforeAll(async () => {
                const pictureTagService = new PictureTagService({
@@ -95,11 +98,19 @@ describe("given cat pictures", () => {
                    }
                } as ManagePictureTags);
 
-               addedPictureTag = await pictureTagService.addTag(58, "x8Rmke68Gae", { email: "g5EJbF8VWPq", password: "" });
+               try {
+                   addedPictureTag = await pictureTagService.addTag(58, "x8Rmke68Gae", {
+                       email: "g5EJbF8VWPq",
+                       password: ""
+                   });
+               } catch (e) {
+                   if (e instanceof PictureNotFoundException)
+                       missingPictureException = e;
+               }
            });
 
-           test("then the added picture tag is correct", () => {
-               expect(addedPictureTag).toBeNull();
+           test("then a missing picture exception is thrown", () => {
+               expect(missingPictureException).toBeDefined();
            });
 
            test("then the added tags are correct", () => {
@@ -111,7 +122,7 @@ describe("given cat pictures", () => {
    describe("and the picture is owned by another cat employee", () => {
        describe("when adding a picture tag", () => {
            const addedTags: [number, string][] = [];
-           let addedPictureTag: PictureTag | null = null;
+           let incorrectEmployeeException: IncorrectEmployeeException;
 
            beforeAll(async () => {
                const pictureTagService = new PictureTagService({
@@ -144,11 +155,19 @@ describe("given cat pictures", () => {
                    }
                } as ManagePictureTags);
 
-               addedPictureTag = await pictureTagService.addTag(204, "x8Rmke68Gae", { email: "g5EJbF8VWPq", password: "" });
+               try {
+                   await pictureTagService.addTag(204, "x8Rmke68Gae", {
+                       email: "g5EJbF8VWPq",
+                       password: ""
+                   });
+               } catch (e) {
+                   if (e instanceof IncorrectEmployeeException)
+                       incorrectEmployeeException = e;
+               }
            });
 
-           test("then the added picture tag is correct", () => {
-               expect(addedPictureTag).toBeNull();
+           test("then an incorrect employee exception is thrown", () => {
+               expect(incorrectEmployeeException).toBeDefined();
            });
 
            test("then the added tags are correct", () => {

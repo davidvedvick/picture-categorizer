@@ -1,6 +1,8 @@
 import {Express} from "express";
 import {ServePictureTags} from "./ServePictureTags.js";
 import {ManageJwtTokens} from "../../security/ManageJwtTokens.js";
+import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException.js";
+import {PictureNotFoundException} from "../PictureNotFoundException.js";
 
 export default function(app: Express, pictureTagService: ServePictureTags, manageJwtTokens: ManageJwtTokens) {
     app.post("/api/pictures/tags", async (req, res) => {
@@ -16,10 +18,21 @@ export default function(app: Express, pictureTagService: ServePictureTags, manag
             return;
         }
 
-        const pictureTag = await pictureTagService.addTag(req.body.pictureId, req.body.tag, authenticatedUser);
-        if (pictureTag) {
+        try {
+            const pictureTag = await pictureTagService.addTag(req.body.pictureId, req.body.tag, authenticatedUser);
             res.status(202).send(pictureTag);
-            return;
+        } catch (e) {
+            if (e instanceof IncorrectEmployeeException) {
+                res.sendStatus(403);
+                return;
+            }
+
+            if (e instanceof PictureNotFoundException) {
+                res.sendStatus(400);
+                return;
+            }
+
+            res.status(500).send("Something bad happened here :|");
         }
     });
 }
