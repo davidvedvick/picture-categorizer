@@ -12,7 +12,7 @@ export default function(app: Express, pictureTagService: ServePictureTags, manag
 
         const authenticatedUser = await manageJwtTokens.decodeToken(token);
         if (!authenticatedUser || !authenticatedUser.email) {
-            res.sendStatus(403);
+            res.sendStatus(401);
             return;
         }
 

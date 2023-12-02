@@ -6,7 +6,7 @@ import {AuthenticationConfiguration} from "./AuthenticationConfiguration.js";
 import * as util from "util";
 
 const bearer = "Bearer";
-const expirationDuration = 86_400_000 // 1 day
+const expirationDurationSeconds = 86_400 // 1 day
 
 const promiseSigning = util.promisify<string | Buffer | object, Secret, SignOptions, string | undefined>(jwt.sign);
 const promiseVerification = util.promisify<string, Secret, VerifyOptions, JwtPayload | string | undefined>(jwt.verify);
@@ -33,7 +33,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
     }
 
     async generateToken(authenticatedEmployee: AuthenticatedCatEmployee): Promise<JwtToken | null> {
-        const expiration = Math.floor(Date.now() / 1000) + expirationDuration;
+        const expiration = Date.now() + expirationDurationSeconds * 1000;
 
         const token = await promiseSigning(
             {},
@@ -41,7 +41,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
             {
                 algorithm: 'HS512',
                 subject: authenticatedEmployee.email,
-                expiresIn: expiration,
+                expiresIn: expirationDurationSeconds,
             });
 
         if (!token) return null;
