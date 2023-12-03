@@ -34,13 +34,11 @@ export function PictureList(props: PictureListProperties) {
                     </a>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
-                        <ul className="list-group list-group-horizontal">
+                        <div>
                             {p.tags.map(t => (
-                                <li>
-                                    <span className="badge bg-primary rounded-pill">{t}</span>
-                                </li>
+                                <span className="badge bg-primary tag">{t}</span>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 </div>
             ))}

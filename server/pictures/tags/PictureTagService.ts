@@ -23,6 +23,6 @@ export class PictureTagService implements ServePictureTags {
 
         if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
 
-        return await this.pictureTags.addTag(pictureId, tag);
+        return await this.pictureTags.addTag(pictureId, tag.toLowerCase());
     }
 }

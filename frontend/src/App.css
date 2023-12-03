@@ -50,6 +50,11 @@
   max-height: 400px;
 }
 
+.tag {
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
 header {
   max-height: 64px;
 }

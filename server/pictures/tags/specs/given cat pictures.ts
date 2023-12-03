@@ -50,14 +50,14 @@ describe("given cat pictures", () => {
 
        test("then the added picture tag is correct", () => {
           expect(addedPictureTag).toStrictEqual({
-              tag: "x8Rmke68Gae",
+              tag: "x8rmke68gae",
               tagId: 3,
               pictureId: 204,
           });
        });
 
        test("then the added tags are correct", () => {
-          expect(addedTags).toStrictEqual([[204, "x8Rmke68Gae"]]);
+          expect(addedTags).toStrictEqual([[204, "x8rmke68gae"]]);
        });
    });
 
