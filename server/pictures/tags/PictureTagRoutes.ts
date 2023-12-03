@@ -5,7 +5,7 @@ import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException
 import {PictureNotFoundException} from "../PictureNotFoundException.js";
 
 export default function(app: Express, pictureTagService: ServePictureTags, manageJwtTokens: ManageJwtTokens) {
-    app.post("/api/pictures/tags", async (req, res) => {
+    app.post("/api/pictures/:pictureId/tags", async (req, res) => {
         const token = req.get('authorization');
         if (!token) {
             res.sendStatus(400);
@@ -19,7 +19,10 @@ export default function(app: Express, pictureTagService: ServePictureTags, manag
         }
 
         try {
-            const pictureTag = await pictureTagService.addTag(req.body.pictureId, req.body.tag, authenticatedUser);
+            const pictureIdString = req.params.pictureId;
+            const pictureId = Number(pictureIdString);
+
+            const pictureTag = await pictureTagService.addTag(pictureId, req.body.tag, authenticatedUser);
             res.status(200).send(pictureTag);
         } catch (e) {
             if (e instanceof IncorrectEmployeeException) {

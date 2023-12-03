@@ -1,14 +1,18 @@
 import React from "react";
+import {Tag} from "../../../transfer";
 
-interface PictureTagProperties {
-    tag: string;
-}
+export function PictureTag(props: Tag) {
+    const [isShowing, setIsShowing] = React.useState(false);
 
-export function PictureTag(props: PictureTagProperties) {
-    return (<>
-        <span className="badge bg-primary tag">
-            <span contentEditable>{props.tag}</span>
-            <button type="button" className="btn-close" aria-label="Close" />
-        </span>
-    </>);
+    return <>
+        <div className="btn-group tag">
+            <button type="button" className="btn btn-primary">{props.tag}</button>
+            <button type="button" className={`btn btn-primary dropdown-toggle dropdown-toggle-split ${isShowing && 'show'}`} aria-expanded={isShowing} onClick={() => setIsShowing(prevState => !prevState)}>
+                <span className="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul className={`dropdown-menu ${isShowing && 'show'}`} data-popper-placement="bottom-start">
+                <li>Delete</li>
+            </ul>
+        </div>
+    </>;
 }

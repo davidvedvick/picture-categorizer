@@ -36,7 +36,7 @@ export function PictureList(props: PictureListProperties) {
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
                         <div>
-                            {p.tags.map(t => (<PictureTag tag={t} />))}
+                            {p.tags.map(t => (<PictureTag {...t} />))}
                         </div>
                     </div>
                 </div>

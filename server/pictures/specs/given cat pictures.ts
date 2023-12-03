@@ -39,12 +39,15 @@ describe("given cat pictures", () => {
                    switch (pictureId) {
                        case 823:
                            return Promise.resolve([{
+                               tagId: 914,
                                tag: "QQh9LTd"
                            } as PictureTag, {
+                               tagId: 1,
                                tag: "UsbY0dnDhv"
                            } as PictureTag]);
                        case 437:
                            return Promise.resolve([{
+                               tagId: 931,
                                tag: "OTIaxGyHE"
                            } as PictureTag]);
                        default:
@@ -61,11 +64,11 @@ describe("given cat pictures", () => {
               {
                   id: 823,
                   fileName: "xKLbRIuf",
-                  tags: ["QQh9LTd", "UsbY0dnDhv"]
+                  tags: [{ id: 914, tag: "QQh9LTd" }, { id: 1, tag: "UsbY0dnDhv" }]
               } as PictureInformation, {
                   id: 437,
                   fileName: "jwKJ996Yo",
-                  tags: ["OTIaxGyHE"]
+                  tags: [{ id: 931, tag: "OTIaxGyHE" }]
               } as PictureInformation
           ]);
        });
@@ -92,7 +95,7 @@ describe("given cat pictures", () => {
                }
            } as ManagePictures, {
            } as ManageCatEmployees, {
-               getPictureTags(pictureId: number): Promise<PictureTag[]> {
+               getPictureTags(_: number): Promise<PictureTag[]> {
                   return Promise.resolve([]);
                }
            } as ManagePictureTags);
@@ -126,7 +129,7 @@ describe("given cat pictures", () => {
                 }
             } as ManagePictures, {
             } as ManageCatEmployees, {
-                getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                getPictureTags(_: number): Promise<PictureTag[]> {
                     return Promise.resolve([]);
                 }
             } as ManagePictureTags);

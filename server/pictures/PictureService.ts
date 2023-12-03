@@ -61,7 +61,12 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         const taggedPictures = await Promise.all(pictures.map(async p => {
             const promisedTags = this.pictureTagManagement.getPictureTags(p.id);
             const response = toPictureResponse(p);
-            response.tags = (await promisedTags).map(t => t.tag);
+            response.tags = (await promisedTags).map(t => {
+                return {
+                    tag: t.tag,
+                    id: t.tagId,
+                }
+            });
             return response;
         }));
 

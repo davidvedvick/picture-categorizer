@@ -1,7 +1,7 @@
 import {ManagePictureTags} from "./ManagePictureTags.js";
 import {PictureTag} from "./PictureTag.js";
 import {Pool, ResultSetHeader, RowDataPacket} from "mysql2/promise";
-import {Tag} from "./Tag.js";
+import {Tag} from "../../../transfer/index.js";
 
 const selectFromPictureTags = `
 SELECT
