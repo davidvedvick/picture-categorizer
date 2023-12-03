@@ -27,7 +27,6 @@ export class CachingResizedPictureFileService implements ServeResizedPictureFile
 
     private readonly cache = new QuickLRU<number, PictureFile | null>({
         maxSize: 80, // ~32MB
-        maxAge: 3 * 86_400_000, // 3 days
     });
 
     constructor(private readonly inner: ServeResizedPictureFiles) {}

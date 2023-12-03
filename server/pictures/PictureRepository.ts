@@ -23,11 +23,15 @@ export class PictureRepository implements ManagePictures {
     async findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
         let sql = selectFromPictures;
 
+        let offset = 0;
         if (pageNumber != null && pageSize != null) {
             sql += `ORDER BY id DESC LIMIT ?,?`;
+            offset = pageNumber * pageSize;
         }
 
-        const [pictures, _] = await this.pool.execute<RowDataPacket[]>(sql, [pageNumber, pageSize]);
+        const [pictures, _] = await this.pool.execute<RowDataPacket[]>(
+            sql,
+            [offset, pageSize]);
         return pictures.map(p => p as Picture);
     }
 
