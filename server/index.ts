@@ -15,7 +15,7 @@ import compression from 'compression';
 import {fileURLToPath} from "url";
 import migrator from "./migrator.js";
 import {ResizingPictureFileService} from "./pictures/ResizingPictureFileService.js";
-import {CachingPictureFileService, CachingResizedPictureFileService} from "./pictures/CachingPictureFileService.js";
+import {CachingResizedPictureFileService} from "./pictures/CachingPictureFileService.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -52,7 +52,7 @@ const port = 5000;
     PictureRoutes(
         app,
         pictureService,
-        new CachingPictureFileService(pictureService),
+        pictureService,
         new CachingResizedPictureFileService(new ResizingPictureFileService(pictureService)),
         jwtTokenManagement);
 
