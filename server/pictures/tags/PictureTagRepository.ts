@@ -33,6 +33,12 @@ export class PictureTagRepository implements ManagePictureTags {
         };
     }
 
+    async deletePictureTag(pictureId: number, tagId: number): Promise<void> {
+        await this.pool.execute<ResultSetHeader>(
+            `DELETE FROM picture_tag WHERE tag_id = ? and picture_id = ?`,
+            [tagId, pictureId]);
+    }
+
     async getPictureTags(pictureId: number): Promise<PictureTag[]> {
         const [rows, _] = await this.pool.execute<RowDataPacket[]>(
             `${selectFromPictureTags} WHERE picture_id = ?`,

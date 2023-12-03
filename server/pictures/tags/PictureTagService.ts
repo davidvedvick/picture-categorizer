@@ -25,4 +25,19 @@ export class PictureTagService implements ServePictureTags {
 
         return await this.pictureTags.addTag(pictureId, tag.toLowerCase());
     }
+
+    async deleteTag(pictureId: number, tagId: number, authenticatedUser: AuthenticatedCatEmployee): Promise<void> {
+        const picture = await this.pictures.findById(pictureId);
+
+        if (!picture) {
+            await this.pictureTags.deletePictureTag(pictureId, tagId);
+            return;
+        }
+
+        const employee = await this.catEmployees.findByEmail(authenticatedUser.email);
+
+        if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
+
+        await this.pictureTags.deletePictureTag(pictureId, tagId);
+    }
 }
