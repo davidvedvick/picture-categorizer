@@ -2,6 +2,7 @@ import React from "react";
 import {newPictureListModel} from "./PictureListModel";
 import {cancellationToken} from "../CancellationToken";
 import {PictureInformation} from "../../../transfer";
+import {PictureTag} from "./PictureTag";
 
 interface PictureListProperties {
     initialPictureList?: PictureInformation[]
@@ -35,9 +36,7 @@ export function PictureList(props: PictureListProperties) {
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
                         <div>
-                            {p.tags.map(t => (
-                                <span className="badge bg-primary tag">{t}</span>
-                            ))}
+                            {p.tags.map(t => (<PictureTag tag={t} />))}
                         </div>
                     </div>
                 </div>
