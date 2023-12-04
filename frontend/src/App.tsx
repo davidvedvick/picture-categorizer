@@ -46,7 +46,7 @@ function App() {
                 </nav>
             </header>
             <div className="mt-3">
-                <PictureList initialPictureList={initialPictures} />
+                <PictureList initialPictureList={initialPictures} onUnauthenticated={handleUnauthenticated} isLoggedIn={isLoggedIn} />
             </div>
             <div className={`modal fade ${isUploadDisplayed && "show"}`} id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden={!isUploadDisplayed} aria-modal={isUploadDisplayed}>
                 <div className="modal-dialog">

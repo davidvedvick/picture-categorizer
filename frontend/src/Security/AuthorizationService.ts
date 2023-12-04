@@ -38,6 +38,10 @@ export class AuthorizationService {
         const userToken = this.getUserToken();
         return (userToken && userToken.expiresAt >= Date.now()) ?? false;
     }
+
+    logOut() {
+        this.storage.removeItem(jwtTokenKey);
+    }
 }
 
 let internalInstance: AuthorizationService

@@ -4,6 +4,7 @@ import {instance as auth} from "../../Security/AuthorizationService";
 interface PictureTagProps {
     pictureId: number;
     onNewPictureAdded: () => void;
+    onUnauthenticated: () => void;
 }
 
 export function NewPictureTag(props: PictureTagProps) {
@@ -13,7 +14,7 @@ export function NewPictureTag(props: PictureTagProps) {
         const jwtToken = auth().getUserToken();
         if (!jwtToken) return;
 
-        await fetch(`/api/pictures/${props.pictureId}/tags`, {
+        const response = await fetch(`/api/pictures/${props.pictureId}/tags`, {
             method: "post",
             headers: {
                 Authorization: `Bearer ${jwtToken.token}`,
@@ -23,6 +24,15 @@ export function NewPictureTag(props: PictureTagProps) {
                 tag: tag,
             }),
         });
+
+        if (response.ok) {
+            props.onNewPictureAdded();
+            return;
+        }
+
+        if (response.status === 401) {
+            props.onUnauthenticated();
+        }
     }
 
     return <button
@@ -38,7 +48,6 @@ export function NewPictureTag(props: PictureTagProps) {
                 if (newTag && newTag !== "")
                    await addNewTag(newTag);
                 setIsEditing(false);
-                props.onNewPictureAdded();
             }
         }}
     >

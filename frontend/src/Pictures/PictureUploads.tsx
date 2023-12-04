@@ -50,10 +50,10 @@ export function PictureUploads(props: PictureUploadsProps) {
             }
 
             const responses = await Promise.all(promisedUploads);
-            if (responses.findIndex(r => r.status === 403) > -1) props.onUnauthenticated();
+            if (responses.findIndex(r => r.status === 401) > -1) props.onUnauthenticated();
             else props.onUploadCompleted(
                 await Promise.all(responses
-                    .filter(r => r.status === 202)
+                    .filter(r => r.ok)
                     .map(r => r.json())));
         } finally {
             setIsUploading(false);
