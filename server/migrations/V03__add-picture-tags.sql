@@ -3,7 +3,7 @@ drop table if exists picture_attribute;
 create table if not exists tag
 (
     id MEDIUMINT AUTO_INCREMENT primary key,
-    tag varchar(100) UNIQUE
+    tag varchar(50) UNIQUE
 );
 
 create table if not exists picture_tag
