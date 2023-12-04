@@ -1,8 +1,25 @@
 import React from "react";
-import {Tag} from "../../../transfer";
+import {Tag} from "../../../../transfer";
+import {instance as auth} from "../../Security/AuthorizationService";
 
-export function PictureTag(props: Tag) {
+interface PictureTagProps extends Tag {
+    pictureId: number;
+}
+
+export function PictureTag(props: PictureTagProps) {
     const [isShowing, setIsShowing] = React.useState(false);
+
+    async function deleteTag() {
+        const jwtToken = auth().getUserToken();
+        if (!jwtToken) return;
+
+        await fetch(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
+            method: "delete",
+            headers: {
+                Authorization: `Bearer ${jwtToken.token}`
+            },
+        });
+    }
 
     return <>
         <div className="btn-group tag">
@@ -11,7 +28,7 @@ export function PictureTag(props: Tag) {
                 <span className="visually-hidden">Toggle Dropdown</span>
             </button>
             <ul className={`dropdown-menu ${isShowing && 'show'}`} data-popper-placement="bottom-start">
-                <li>Delete</li>
+                <li><button className="dropdown-item" onClick={deleteTag}>Delete</button></li>
             </ul>
         </div>
     </>;

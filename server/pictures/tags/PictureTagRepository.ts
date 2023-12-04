@@ -49,7 +49,7 @@ export class PictureTagRepository implements ManagePictureTags {
 
     private async getTagByName(tag: string) {
         const [rows, _] = await this.pool.execute<RowDataPacket[]>(
-            `${selectFromPictureTags} WHERE tag = ?`,
+            `SELECT * FROM tag WHERE tag = ?`,
             [tag]);
 
         return rows.length > 0 ? rows[0] as Tag : null;

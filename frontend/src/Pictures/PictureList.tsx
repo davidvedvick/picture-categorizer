@@ -2,7 +2,8 @@ import React from "react";
 import {newPictureListModel} from "./PictureListModel";
 import {cancellationToken} from "../CancellationToken";
 import {PictureInformation} from "../../../transfer";
-import {PictureTag} from "./PictureTag";
+import {PictureTag} from "./Tags/PictureTag";
+import {NewPictureTag} from "./Tags/NewPictureTag";
 
 interface PictureListProperties {
     initialPictureList?: PictureInformation[]
@@ -36,7 +37,8 @@ export function PictureList(props: PictureListProperties) {
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
                         <div>
-                            {p.tags.map(t => (<PictureTag {...t} />))}
+                            {p.tags.map(t => (<PictureTag {...t} pictureId={p.id} />))}
+                            <NewPictureTag pictureId={p.id} onNewPictureAdded={() => {}} />
                         </div>
                     </div>
                 </div>
