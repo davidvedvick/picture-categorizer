@@ -50,6 +50,14 @@
   max-height: 400px;
 }
 
+.tag {
+    margin: 4px;
+}
+
+.dropdown-menu {
+    margin-top: 2em;
+}
+
 header {
   max-height: 64px;
 }

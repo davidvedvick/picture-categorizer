@@ -1,4 +1,4 @@
-import {Express} from "express";
+import express, {Express} from "express";
 import {ServePictureInformation} from "./ServePictureInformation.js";
 import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
 import {UploadedFile} from "express-fileupload";
@@ -18,29 +18,9 @@ export default function(app: Express, pictureService: ServePictureInformation, p
         res.send(await pictureService.getPictureInformation(pageNumber, pageSize))
     });
 
-    app.get("/api/pictures/:id/file", async (req, res) => {
-        const idString = req.params.id;
-        if (!idString) {
-            res.sendStatus(400);
-            return;
-        }
+    app.get("/api/pictures/:id/file", handlePictureFileRequests(pictureFileService));
 
-        const id = Number(idString);
-
-        const picture = req.query.hasOwnProperty("resize")
-            ? await resizedPictureFileService.getPictureFile(id)
-            : await pictureFileService.getPictureFile(id);
-
-        if (!picture) {
-            res.sendStatus(404);
-            return;
-        }
-
-        res
-            .set("cache-control", "public, max-age=31536000, immutable")
-            .type(picture.mimeType)
-            .send(picture.file);
-    });
+    app.get("/api/pictures/:id/preview", handlePictureFileRequests(resizedPictureFileService));
 
     app.post("/api/pictures", async (req, res) => {
         const token = req.get('authorization');
@@ -66,7 +46,7 @@ export default function(app: Express, pictureService: ServePictureInformation, p
 
         const authenticatedUser = await manageJwtTokens.decodeToken(token);
         if (!authenticatedUser || !authenticatedUser.email) {
-            res.sendStatus(403);
+            res.sendStatus(401);
             return;
         }
 
@@ -94,4 +74,28 @@ export default function(app: Express, pictureService: ServePictureInformation, p
             res.status(500).send("I'm not sure what happened here.");
         }
     });
+
+    function handlePictureFileRequests(pictureFiles: ServePictureFiles): (req: express.Request, res: express.Response) => Promise<void> {
+        return async (req, res) =>  {
+            const idString = req.params.id;
+            if (!idString) {
+                res.sendStatus(400);
+                return;
+            }
+
+            const id = Number(idString);
+
+            const picture = await pictureFiles.getPictureFile(id);
+
+            if (!picture) {
+                res.sendStatus(404);
+                return;
+            }
+
+            res
+                .set("cache-control", "public, max-age=31536000, immutable")
+                .type(picture.mimeType)
+                .send(picture.file);
+        }
+    }
 }

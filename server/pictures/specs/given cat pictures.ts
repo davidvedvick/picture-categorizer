@@ -14,7 +14,19 @@ describe("given cat pictures", () => {
        beforeAll(async () => {
            const pictureService = new PictureService({
                findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
-                   return Promise.resolve(pageNumber == 0 && pageSize == 5 ? [{} as Picture, {} as Picture] : []);
+                   return Promise.resolve(
+                       pageNumber == 0 && pageSize == 5
+                           ? [
+                               {
+                                   id: 823,
+                                   mimeType: "",
+                                   fileName: "xKLbRIuf",
+                               } as Picture,
+                               {
+                                   id: 437,
+                                   fileName: "jwKJ996Yo",
+                               } as Picture]
+                           : []);
                },
                countAll(): Promise<number> {
                    return Promise.resolve(10);
@@ -26,7 +38,16 @@ describe("given cat pictures", () => {
        });
 
        test("then the returned pictures are correct", () => {
-          expect(page.content).toHaveLength(2);
+          expect(page.content).toStrictEqual([
+              {
+                  id: 823,
+                  mimeType: "",
+                  fileName: "xKLbRIuf",
+              } as PictureInformation, {
+                  id: 437,
+                  fileName: "jwKJ996Yo",
+              } as PictureInformation
+          ]);
        });
 
        test("then it is not the last page", () => {

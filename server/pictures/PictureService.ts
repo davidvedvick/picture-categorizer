@@ -54,10 +54,8 @@ export class PictureService implements ServePictureInformation, ServePictureFile
             isLast = count <= (pageNumber + 1) * pageSize;
         }
 
-        const pictures = await promisedPictures;
-
         return {
-            content: pictures.map(toPictureResponse),
+            content: await promisedPictures,
             number: pageNumber ?? 0,
             last: isLast,
         };
