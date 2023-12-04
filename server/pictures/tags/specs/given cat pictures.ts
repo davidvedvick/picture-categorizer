@@ -8,8 +8,44 @@ import {ManagePictureTags} from "../ManagePictureTags.js";
 import CatEmployee from "../../../users/CatEmployee.js";
 import {IncorrectEmployeeException} from "../../../users/IncorrectEmployeeException.js";
 import {PictureNotFoundException} from "../../PictureNotFoundException.js";
+import {TagService} from "../TagService.js";
+import {Tag} from "../../../../transfer/index.js";
 
 describe("given cat pictures", () => {
+    describe('when getting picture tags', () => {
+        let tags: Tag[] = [];
+
+        beforeAll(async () => {
+            const tagService = new TagService({
+                getPictureTags(pictureId: number): Promise<PictureTag[]> {
+                    switch (pictureId) {
+                        case 823:
+                            return Promise.resolve([{
+                                tagId: 914,
+                                tag: "QQh9LTd"
+                            } as PictureTag, {
+                                tagId: 1,
+                                tag: "UsbY0dnDhv"
+                            } as PictureTag]);
+                        case 437:
+                            return Promise.resolve([{
+                                tagId: 931,
+                                tag: "OTIaxGyHE"
+                            } as PictureTag]);
+                        default:
+                            return Promise.resolve([]);
+                    }
+                }
+            } as ManagePictureTags);
+
+            tags = await tagService.getTags(823);
+        });
+
+        test("then the returned tags are correct", () => {
+            expect(tags).toStrictEqual([{ id: 914, tag: "QQh9LTd" }, { id: 1, tag: "UsbY0dnDhv" }]);
+        });
+    });
+
     describe("when adding a picture tag", () => {
         const addedTags: [number, string][] = [];
         let addedPictureTag: PictureTag | null = null;

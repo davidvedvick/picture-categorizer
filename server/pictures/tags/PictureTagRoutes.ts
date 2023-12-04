@@ -3,8 +3,19 @@ import {ServePictureTags} from "./ServePictureTags.js";
 import {ManageJwtTokens} from "../../security/ManageJwtTokens.js";
 import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException.js";
 import {PictureNotFoundException} from "../PictureNotFoundException.js";
+import {ServeTags} from "./ServeTags.js";
 
-export default function(app: Express, pictureTagService: ServePictureTags, manageJwtTokens: ManageJwtTokens) {
+export default function(app: Express, tagService: ServeTags, pictureTagService: ServePictureTags, manageJwtTokens: ManageJwtTokens) {
+    app.get("/api/pictures/:pictureId/tags", async (req, res) => {
+        try {
+            const pictureIdString = req.params.pictureId;
+            const pictureId = Number(pictureIdString);
+            res.send(await tagService.getTags(pictureId));
+        } catch (e) {
+            res.status(500).send("Something bad happened here :|");
+        }
+    });
+
     app.post("/api/pictures/:pictureId/tags", async (req, res) => {
         const token = req.get('authorization');
         if (!token) {

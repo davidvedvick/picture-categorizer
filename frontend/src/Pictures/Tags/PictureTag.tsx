@@ -4,6 +4,7 @@ import {instance as auth} from "../../Security/AuthorizationService";
 
 interface PictureTagProps extends Tag {
     pictureId: number;
+    onTagDeleted: () => void;
 }
 
 export function PictureTag(props: PictureTagProps) {
@@ -19,6 +20,8 @@ export function PictureTag(props: PictureTagProps) {
                 Authorization: `Bearer ${jwtToken.token}`
             },
         });
+
+        props.onTagDeleted();
     }
 
     return <>

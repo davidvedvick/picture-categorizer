@@ -6,8 +6,6 @@ import {Picture} from "../Picture.js";
 import {ManagePictures} from "../ManagePictures.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import PictureFile from "../PictureFile.js";
-import {ManagePictureTags} from "../tags/ManagePictureTags.js";
-import {PictureTag} from "../tags/PictureTag.js";
 
 describe("given cat pictures", () => {
    describe("when getting the first page", () => {
@@ -34,27 +32,7 @@ describe("given cat pictures", () => {
                    return Promise.resolve(10);
                }
            } as ManagePictures, {
-           } as ManageCatEmployees, {
-               getPictureTags(pictureId: number): Promise<PictureTag[]> {
-                   switch (pictureId) {
-                       case 823:
-                           return Promise.resolve([{
-                               tagId: 914,
-                               tag: "QQh9LTd"
-                           } as PictureTag, {
-                               tagId: 1,
-                               tag: "UsbY0dnDhv"
-                           } as PictureTag]);
-                       case 437:
-                           return Promise.resolve([{
-                               tagId: 931,
-                               tag: "OTIaxGyHE"
-                           } as PictureTag]);
-                       default:
-                           return Promise.resolve([]);
-                   }
-               }
-           } as ManagePictureTags);
+           } as ManageCatEmployees);
 
            page = await pictureService.getPictureInformation(0, 5);
        });
@@ -63,12 +41,11 @@ describe("given cat pictures", () => {
           expect(page.content).toStrictEqual([
               {
                   id: 823,
+                  mimeType: "",
                   fileName: "xKLbRIuf",
-                  tags: [{ id: 914, tag: "QQh9LTd" }, { id: 1, tag: "UsbY0dnDhv" }]
               } as PictureInformation, {
                   id: 437,
                   fileName: "jwKJ996Yo",
-                  tags: [{ id: 931, tag: "OTIaxGyHE" }]
               } as PictureInformation
           ]);
        });
@@ -94,11 +71,7 @@ describe("given cat pictures", () => {
                    return Promise.resolve(6);
                }
            } as ManagePictures, {
-           } as ManageCatEmployees, {
-               getPictureTags(_: number): Promise<PictureTag[]> {
-                  return Promise.resolve([]);
-               }
-           } as ManagePictureTags);
+           } as ManageCatEmployees);
 
            page = await pictureService.getPictureInformation(1, 3);
        });
@@ -128,11 +101,7 @@ describe("given cat pictures", () => {
                     return Promise.resolve(-638);
                 }
             } as ManagePictures, {
-            } as ManageCatEmployees, {
-                getPictureTags(_: number): Promise<PictureTag[]> {
-                    return Promise.resolve([]);
-                }
-            } as ManagePictureTags);
+            } as ManageCatEmployees);
 
             page = await pictureService.getPictureInformation();
         });
@@ -168,8 +137,7 @@ describe("given cat pictures", () => {
                     return Promise.resolve(id == 644 ? Buffer.of(322, 379, 706) : Buffer.of());
                 }
             } as ManagePictures, {
-            } as ManageCatEmployees, {
-            } as ManagePictureTags);
+            } as ManageCatEmployees);
 
             picture = await pictureService.getPictureFile(644);
         });

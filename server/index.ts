@@ -19,6 +19,7 @@ import {CachingResizedPictureFileService} from "./pictures/CachingPictureFileSer
 import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import {PictureTagService} from "./pictures/tags/PictureTagService.js";
 import {PictureTagRepository} from "./pictures/tags/PictureTagRepository.js";
+import {TagService} from "./pictures/tags/TagService.js";
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -50,7 +51,7 @@ const port = 5000;
     const pictureRepository = new PictureRepository(pool);
     const catEmployeeRepository = new CatEmployeeRepository(pool);
     const pictureTagRepository = new PictureTagRepository(pool);
-    const pictureService = new PictureService(pictureRepository, catEmployeeRepository, pictureTagRepository);
+    const pictureService = new PictureService(pictureRepository, catEmployeeRepository);
     const jwtTokenManagement = new JwtTokenManagement(config.authentication);
 
     PictureRoutes(
@@ -62,6 +63,7 @@ const port = 5000;
 
     PictureTagRoutes(
         app,
+        new TagService(pictureTagRepository),
         new PictureTagService(catEmployeeRepository, pictureRepository, pictureTagRepository),
         jwtTokenManagement);
 

@@ -9,13 +9,11 @@ import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js"
 import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
 import {PictureInformation} from "../../transfer/index.js";
 import {ServePictureFiles} from "./ServePictureFiles.js";
-import {ManagePictureTags} from "./tags/ManagePictureTags.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
         fileName: picture.fileName,
         id: picture.id,
-        tags: [],
     };
 }
 
@@ -23,8 +21,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
 
     constructor(
         private readonly pictureManagement: ManagePictures,
-        private readonly catEmployees: ManageCatEmployees,
-        private readonly pictureTagManagement: ManagePictureTags) {}
+        private readonly catEmployees: ManageCatEmployees) {}
 
     async addPicture(pictureFile: PictureFile, authenticatedCatEmployee: AuthenticatedCatEmployee): Promise<PictureInformation> {
         const employee = await this.catEmployees.findByEmail(authenticatedCatEmployee.email);
@@ -57,21 +54,8 @@ export class PictureService implements ServePictureInformation, ServePictureFile
             isLast = count <= (pageNumber + 1) * pageSize;
         }
 
-        const pictures = await promisedPictures;
-        const taggedPictures = await Promise.all(pictures.map(async p => {
-            const promisedTags = this.pictureTagManagement.getPictureTags(p.id);
-            const response = toPictureResponse(p);
-            response.tags = (await promisedTags).map(t => {
-                return {
-                    tag: t.tag,
-                    id: t.tagId,
-                }
-            });
-            return response;
-        }));
-
         return {
-            content: taggedPictures,
+            content: await promisedPictures,
             number: pageNumber ?? 0,
             last: isLast,
         };
