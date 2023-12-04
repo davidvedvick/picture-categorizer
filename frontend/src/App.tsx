@@ -10,10 +10,11 @@ import {PictureInformation} from "../../transfer";
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(auth().isLoggedIn());
     const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([])
 
     function handleUnauthenticated() {
+        auth().logOut();
         setIsLoggedIn(false);
     }
 
