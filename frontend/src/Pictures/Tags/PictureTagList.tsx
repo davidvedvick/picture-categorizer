@@ -7,6 +7,7 @@ import {ReadOnlyPictureTag} from "./ReadOnlyPictureTag";
 
 interface PictureTagListProps {
     pictureId: number;
+    onUnauthenticated: () => void;
 }
 
 export function PictureTagList(props: PictureTagListProps) {

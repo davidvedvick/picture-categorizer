@@ -5,6 +5,7 @@ import {instance as auth} from "../../Security/AuthorizationService";
 interface PictureTagProps extends Tag {
     pictureId: number;
     onTagDeleted: () => void;
+    onUnauthenticated: () => void;
 }
 
 export function PictureTag(props: PictureTagProps) {
@@ -14,14 +15,21 @@ export function PictureTag(props: PictureTagProps) {
         const jwtToken = auth().getUserToken();
         if (!jwtToken) return;
 
-        await fetch(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
+        const response = await fetch(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
             method: "delete",
             headers: {
                 Authorization: `Bearer ${jwtToken.token}`
             },
         });
 
-        props.onTagDeleted();
+        if (response.ok) {
+            props.onTagDeleted();
+            return;
+        }
+
+        if (response.status === 401) {
+            props.onUnauthenticated();
+        }
     }
 
     return <>

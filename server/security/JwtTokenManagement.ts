@@ -16,20 +16,25 @@ export class JwtTokenManagement implements ManageJwtTokens {
     constructor(private readonly configuration: AuthenticationConfiguration) {}
 
     async decodeToken(token: string): Promise<AuthenticatedCatEmployee | null> {
-        const decoded = await promiseVerification(
-            token.substring(bearer.length).trim(),
-            this.configuration.secret,
-            {
-                algorithms: [ 'HS512' ]
-            });
+        try {
+            const decoded = await promiseVerification(
+                token.substring(bearer.length).trim(),
+                this.configuration.secret,
+                {
+                    algorithms: ['HS512']
+                });
 
-        if (!decoded) return null;
+            if (!decoded) return null;
 
-        const payload = decoded as JwtPayload;
+            const payload = decoded as JwtPayload;
 
-        if (!payload.sub) return null;
+            if (!payload.sub) return null;
 
-        return new AuthenticatedCatEmployee(decoded.sub as string, "");
+            return new AuthenticatedCatEmployee(decoded.sub as string, "");
+        } catch (e) {
+            console.warn("An error occurred verifying the token", e);
+            return null;
+        }
     }
 
     async generateToken(authenticatedEmployee: AuthenticatedCatEmployee): Promise<JwtToken | null> {
