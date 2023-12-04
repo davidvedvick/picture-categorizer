@@ -6,5 +6,5 @@ interface PictureTagProps extends Tag {
 }
 
 export function ReadOnlyPictureTag(props: PictureTagProps) {
-    return <button type="button" className="btn btn-primary disabled">{props.tag}</button>;
+    return <button type="button" className="btn btn-primary disabled tag">{props.tag}</button>;
 }
