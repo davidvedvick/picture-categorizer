@@ -1,12 +1,8 @@
 import {FormEvent, useState} from "react";
-import {instance as auth} from "../Security/AuthorizationService";
 import {User} from "../Security/User";
+import {userModel} from "../Security/UserModel";
 
-export interface UserLoginProperties {
-    onLoggedIn: () => void;
-}
-
-export function UserLogin({ onLoggedIn }: UserLoginProperties) {
+export function UserLogin() {
 
     const [isLoginError, setIsLoginError] = useState(false);
     const [email, setEmail] = useState("");
@@ -15,9 +11,7 @@ export function UserLogin({ onLoggedIn }: UserLoginProperties) {
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
 
-        const result = await auth().authenticate(new User(email, password));
-        if (result)
-            onLoggedIn();
+        const result = await userModel().authenticate(new User(email, password));
         setIsLoginError(!result);
     }
 

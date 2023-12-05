@@ -7,7 +7,6 @@ import {PictureTagList} from "./Tags/PictureTagList";
 interface PictureListProperties {
     initialPictureList?: PictureInformation[];
     isLoggedIn: boolean;
-    onUnauthenticated: () => void;
 }
 
 export function PictureList(props: PictureListProperties) {
@@ -37,7 +36,7 @@ export function PictureList(props: PictureListProperties) {
                     </a>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
-                        <PictureTagList pictureId={p.id} onUnauthenticated={props.onUnauthenticated} isLoggedIn={props.isLoggedIn} />
+                        <PictureTagList pictureId={p.id} />
                     </div>
                 </div>
             ))}

@@ -1,10 +1,11 @@
 import {JwtToken} from "./JwtToken";
 import {ExpiringJwtToken} from "./ExpiringJwtToken";
 import {User} from "./User";
+import {ServeAuthentication} from "./ServeAuthentication";
 
 const jwtTokenKey = "jwtToken";
 
-export class AuthorizationService {
+export class AuthorizationService implements ServeAuthentication {
     constructor(private readonly storage: Storage) {}
 
     async authenticate(user: User): Promise<JwtToken | null> {
