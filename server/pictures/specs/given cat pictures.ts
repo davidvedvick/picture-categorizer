@@ -19,11 +19,13 @@ describe("given cat pictures", () => {
                            ? [
                                {
                                    id: 823,
+                                   catEmployeeId: 521,
                                    mimeType: "",
                                    fileName: "xKLbRIuf",
                                } as Picture,
                                {
                                    id: 437,
+                                   catEmployeeId: 521,
                                    fileName: "jwKJ996Yo",
                                } as Picture]
                            : []);
@@ -41,10 +43,11 @@ describe("given cat pictures", () => {
           expect(page.content).toStrictEqual([
               {
                   id: 823,
-                  mimeType: "",
+                  catEmployeeId: 521,
                   fileName: "xKLbRIuf",
               } as PictureInformation, {
                   id: 437,
+                  catEmployeeId: 521,
                   fileName: "jwKJ996Yo",
               } as PictureInformation
           ]);

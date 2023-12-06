@@ -5,10 +5,11 @@ import CatEmployee from "../CatEmployee.js";
 import {ManageCatEmployees} from "../ManageCatEmployees.js";
 import {UnauthenticatedCatEmployee} from "../UnauthenticatedCatEmployee.js";
 import Encoder from "../../security/Encoder.js";
+import {CatEmployeeCredentials} from "../CatEmployeeCredentials.js";
 
 describe("given an existing user", () => {
     describe("when logging the user in", () => {
-        let user: AuthenticatedCatEmployee;
+        let user: CatEmployeeCredentials;
 
         beforeAll(async () => {
             const catEmployeeEntry = new CatEmployeeEntry({
@@ -46,7 +47,7 @@ describe("given an existing user", () => {
     });
 
     describe("and the password does not match", () => {
-        let user: AuthenticatedCatEmployee;
+        let user: CatEmployeeCredentials;
 
         beforeAll(async () => {
             const catEmployeeEntry = new CatEmployeeEntry({

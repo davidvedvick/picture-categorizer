@@ -1,11 +1,11 @@
 import {ServePictureTags} from "./ServePictureTags.js";
 import {PictureTag} from "./PictureTag.js";
-import {AuthenticatedCatEmployee} from "../../users/AuthenticatedCatEmployee.js";
 import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
 import {ManagePictureTags} from "./ManagePictureTags.js";
 import {ManagePictures} from "../ManagePictures.js";
 import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException.js";
 import {PictureNotFoundException} from "../PictureNotFoundException.js";
+import {EmailIdentifiedCatEmployee} from "../../users/EmailIdentifiedCatEmployee.js";
 
 export class PictureTagService implements ServePictureTags {
 
@@ -14,7 +14,7 @@ export class PictureTagService implements ServePictureTags {
         private readonly pictures: ManagePictures,
         private readonly pictureTags: ManagePictureTags) {}
 
-    async addTag(pictureId: number, tag: string, authenticatedUser: AuthenticatedCatEmployee): Promise<PictureTag> {
+    async addTag(pictureId: number, tag: string, authenticatedUser: EmailIdentifiedCatEmployee): Promise<PictureTag> {
         const picture = await this.pictures.findById(pictureId);
 
         if (!picture) throw new PictureNotFoundException(pictureId);
@@ -26,7 +26,7 @@ export class PictureTagService implements ServePictureTags {
         return await this.pictureTags.addTag(pictureId, tag.toLowerCase());
     }
 
-    async deleteTag(pictureId: number, tagId: number, authenticatedUser: AuthenticatedCatEmployee): Promise<void> {
+    async deleteTag(pictureId: number, tagId: number, authenticatedUser: EmailIdentifiedCatEmployee): Promise<void> {
         const picture = await this.pictures.findById(pictureId);
 
         if (!picture) {

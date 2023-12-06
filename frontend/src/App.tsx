@@ -4,23 +4,16 @@ import './App.css';
 import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
-import {instance as auth} from "./Security/AuthorizationService";
 import {PictureInformation} from "../../transfer";
+import {userModel} from "./Security/UserModel";
 
 function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
-    const [isLoggedIn, setIsLoggedIn] = React.useState(auth().isLoggedIn());
+    const [isLoggedIn, setIsLoggedIn] = React.useState(userModel().isLoggedIn.value);
     const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([])
 
-    function handleUnauthenticated() {
-        auth().logOut();
-        setIsLoggedIn(false);
-    }
-
     async function showUploads() {
-        const isLoggedIn = auth().isLoggedIn();
-        setIsLoggedIn(isLoggedIn);
         setIsUploadDisplayed(true);
     }
 
@@ -32,6 +25,13 @@ function App() {
     function hideUploads() {
         setIsUploadDisplayed(false);
     }
+
+    React.useEffect(() => {
+        const vm = userModel();
+        const isLoggedInSub = vm.isLoggedIn.subscribe(setIsLoggedIn);
+
+        return () => isLoggedInSub.unsubscribe();
+    }, []);
 
     return (
         <div>
@@ -47,7 +47,7 @@ function App() {
                 </nav>
             </header>
             <div className="mt-3">
-                <PictureList initialPictureList={initialPictures} onUnauthenticated={handleUnauthenticated} isLoggedIn={isLoggedIn} />
+                <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />
             </div>
             <div className={`modal fade ${isUploadDisplayed && "show"}`} id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden={!isUploadDisplayed} aria-modal={isUploadDisplayed}>
                 <div className="modal-dialog">
@@ -59,8 +59,8 @@ function App() {
                         <div className="modal-body">
                             {
                                isLoggedIn
-                                   ? <PictureUploads onUploadCompleted={handlePicturesUploaded} onUnauthenticated={handleUnauthenticated} />
-                                   : <UserLogin onLoggedIn={showUploads} />
+                                   ? <PictureUploads onUploadCompleted={handlePicturesUploaded} />
+                                   : <UserLogin />
                             }
                         </div>
                     </div>

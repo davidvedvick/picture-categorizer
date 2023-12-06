@@ -1,10 +1,10 @@
 import React, {ChangeEvent, FormEvent, useState} from "react";
 import {instance as auth} from "../Security/AuthorizationService";
 import {PictureInformation} from "../../../transfer";
+import {fetchAuthenticated} from "../Security/UserModel";
 
 interface PictureUploadsProps {
     onUploadCompleted: (uploadedPictures: PictureInformation[]) => void;
-    onUnauthenticated: () => void;
 }
 
 export function PictureUploads(props: PictureUploadsProps) {
@@ -28,30 +28,23 @@ export function PictureUploads(props: PictureUploadsProps) {
 
             if (!auth().isLoggedIn()) return;
 
-            const jwtToken = auth().getUserToken()
-            if (!jwtToken) return;
-
             const promisedUploads: Promise<Response>[] = []
             for (let i = 0; i < localFiles.length; i++) {
                 const file = localFiles.item(i)
                 if (!file) continue;
 
                 const formData = new FormData();
-                formData.set("file", file)
-                promisedUploads.push(fetch(
+                formData.set("file", file);
+                promisedUploads.push(fetchAuthenticated(
                     "/api/pictures",
                     {
                         method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${jwtToken.token}`
-                        },
                         body: formData
                     }));
             }
 
             const responses = await Promise.all(promisedUploads);
-            if (responses.findIndex(r => r.status === 401) > -1) props.onUnauthenticated();
-            else props.onUploadCompleted(
+            props.onUploadCompleted(
                 await Promise.all(responses
                     .filter(r => r.ok)
                     .map(r => r.json())));

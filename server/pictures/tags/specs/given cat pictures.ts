@@ -81,7 +81,7 @@ describe("given cat pictures", () => {
                 }
             } as ManagePictureTags);
 
-            addedPictureTag = await pictureTagService.addTag(204, "x8Rmke68Gae", {email: "g5EJbF8VWPq", password: ""});
+            addedPictureTag = await pictureTagService.addTag(204, "x8Rmke68Gae", {email: "g5EJbF8VWPq"});
         });
 
         test("then the added picture tag is correct", () => {
@@ -122,7 +122,7 @@ describe("given cat pictures", () => {
                 }
             } as ManagePictureTags);
 
-            await pictureTagService.deleteTag(518, 460, {email: "0YWSDi8fRYG", password: ""});
+            await pictureTagService.deleteTag(518, 460, {email: "0YWSDi8fRYG"});
         });
 
         test("then the deleted tags are correct", () => {
@@ -167,10 +167,7 @@ describe("given cat pictures", () => {
                 } as ManagePictureTags);
 
                 try {
-                    await pictureTagService.addTag(58, "x8Rmke68Gae", {
-                        email: "g5EJbF8VWPq",
-                        password: ""
-                    });
+                    await pictureTagService.addTag(58, "x8Rmke68Gae", {email: "g5EJbF8VWPq"});
                 } catch (e) {
                     if (e instanceof PictureNotFoundException)
                         missingPictureException = e;
@@ -213,7 +210,7 @@ describe("given cat pictures", () => {
                     }
                 } as ManagePictureTags);
 
-                await pictureTagService.deleteTag(242, 17, {email: "0YWSDi8fRYG", password: ""});
+                await pictureTagService.deleteTag(242, 17, {email: "0YWSDi8fRYG"});
             });
 
             test("then the deleted tags are correct", () => {
@@ -259,10 +256,7 @@ describe("given cat pictures", () => {
                 } as ManagePictureTags);
 
                 try {
-                    await pictureTagService.addTag(204, "x8Rmke68Gae", {
-                        email: "g5EJbF8VWPq",
-                        password: ""
-                    });
+                    await pictureTagService.addTag(204, "x8Rmke68Gae", {email: "g5EJbF8VWPq"});
                 } catch (e) {
                     if (e instanceof IncorrectEmployeeException)
                         incorrectEmployeeException = e;
@@ -305,7 +299,7 @@ describe("given cat pictures", () => {
                 } as ManagePictureTags);
 
                 try {
-                    await pictureTagService.deleteTag(803, 17, {email: "yPWhXEP", password: ""});
+                    await pictureTagService.deleteTag(803, 17, {email: "yPWhXEP"});
                 } catch (e) {
                     if (e instanceof IncorrectEmployeeException)
                         incorrectEmployeeException = e;
