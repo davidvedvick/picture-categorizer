@@ -37,7 +37,7 @@ class UserViewModel implements UserModel {
 
     async fetchAuthenticated(input: RequestInfo | URL, init?: RequestInit) {
         const jwtToken = this.authentication.getUserToken();
-        if (!jwtToken) {
+        if (!jwtToken?.catEmployeeId) {
             this.logOut();
             throw new InvalidTokenException(jwtToken);
         }
