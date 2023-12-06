@@ -1,9 +1,10 @@
 import {ManageJwtTokens} from "./ManageJwtTokens.js";
 import {AuthenticatedCatEmployee} from "../users/AuthenticatedCatEmployee.js";
-import {JwtToken} from "./JwtToken.js";
 import jwt, {JwtPayload, Secret, SignOptions, VerifyOptions} from 'jsonwebtoken';
 import {AuthenticationConfiguration} from "./AuthenticationConfiguration.js";
 import * as util from "util";
+import {JwtToken} from "../../transfer/JwtToken.js";
+import {DecodedCatEmployee} from "../users/DecodedCatEmployee.js";
 
 const bearer = "Bearer";
 const expirationDurationSeconds = 86_400 // 1 day
@@ -15,7 +16,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
 
     constructor(private readonly configuration: AuthenticationConfiguration) {}
 
-    async decodeToken(token: string): Promise<AuthenticatedCatEmployee | null> {
+    async decodeToken(token: string): Promise<DecodedCatEmployee | null> {
         try {
             const decoded = await promiseVerification(
                 token.substring(bearer.length).trim(),
@@ -30,7 +31,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
 
             if (!payload.sub) return null;
 
-            return new AuthenticatedCatEmployee(decoded.sub as string, "");
+            return new DecodedCatEmployee(decoded.sub as string);
         } catch (e) {
             console.warn("An error occurred verifying the token", e);
             return null;
@@ -52,6 +53,7 @@ export class JwtTokenManagement implements ManageJwtTokens {
         if (!token) return null;
 
         return {
+            catEmployeeId: authenticatedEmployee.catEmployeeId,
             token: token,
             expiresInMs: expiration,
         };

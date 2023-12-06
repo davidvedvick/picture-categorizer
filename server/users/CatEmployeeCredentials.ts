@@ -1,3 +1,4 @@
 export interface CatEmployeeCredentials {
-    email: string, password: string,
+    email: string;
+    password: string;
 }

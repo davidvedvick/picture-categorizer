@@ -36,7 +36,7 @@ export function PictureList(props: PictureListProperties) {
                     </a>
                     <div className="card-body">
                         <h5 className="card-title">{p.fileName}</h5>
-                        <PictureTagList pictureId={p.id} />
+                        <PictureTagList pictureId={p.id} catEmployeeId={p.catEmployeeId} />
                     </div>
                 </div>
             ))}

@@ -41,8 +41,7 @@ describe("given a user", () => {
                 file: Buffer.of(247, 761, 879, 11),
                 mimeType: "pV9UkazC",
             }, {
-                email: "8N8k",
-                password: "OaH1Su"
+                email: "8N8k"
             });
         });
 
@@ -102,8 +101,7 @@ describe("given a user", () => {
                         file: Buffer.of(247, 761, 879, 11),
                         mimeType: "qntxhf2N",
                     }, {
-                        email: "8N8k",
-                        password: "OaH1Su"
+                        email: "8N8k"
                     });
                 } catch (e) {
                     if (e instanceof PictureAlreadyExistsException)
@@ -155,8 +153,7 @@ describe("given a user", () => {
                         file: Buffer.of(247, 761, 879, 11),
                         mimeType: "pXuuBlE"
                     }, {
-                        email: "8N8k",
-                        password: "OaH1Su"
+                        email: "8N8k"
                     });
                 } catch (e) {
                     if (e instanceof UnknownCatEmployeeException)

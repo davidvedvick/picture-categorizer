@@ -35,7 +35,7 @@ export default class CatEmployeeEntry implements AuthenticateCatEmployees {
         }
 
         return await this.encoder.matches(unauthenticatedPassword, hashedPassword)
-            ? new AuthenticatedCatEmployee(email, hashedPassword)
-            : new UnauthenticatedCatEmployee(email, hashedPassword)
+            ? new AuthenticatedCatEmployee(catEmployee.id, email, hashedPassword)
+            : new UnauthenticatedCatEmployee(email, hashedPassword);
     }
 }

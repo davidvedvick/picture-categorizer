@@ -6,6 +6,7 @@ import {ReadOnlyPictureTag} from "./ReadOnlyPictureTag";
 import {userModel} from "../../Security/UserModel";
 
 interface PictureTagListProps {
+    catEmployeeId: number;
     pictureId: number;
 }
 
@@ -13,6 +14,7 @@ export function PictureTagList(props: PictureTagListProps) {
     const {pictureId} = props;
     const [tags, setTags] = React.useState<Tag[]>([]);
     const [isLoggedIn, setIsLoggedIn] = React.useState(userModel().isLoggedIn.value);
+    const [loggedInCatEmployeeId, setLoggedInCatEmployeeId] = React.useState(userModel().catEmployeeId.value);
 
     async function updateTags(pictureId: number) {
         const response = await fetch(`/api/pictures/${pictureId}/tags`);
@@ -27,11 +29,15 @@ export function PictureTagList(props: PictureTagListProps) {
     React.useEffect(() => {
         const vm = userModel();
         const isLoggedInSub = vm.isLoggedIn.subscribe(setIsLoggedIn);
+        const idSub = vm.catEmployeeId.subscribe(setLoggedInCatEmployeeId);
 
-        return () => isLoggedInSub.unsubscribe();
+        return () => {
+            isLoggedInSub.unsubscribe();
+            idSub.unsubscribe();
+        };
     }, []);
 
-    return isLoggedIn
+    return isLoggedIn && loggedInCatEmployeeId === props.catEmployeeId
         ? <div>
             {tags.map(t => (<PictureTag {...t} {...props} onTagDeleted={() => updateTags(pictureId)} />))}
             <NewPictureTag {...props} onNewPictureAdded={() => updateTags(pictureId)} />

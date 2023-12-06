@@ -1,6 +1,6 @@
 import {User} from "./User";
-import {JwtToken} from "./JwtToken";
 import {ExpiringJwtToken} from "./ExpiringJwtToken";
+import {JwtToken} from "../../../transfer/JwtToken";
 
 export interface ServeAuthentication {
     authenticate(user: User): Promise<JwtToken | null>;

@@ -1,7 +1,7 @@
-import {JwtToken} from "./JwtToken";
 import {ExpiringJwtToken} from "./ExpiringJwtToken";
 import {User} from "./User";
 import {ServeAuthentication} from "./ServeAuthentication";
+import {JwtToken} from "../../../transfer/JwtToken";
 
 const jwtTokenKey = "jwtToken";
 
@@ -24,7 +24,10 @@ export class AuthorizationService implements ServeAuthentication {
         const jwtToken = await response.json() as JwtToken;
         if (!jwtToken) return null;
 
-        const expiringToken = new ExpiringJwtToken(jwtToken.token, Date.now() + jwtToken.expiresInMs)
+        const expiringToken = new ExpiringJwtToken(
+            jwtToken.catEmployeeId,
+            jwtToken.token,
+            Date.now() + jwtToken.expiresInMs)
         this.storage.setItem(jwtTokenKey, JSON.stringify(expiringToken))
         return jwtToken;
     }
