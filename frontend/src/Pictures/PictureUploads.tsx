@@ -8,11 +8,11 @@ interface PictureUploadsProps {
 }
 
 export function PictureUploads(props: PictureUploadsProps) {
-    const [files, setFiles] = useState<FileList>()
+    const [files, setFiles] = useState<FileList>();
     const [isUploading, setIsUploading] = useState(false);
 
     function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-        const files = event.target.files
+        const files = event.target.files;
 
         if (files) setFiles(files);
     }
@@ -28,9 +28,9 @@ export function PictureUploads(props: PictureUploadsProps) {
 
             if (!auth().isLoggedIn()) return;
 
-            const promisedUploads: Promise<Response>[] = []
+            const promisedUploads: Promise<Response>[] = [];
             for (let i = 0; i < localFiles.length; i++) {
-                const file = localFiles.item(i)
+                const file = localFiles.item(i);
                 if (!file) continue;
 
                 const formData = new FormData();
@@ -38,7 +38,7 @@ export function PictureUploads(props: PictureUploadsProps) {
                 promisedUploads.push(fetchAuthenticated(
                     "/api/pictures",
                     {
-                        method: 'POST',
+                        method: "POST",
                         body: formData
                     }));
             }

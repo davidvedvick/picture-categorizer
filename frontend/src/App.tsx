@@ -1,6 +1,6 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 import {UserLogin} from "./Users/UserLogin";
 import {PictureUploads} from "./Pictures/PictureUploads";
 import {PictureList} from "./Pictures/PictureList";
@@ -11,7 +11,7 @@ function App() {
 
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
     const [isLoggedIn, setIsLoggedIn] = React.useState(userModel().isLoggedIn.value);
-    const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([])
+    const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([]);
 
     async function showUploads() {
         setIsUploadDisplayed(true);
@@ -58,16 +58,16 @@ function App() {
                         </div>
                         <div className="modal-body">
                             {
-                               isLoggedIn
-                                   ? <PictureUploads onUploadCompleted={handlePicturesUploaded} />
-                                   : <UserLogin />
+                                isLoggedIn
+                                    ? <PictureUploads onUploadCompleted={handlePicturesUploaded} />
+                                    : <UserLogin />
                             }
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default App;

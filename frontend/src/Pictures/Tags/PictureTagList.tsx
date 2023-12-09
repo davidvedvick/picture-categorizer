@@ -39,10 +39,10 @@ export function PictureTagList(props: PictureTagListProps) {
 
     return isLoggedIn && loggedInCatEmployeeId === props.catEmployeeId
         ? <div>
-            {tags.map(t => (<PictureTag {...t} {...props} onTagDeleted={() => updateTags(pictureId)} />))}
+            {tags.map(t => (<PictureTag key={t.id} {...t} {...props} onTagDeleted={() => updateTags(pictureId)} />))}
             <NewPictureTag {...props} onNewPictureAdded={() => updateTags(pictureId)} />
         </div>
         : <div>
-            {tags.map(t => (<ReadOnlyPictureTag {...t} {...props} />))}
+            {tags.map(t => (<ReadOnlyPictureTag key={t.id} {...t} {...props} />))}
         </div>;
 }

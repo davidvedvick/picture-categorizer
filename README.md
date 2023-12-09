@@ -33,12 +33,13 @@ To run it **with** Docker, you can just run the following command:
 docker compose up db
 ```
 
-2. Start the Spring Boot server. If your IDEA supports Spring Boot (IntelliJ IDEA Ultimate has native support), this is
-as easy as running it out of IDEA:
+2. Start the backend server. Open a command prompt in the `server` folder and run this command:
 
-![Spring Boot](./running-spring-boot.png)
+```shell
+npm run serve-backend
+```
 
-3. Start the NodeJS Server. This is as easy as opening a command prompt in the folder `frontend` and running this command:
+3. Start the frontend server. This is as easy as opening a command prompt in the folder `frontend` and running this command:
 
 ```shell
 npm start
@@ -49,7 +50,7 @@ npm start
 Run the tests via the IDE or in a command line with this command:
 
 ```shell
-./gradlew test
+npm run test
 ```
 
 ## Running the Build
@@ -72,10 +73,9 @@ docker compose build web && docker compose up
 
 ## Built With
 
-- [Gradle](https://gradle.org/) - Dependency and Build Management
-- [Kotlin](https://kotlinlang.org/) - Language project blue is migrating to
-- [Java](https://www.java.com/en/) - Majority of the project is written in Java
-- [IntelliJ IDEA](https://www.jetbrains.com/idea/) - IDE
+- [NodeJS](https://nodejs.org/) - Server javascript runtime.
+- [Typescript](https://www.typescriptlang.org/) - Strongly-typed flavor of Javascript the majority of the project is built in.
+- [Webstorm](https://www.jetbrains.com/webstorm/) - IDE
 - [ReactJS](https://reactjs.org) - Front-end framework
 - [Bootstrap](https://getbootstrap.com) - Provides styling of front-end
 

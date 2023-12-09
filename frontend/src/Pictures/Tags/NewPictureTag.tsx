@@ -36,7 +36,7 @@ export function NewPictureTag(props: PictureTagProps) {
             if (e.key === "Enter") {
                 const newTag = e.currentTarget.textContent;
                 if (newTag && newTag !== "")
-                   await addNewTag(newTag);
+                    await addNewTag(newTag);
                 setIsEditing(false);
             }
         }}
