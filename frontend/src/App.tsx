@@ -30,6 +30,42 @@ const Root = styled.div`
         text-decoration: none;
         color: ${(props) => props.theme.onSurface};
     }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-weight: 500;
+        line-height: 1.2;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.75rem;
+    }
+
+    h4 {
+        font-size: 1.5rem;
+    }
+
+    h5 {
+        font-size: 1.25rem;
+    }
+
+    h6 {
+        font-size: 1rem;
+    }
 `;
 
 function App() {
@@ -69,9 +105,7 @@ function App() {
                         <Button onClick={showUploads}>Upload More Catpics!</Button>
                     </NavBar>
                 </Header>
-                <div className="mt-3">
-                    <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />
-                </div>
+                <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />
                 {isUploadDisplayed && (
                     <Modal onClose={hideUploads}>
                         <h5>Upload Cat Pics!</h5>

@@ -9,23 +9,27 @@ export const Button = styled.button`
     /* Color the border and text with theme.main */
     color: ${(props) => props.theme.onPrimary};
     background-color: ${(props) => props.theme.primary};
-    border: 1px solid ${(props) => props.theme.primary};
+
+    border-width: 1px;
+    border-style: solid;
+
+    border-color: ${(props) => props.theme.primary};
 
     cursor: pointer;
 
     &:hover {
         background-color: ${(props) => props.theme.primaryDeciding};
-        border: 1px solid ${(props) => props.theme.primaryDeciding};
+        border-color: ${(props) => props.theme.primaryDeciding};
     }
 
     &:active {
         background-color: ${(props) => props.theme.primaryDecided};
-        border: 1px solid ${(props) => props.theme.primaryDecided};
+        border-color: ${(props) => props.theme.primaryDecided};
     }
 
     &:disabled {
         background-color: ${(props) => props.theme.primaryDeciding};
-        border: 1px solid ${(props) => props.theme.primaryDeciding};
+        border-color: ${(props) => props.theme.primaryDeciding};
         cursor: auto;
     }
 

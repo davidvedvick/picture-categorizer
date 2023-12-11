@@ -2,71 +2,10 @@
     background-color: teal !important;
 }
 
-.btn-primary {
-    background-color: salmon;
-    border-color: salmon;
-}
-
-.btn-primary:hover, .btn-primary:focus {
-    background-color: lightsalmon;
-    border-color: lightsalmon;
-}
-
-:not(.btn-check) .btn-primary:active, .btn-primary.active {
-    background-color: darksalmon;
-    border-color: darksalmon;
-}
-
 .modal.show {
     display: block;
 }
 
-.card {
-    background-color: #f7f7f7;
-    padding: 20px 25px 30px;
-    margin: 50px auto 25px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
-}
-
-.pictures {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-.picture {
-    max-width: 400px;
-}
-
-.picture img {
-    max-height: 400px;
-    max-width: 100%;
-    width: auto;
-    height: auto;
-}
-
-.tag {
-    margin: 4px;
-}
-
 .dropdown-menu {
     margin-top: 2em;
-}
-
-header {
-    max-height: 64px;
-}
-
-header img {
-    max-height: 48px;
-    padding-left: 8px;
-    padding-right: 8px;
 }

@@ -1,8 +1,31 @@
 import React from "react";
-import {newPictureListModel} from "./PictureListModel";
-import {cancellationToken} from "../CancellationToken";
-import {PictureInformation} from "../../../transfer";
-import {PictureTagList} from "./Tags/PictureTagList";
+import { newPictureListModel } from "./PictureListModel";
+import { cancellationToken } from "../CancellationToken";
+import { PictureInformation } from "../../../transfer";
+import { PictureTagList } from "./Tags/PictureTagList";
+import styled from "styled-components";
+import { Card, CardBody, CardTitle } from "../components/Card";
+
+const Pictures = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    box-sizing: border-box;
+`;
+
+const PictureCard = styled(Card)`
+    max-width: 400px;
+
+    img {
+        max-height: 400px;
+        max-width: 100%;
+        width: auto;
+        height: auto;
+    }
+`;
 
 interface PictureListProperties {
     initialPictureList?: PictureInformation[];
@@ -10,7 +33,6 @@ interface PictureListProperties {
 }
 
 export function PictureList(props: PictureListProperties) {
-
     const [pictures, setItemPictures] = React.useState<PictureInformation[]>([]);
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -19,7 +41,9 @@ export function PictureList(props: PictureListProperties) {
         const viewModel = newPictureListModel(document, props.initialPictureList);
         const picturesSub = viewModel.pictures.subscribe(setItemPictures);
         const isLoadingSub = viewModel.isLoading.subscribe(setIsLoading);
-        viewModel.watchFromScrollState(token).catch(err => console.error("An unrecoverable error occurred watching the scroll state.", err));
+        viewModel
+            .watchFromScrollState(token)
+            .catch((err) => console.error("An unrecoverable error occurred watching the scroll state.", err));
         return () => {
             token.cancel();
             picturesSub.unsubscribe();
@@ -28,21 +52,28 @@ export function PictureList(props: PictureListProperties) {
     }, [props.initialPictureList]);
 
     return (
-        <div className="pictures">
-            {pictures.map(p => (
-                <div key={p.id} className="picture card">
+        <Pictures>
+            {pictures.map((p) => (
+                <PictureCard key={p.id}>
                     <a target="_blank" href={`/api/pictures/${p.id}/file`} title={p.fileName} rel="noreferrer">
-                        <img src={`/api/pictures/${p.id}/preview`} alt={p.fileName} title={p.fileName} className="card-img-top"/>
+                        <img
+                            src={`/api/pictures/${p.id}/preview`}
+                            alt={p.fileName}
+                            title={p.fileName}
+                            className="card-img-top"
+                        />
                     </a>
-                    <div className="card-body">
-                        <h5 className="card-title">{p.fileName}</h5>
+                    <CardBody>
+                        <CardTitle>{p.fileName}</CardTitle>
                         <PictureTagList pictureId={p.id} catEmployeeId={p.catEmployeeId} />
-                    </div>
-                </div>
+                    </CardBody>
+                </PictureCard>
             ))}
-            {isLoading && <div className="spinner-border text-center" role="status">
-                <span className="visually-hidden">Loading...</span>
-            </div>}
-        </div>
+            {isLoading && (
+                <div className="spinner-border text-center" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            )}
+        </Pictures>
     );
 }
