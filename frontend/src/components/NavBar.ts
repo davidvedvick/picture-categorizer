@@ -8,7 +8,6 @@ export const NavBar = styled.nav`
     align-items: center;
 
     padding: 0.75rem;
-    font-size: 1.25rem;
     color: ${(props) => props.theme.onBrand};
 
     a {

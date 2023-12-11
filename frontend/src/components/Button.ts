@@ -13,8 +13,25 @@ export const Button = styled.button`
 
     cursor: pointer;
 
-    :hover {
+    &:hover {
         background-color: ${(props) => props.theme.primaryDeciding};
         border: 1px solid ${(props) => props.theme.primaryDeciding};
     }
+
+    &:active {
+        background-color: ${(props) => props.theme.primaryDecided};
+        border: 1px solid ${(props) => props.theme.primaryDecided};
+    }
+
+    &:disabled {
+        background-color: ${(props) => props.theme.primaryDeciding};
+        border: 1px solid ${(props) => props.theme.primaryDeciding};
+        cursor: auto;
+    }
+
+    transition:
+        color 0.15s ease-in-out,
+        background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
 `;

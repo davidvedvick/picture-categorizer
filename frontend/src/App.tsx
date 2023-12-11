@@ -9,6 +9,7 @@ import styled, { ThemeProvider } from "styled-components";
 import { Button } from "./components/Button";
 import { NavBar } from "./components/NavBar";
 import { Header } from "./components/Header";
+import { Modal } from "./components/Modal";
 
 const theme = {
     surface: "white",
@@ -16,12 +17,14 @@ const theme = {
     primary: "salmon",
     onPrimary: "white",
     primaryDeciding: "lightsalmon",
+    primaryDecided: "darksalmon",
     brand: "teal",
     onBrand: "rgba(0, 0, 0, .9)",
 };
 
 const Root = styled.div`
     text-align: start;
+    font-size: 1.25rem;
 
     a {
         text-decoration: none;
@@ -59,7 +62,7 @@ function App() {
             <Root>
                 <Header>
                     <NavBar>
-                        <a className="navbar-brand" href="/">
+                        <a href="/">
                             <img src="/cat-logo.png" alt="Logo of a Smirking Cat" />
                             Cat Pics!
                         </a>
@@ -69,38 +72,12 @@ function App() {
                 <div className="mt-3">
                     <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />
                 </div>
-                <div
-                    className={`modal fade ${isUploadDisplayed && "show"}`}
-                    id="exampleModal"
-                    tabIndex={-1}
-                    aria-labelledby="exampleModalLabel"
-                    aria-hidden={!isUploadDisplayed}
-                    aria-modal={isUploadDisplayed}
-                >
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">
-                                    Upload Cat Pics!
-                                </h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"
-                                    onClick={hideUploads}
-                                />
-                            </div>
-                            <div className="modal-body">
-                                {isLoggedIn ? (
-                                    <PictureUploads onUploadCompleted={handlePicturesUploaded} />
-                                ) : (
-                                    <UserLogin />
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {isUploadDisplayed && (
+                    <Modal onClose={hideUploads}>
+                        <h5>Upload Cat Pics!</h5>
+                        {isLoggedIn ? <PictureUploads onUploadCompleted={handlePicturesUploaded} /> : <UserLogin />}
+                    </Modal>
+                )}
             </Root>
         </ThemeProvider>
     );
