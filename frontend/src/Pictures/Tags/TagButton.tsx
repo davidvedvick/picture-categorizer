@@ -1,6 +1,6 @@
-import { Button } from "../../components/Button";
 import React, { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
+import { PrimaryButton } from "../../components/PrimaryButton";
 
 export function TagButton(props: DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) {
-    return <Button {...props} type="button" />;
+    return <PrimaryButton {...props} type="button" />;
 }

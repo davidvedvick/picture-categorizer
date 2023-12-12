@@ -1,11 +1,12 @@
 import React from "react";
 import { Tag } from "../../../../transfer";
 import { fetchAuthenticated } from "../../Security/UserModel";
-import { ButtonGroup } from "../../components/ButtonGroup";
+import { ButtonGroup, VerticalButtonGroup } from "../../components/ButtonGroup";
 import { Button } from "../../components/Button";
 import styled from "styled-components";
+import { PrimaryButton } from "../../components/PrimaryButton";
 
-const DropdownButton = styled(Button)`
+const DropdownButton = styled(PrimaryButton)`
     &::after {
         border-top: 0.3em solid;
         border-right: 0.3em solid transparent;
@@ -19,13 +20,23 @@ const DropdownButton = styled(Button)`
     }
 `;
 
+const ExpandoGroup = styled(ButtonGroup)`
+    position: relative;
+`;
+
+const ExpandedButtons = styled(VerticalButtonGroup)`
+    position: absolute;
+    top: 100%;
+    left: 0;
+`;
+
 interface PictureTagProps extends Tag {
     pictureId: number;
     onTagDeleted: () => void;
 }
 
 export function PictureTag(props: PictureTagProps) {
-    const [isShowing, setIsShowing] = React.useState(false);
+    const [isExpanded, setIsExpanded] = React.useState(false);
 
     async function deleteTag() {
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
@@ -36,20 +47,13 @@ export function PictureTag(props: PictureTagProps) {
     }
 
     return (
-        <ButtonGroup>
-            <Button>{props.tag}</Button>
-            <DropdownButton onClick={() => setIsShowing((prevState) => !prevState)} aria-expanded={isShowing}>
+        <ExpandoGroup>
+            <PrimaryButton>{props.tag}</PrimaryButton>
+            <DropdownButton onClick={() => setIsExpanded((prevState) => !prevState)} aria-expanded={isExpanded}>
                 <span style={{ display: "none" }}>Toggle Dropdown</span>
             </DropdownButton>
-            {isShowing && (
-                <ul>
-                    <li>
-                        <button className="dropdown-item" onClick={deleteTag}>
-                            Delete
-                        </button>
-                    </li>
-                </ul>
-            )}
-        </ButtonGroup>
+
+            <ExpandedButtons>{isExpanded && <Button onClick={deleteTag}>Delete</Button>}</ExpandedButtons>
+        </ExpandoGroup>
     );
 }

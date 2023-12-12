@@ -6,10 +6,10 @@ import { PictureList } from "./Pictures/PictureList";
 import { PictureInformation } from "../../transfer";
 import { userModel } from "./Security/UserModel";
 import styled, { ThemeProvider } from "styled-components";
-import { Button } from "./components/Button";
 import { NavBar } from "./components/NavBar";
 import { Header } from "./components/Header";
 import { Modal } from "./components/Modal";
+import { PrimaryButton } from "./components/PrimaryButton";
 
 const theme = {
     surface: "white",
@@ -102,7 +102,7 @@ function App() {
                             <img src="/cat-logo.png" alt="Logo of a Smirking Cat" />
                             Cat Pics!
                         </a>
-                        <Button onClick={showUploads}>Upload More Catpics!</Button>
+                        <PrimaryButton onClick={showUploads}>Upload More Catpics!</PrimaryButton>
                     </NavBar>
                 </Header>
                 <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />

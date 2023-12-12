@@ -1,6 +1,6 @@
 import React from "react";
 import { fetchAuthenticated } from "../../Security/UserModel";
-import { Button } from "../../components/Button";
+import { PrimaryButton } from "../../components/PrimaryButton";
 
 interface PictureTagProps {
     pictureId: number;
@@ -27,7 +27,7 @@ export function NewPictureTag(props: PictureTagProps) {
     }
 
     return (
-        <Button
+        <PrimaryButton
             contentEditable={isEditing}
             onClick={() => setIsEditing(true)}
             onKeyUp={async (e) => {
@@ -40,6 +40,6 @@ export function NewPictureTag(props: PictureTagProps) {
             }}
         >
             {!isEditing ? "New Tag" : ""}
-        </Button>
+        </PrimaryButton>
     );
 }
