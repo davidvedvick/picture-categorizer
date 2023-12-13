@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import { UserLogin } from "./Users/UserLogin";
 import { PictureUploads } from "./Pictures/PictureUploads";
 import { PictureList } from "./Pictures/PictureList";
@@ -10,6 +9,7 @@ import { NavBar } from "./components/NavBar";
 import { Header } from "./components/Header";
 import { Modal } from "./components/Modal";
 import { PrimaryButton } from "./components/PrimaryButton";
+import { CloseButton } from "./components/CloseButton";
 
 const theme = {
     surface: "white",
@@ -23,8 +23,23 @@ const theme = {
 };
 
 const Root = styled.div`
+    font-family:
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        "Noto Sans",
+        "Liberation Sans",
+        Arial,
+        sans-serif,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+
     text-align: start;
-    font-size: 1.25rem;
+    font-size: 1rem;
 
     a {
         text-decoration: none;
@@ -66,6 +81,46 @@ const Root = styled.div`
     h6 {
         font-size: 1rem;
     }
+
+    p {
+        margin-bottom: 1rem;
+    }
+
+    div {
+        margin-bottom: 1rem !important;
+    }
+
+    label {
+        margin-bottom: 0.5rem;
+        box-sizing: border-box;
+        display: inline-block;
+    }
+
+    input {
+        margin: 0;
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    input[type="file"] {
+        width: 100%;
+
+        &::file-selector-button {
+            margin: -0.375rem -0.75rem;
+            margin-inline-end: 0.75rem;
+            border: 0 solid;
+            padding: 0.375rem 0.75rem;
+        }
+    }
+`;
+
+const Logo = styled.img`
+    max-height: 48px;
+    padding-left: 8px;
+    padding-right: 8px;
 `;
 
 function App() {
@@ -99,7 +154,7 @@ function App() {
                 <Header>
                     <NavBar>
                         <a href="/">
-                            <img src="/cat-logo.png" alt="Logo of a Smirking Cat" />
+                            <Logo src="/cat-logo.png" alt="Logo of a Smirking Cat" />
                             Cat Pics!
                         </a>
                         <PrimaryButton onClick={showUploads}>Upload More Catpics!</PrimaryButton>
@@ -107,8 +162,11 @@ function App() {
                 </Header>
                 <PictureList initialPictureList={initialPictures} isLoggedIn={isLoggedIn} />
                 {isUploadDisplayed && (
-                    <Modal onClose={hideUploads}>
-                        <h5>Upload Cat Pics!</h5>
+                    <Modal>
+                        <header>
+                            <h5>Upload Cat Pics!</h5>
+                            <CloseButton onClick={hideUploads} />
+                        </header>
                         {isLoggedIn ? <PictureUploads onUploadCompleted={handlePicturesUploaded} /> : <UserLogin />}
                     </Modal>
                 )}

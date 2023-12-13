@@ -3,6 +3,8 @@ import styled from "styled-components";
 export const NavBar = styled.nav`
     background-color: ${(props) => props.theme.brand};
 
+    font-size: 1.25rem;
+
     display: flex;
     justify-content: space-between;
     align-items: center;

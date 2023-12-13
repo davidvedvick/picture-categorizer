@@ -1,7 +1,9 @@
-import React, {ChangeEvent, FormEvent, useState} from "react";
-import {instance as auth} from "../Security/AuthorizationService";
-import {PictureInformation} from "../../../transfer";
-import {fetchAuthenticated} from "../Security/UserModel";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { instance as auth } from "../Security/AuthorizationService";
+import { PictureInformation } from "../../../transfer";
+import { fetchAuthenticated } from "../Security/UserModel";
+import { PrimaryButton } from "../components/PrimaryButton";
+import { ModalBody } from "../components/Modal";
 
 interface PictureUploadsProps {
     onUploadCompleted: (uploadedPictures: PictureInformation[]) => void;
@@ -35,41 +37,36 @@ export function PictureUploads(props: PictureUploadsProps) {
 
                 const formData = new FormData();
                 formData.set("file", file);
-                promisedUploads.push(fetchAuthenticated(
-                    "/api/pictures",
-                    {
+                promisedUploads.push(
+                    fetchAuthenticated("/api/pictures", {
                         method: "POST",
-                        body: formData
-                    }));
+                        body: formData,
+                    }),
+                );
             }
 
             const responses = await Promise.all(promisedUploads);
-            props.onUploadCompleted(
-                await Promise.all(responses
-                    .filter(r => r.ok)
-                    .map(r => r.json())));
+            props.onUploadCompleted(await Promise.all(responses.filter((r) => r.ok).map((r) => r.json())));
         } finally {
             setIsUploading(false);
         }
     }
 
-    return (
-        <div className="col-sm-12">
-            {
-                isUploading
-                    ? <div className="spinner-border text-center" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                    : <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label htmlFor="cat-pics" className="form-label">Upload your cat pics!</label>
-                            <input className="form-control" type="file" id="cat-pics" onChange={handleFileChange} multiple/>
-                        </div>
-                        <p>
-                            <button type="submit" className="btn btn-primary mb-3">Upload</button>
-                        </p>
-                    </form>
-            }
+    return isUploading ? (
+        <div className="spinner-border text-center" role="status">
+            <span className="visually-hidden">Loading...</span>
         </div>
+    ) : (
+        <ModalBody>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label htmlFor="cat-pics">Upload your cat pics!</label>
+                    <input className="form-control" type="file" id="cat-pics" onChange={handleFileChange} multiple />
+                </div>
+                <p>
+                    <PrimaryButton type="submit">Upload</PrimaryButton>
+                </p>
+            </form>
+        </ModalBody>
     );
 }

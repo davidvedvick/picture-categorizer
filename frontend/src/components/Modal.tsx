@@ -14,15 +14,30 @@ const ModalDialogue = styled.div`
     position: relative;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 20px;
     width: 500px;
     background-color: ${(props) => props.theme.surface};
+
+    box-sizing: border-box;
+
+    border-color: #dee2e6;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0.375rem;
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid rgb(222, 226, 230);
+    }
 `;
 
-interface Props extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-    onClose: () => void;
-}
+export const ModalBody = styled.div`
+    padding: 1rem;
+`;
 
-export function Modal(props: Props) {
+export function Modal(props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
     return (
         <Overlay>
             <ModalDialogue {...props} />
