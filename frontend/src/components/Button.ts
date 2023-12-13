@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 export const Button = styled.button`
     font-size: 1rem;
+    line-height: 24px;
     padding: 0.375rem 0.75rem;
     border-radius: 0.375rem;
 
