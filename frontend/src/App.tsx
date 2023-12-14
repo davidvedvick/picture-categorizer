@@ -7,7 +7,7 @@ import { userModel } from "./Security/UserModel";
 import styled, { ThemeProvider } from "styled-components";
 import { NavBar } from "./components/NavBar";
 import { Header } from "./components/Header";
-import { Modal } from "./components/Modal";
+import { Modal, ModalBody } from "./components/Modal";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { CloseButton } from "./components/CloseButton";
 
@@ -167,7 +167,9 @@ function App() {
                             <h5>Upload Cat Pics!</h5>
                             <CloseButton onClick={hideUploads} />
                         </header>
-                        {isLoggedIn ? <PictureUploads onUploadCompleted={handlePicturesUploaded} /> : <UserLogin />}
+                        <ModalBody>
+                            {isLoggedIn ? <PictureUploads onUploadCompleted={handlePicturesUploaded} /> : <UserLogin />}
+                        </ModalBody>
                     </Modal>
                 )}
             </Root>

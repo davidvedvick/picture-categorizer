@@ -28,8 +28,15 @@ const ModalDialogue = styled.div`
     header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 1rem;
         border-bottom: 1px solid rgb(222, 226, 230);
+        line-height: 1.5;
+        vertical-align: center;
+
+        > * {
+            margin-bottom: 0;
+        }
     }
 `;
 

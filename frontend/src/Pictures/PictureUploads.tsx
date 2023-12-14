@@ -3,7 +3,6 @@ import { instance as auth } from "../Security/AuthorizationService";
 import { PictureInformation } from "../../../transfer";
 import { fetchAuthenticated } from "../Security/UserModel";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { ModalBody } from "../components/Modal";
 
 interface PictureUploadsProps {
     onUploadCompleted: (uploadedPictures: PictureInformation[]) => void;
@@ -57,16 +56,14 @@ export function PictureUploads(props: PictureUploadsProps) {
             <span className="visually-hidden">Loading...</span>
         </div>
     ) : (
-        <ModalBody>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="cat-pics">Upload your cat pics!</label>
-                    <input className="form-control" type="file" id="cat-pics" onChange={handleFileChange} multiple />
-                </div>
-                <p>
-                    <PrimaryButton type="submit">Upload</PrimaryButton>
-                </p>
-            </form>
-        </ModalBody>
+        <form onSubmit={handleSubmit}>
+            <div>
+                <label htmlFor="cat-pics">Upload your cat pics!</label>
+                <input className="form-control" type="file" id="cat-pics" onChange={handleFileChange} multiple />
+            </div>
+            <p>
+                <PrimaryButton type="submit">Upload</PrimaryButton>
+            </p>
+        </form>
     );
 }
