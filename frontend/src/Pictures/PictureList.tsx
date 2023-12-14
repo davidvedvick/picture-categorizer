@@ -5,6 +5,8 @@ import { PictureInformation } from "../../../transfer";
 import { PictureTagList } from "./Tags/PictureTagList";
 import styled from "styled-components";
 import { Card, CardBody, CardTitle } from "../components/Card";
+import { VisuallyHidden } from "../components/VisuallyHidden";
+import { Spinner } from "../components/Spinner";
 
 const Pictures = styled.div`
     display: flex;
@@ -70,9 +72,9 @@ export function PictureList(props: PictureListProperties) {
                 </PictureCard>
             ))}
             {isLoading && (
-                <div className="spinner-border text-center" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
+                <Spinner>
+                    <VisuallyHidden>Loading...</VisuallyHidden>
+                </Spinner>
             )}
         </Pictures>
     );

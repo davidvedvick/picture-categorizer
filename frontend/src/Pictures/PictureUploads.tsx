@@ -3,6 +3,8 @@ import { instance as auth } from "../Security/AuthorizationService";
 import { PictureInformation } from "../../../transfer";
 import { fetchAuthenticated } from "../Security/UserModel";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { Spinner } from "../components/Spinner";
+import { VisuallyHidden } from "../components/VisuallyHidden";
 
 interface PictureUploadsProps {
     onUploadCompleted: (uploadedPictures: PictureInformation[]) => void;
@@ -52,9 +54,9 @@ export function PictureUploads(props: PictureUploadsProps) {
     }
 
     return isUploading ? (
-        <div className="spinner-border text-center" role="status">
-            <span className="visually-hidden">Loading...</span>
-        </div>
+        <Spinner>
+            <VisuallyHidden>Loading...</VisuallyHidden>
+        </Spinner>
     ) : (
         <form onSubmit={handleSubmit}>
             <div>
