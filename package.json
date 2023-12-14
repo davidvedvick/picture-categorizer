@@ -1,0 +1,33 @@
+{
+    "name": "picture-categorizer",
+    "version": "1.0.0",
+    "description": "Meta Package for Picture Categorizer",
+    "main": "index.js",
+    "scripts": {
+        "prepare": "husky install",
+        "postinstall": "husky install",
+        "test": "npm --prefix server run test",
+        "publish": "npm run test && (npm --prefix transfer run build) && ((npm --prefix server run build); (npm --prefix frontend run build && cp -r ./frontend/build ./server/build/public))",
+        "serve": "NODE_ENV=development npm run publish && cd server && cp app-config.json build && cd build && sh ./start-server.sh"
+    },
+    "author": "David Vedvick",
+    "license": "ISC",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^6.13.2",
+        "@typescript-eslint/parser": "^6.13.2",
+        "eslint": "^8.55.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-react": "^7.33.2",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.0",
+        "prettier": "^3.1.0"
+    },
+    "lint-staged": {
+        "*.{js, jsx,ts,tsx}": [
+            "eslint --quiet --fix"
+        ],
+        "*.{json,js,ts,jsx,tsx,html}": [
+            "prettier --write --ignore-unknown"
+        ]
+    }
+}

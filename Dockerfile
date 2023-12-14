@@ -1,5 +1,9 @@
 FROM node:20.9.0 AS build
 
+WORKDIR /workspace
+COPY package*.json .
+RUN npm install
+
 WORKDIR /workspace/transfer
 COPY transfer/package*.json .
 RUN npm install
@@ -15,7 +19,7 @@ RUN npm install
 WORKDIR /workspace
 COPY . .
 
-RUN cd server && NODE_ENV=production npm run publish
+RUN NODE_ENV=production npm run publish
 
 FROM scratch AS staging
 ARG DEPENDENCY=/workspace/server/build

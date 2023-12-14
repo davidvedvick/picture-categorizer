@@ -20,7 +20,7 @@ class PictureListViewModel implements PictureListModel {
     private readonly picturesSubject;
 
     constructor(private readonly document: Document, initialPictures: PictureInformation[] = []) {
-        this.loadedPictures = new Set<number>(initialPictures.map(p => p.id))
+        this.loadedPictures = new Set<number>(initialPictures.map(p => p.id));
         this.picturesSubject = new BehaviorSubject<PictureInformation[]>(initialPictures.sort((a, b) => b.id - a.id));
     }
 
@@ -58,10 +58,10 @@ class PictureListViewModel implements PictureListModel {
                 this.isLoadingSubject.next(false);
             }
 
-            const events = fromEvent(this.document, 'scroll')
+            const events = fromEvent(this.document, "scroll")
                 .pipe(
                     filter(() => {
-                        const fifthLastNote = this.document.querySelector('div.pictures div.picture:nth-last-child(5)');
+                        const fifthLastNote = this.document.querySelector("div.pictures div.picture:nth-last-child(5)");
                         if (!fifthLastNote) return false;
 
                         const rect = fifthLastNote.getBoundingClientRect();

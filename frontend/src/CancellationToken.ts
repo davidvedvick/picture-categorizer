@@ -1,7 +1,7 @@
 export type CancellationToken = {
     get isCancelled(): boolean,
     cancel(): void,
-    promisedCancellation: Promise<any>,
+    promisedCancellation: Promise<unknown>,
 }
 
 export function cancellationToken(): CancellationToken {
@@ -19,5 +19,5 @@ export function cancellationToken(): CancellationToken {
         promisedCancellation: new Promise(resolve => {
             resolver = resolve;
         }),
-    }
+    };
 }

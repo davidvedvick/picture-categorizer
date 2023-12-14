@@ -1,6 +1,34 @@
 import React from "react";
-import {Tag} from "../../../../transfer";
-import {fetchAuthenticated} from "../../Security/UserModel";
+import { Tag } from "../../../../transfer";
+import { fetchAuthenticated } from "../../Security/UserModel";
+import { ButtonGroup, VerticalButtonGroup } from "../../components/ButtonGroup";
+import { Button } from "../../components/Button";
+import styled from "styled-components";
+import { PrimaryButton } from "../../components/PrimaryButton";
+
+const DropdownButton = styled(PrimaryButton)`
+    &::after {
+        border-top: 0.3em solid;
+        border-right: 0.3em solid transparent;
+        border-bottom: 0;
+        border-left: 0.3em solid transparent;
+
+        display: inline-block;
+        margin-left: $caret-spacing;
+        vertical-align: 0.255em;
+        content: "";
+    }
+`;
+
+const ExpandoGroup = styled(ButtonGroup)`
+    position: relative;
+`;
+
+const ExpandedButtons = styled(VerticalButtonGroup)`
+    position: absolute;
+    top: 100%;
+    left: 0;
+`;
 
 interface PictureTagProps extends Tag {
     pictureId: number;
@@ -8,7 +36,7 @@ interface PictureTagProps extends Tag {
 }
 
 export function PictureTag(props: PictureTagProps) {
-    const [isShowing, setIsShowing] = React.useState(false);
+    const [isExpanded, setIsExpanded] = React.useState(false);
 
     async function deleteTag() {
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
@@ -18,13 +46,14 @@ export function PictureTag(props: PictureTagProps) {
         if (response.ok) props.onTagDeleted();
     }
 
-    return <div className="btn-group tag">
-        <button type="button" className="btn btn-primary">{props.tag}</button>
-        <button type="button" className={`btn btn-primary dropdown-toggle dropdown-toggle-split ${isShowing && 'show'}`} aria-expanded={isShowing} onClick={() => setIsShowing(prevState => !prevState)}>
-            <span className="visually-hidden">Toggle Dropdown</span>
-        </button>
-        <ul className={`dropdown-menu ${isShowing && 'show'}`} data-popper-placement="bottom-start">
-            <li><button className="dropdown-item" onClick={deleteTag}>Delete</button></li>
-        </ul>
-    </div>;
+    return (
+        <ExpandoGroup>
+            <PrimaryButton>{props.tag}</PrimaryButton>
+            <DropdownButton onClick={() => setIsExpanded((prevState) => !prevState)} aria-expanded={isExpanded}>
+                <span style={{ display: "none" }}>Toggle Dropdown</span>
+            </DropdownButton>
+
+            <ExpandedButtons>{isExpanded && <Button onClick={deleteTag}>Delete</Button>}</ExpandedButtons>
+        </ExpandoGroup>
+    );
 }

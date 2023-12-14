@@ -1,5 +1,6 @@
 import React from "react";
-import {fetchAuthenticated} from "../../Security/UserModel";
+import { fetchAuthenticated } from "../../Security/UserModel";
+import { PrimaryButton } from "../../components/PrimaryButton";
 
 interface PictureTagProps {
     pictureId: number;
@@ -25,22 +26,20 @@ export function NewPictureTag(props: PictureTagProps) {
         }
     }
 
-    return <button
-        type="button"
-        className="btn btn-primary tag"
-        contentEditable={isEditing}
-        onClick={() => setIsEditing(true)}
-        onKeyUp={async (e) => {
-            if (e.key === "Escape")
-                setIsEditing(false);
-            if (e.key === "Enter") {
-                const newTag = e.currentTarget.textContent;
-                if (newTag && newTag !== "")
-                   await addNewTag(newTag);
-                setIsEditing(false);
-            }
-        }}
-    >
-        {!isEditing ? "New Tag" : ""}
-    </button>;
+    return (
+        <PrimaryButton
+            contentEditable={isEditing}
+            onClick={() => setIsEditing(true)}
+            onKeyUp={async (e) => {
+                if (e.key === "Escape") setIsEditing(false);
+                if (e.key === "Enter") {
+                    const newTag = e.currentTarget.textContent;
+                    if (newTag && newTag !== "") await addNewTag(newTag);
+                    setIsEditing(false);
+                }
+            }}
+        >
+            {!isEditing ? "New Tag" : ""}
+        </PrimaryButton>
+    );
 }

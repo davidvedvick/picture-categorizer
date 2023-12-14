@@ -12,9 +12,9 @@ export class AuthorizationService implements ServeAuthentication {
         const response = await fetch(
             "/api/login",
             {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(user)
             });
@@ -27,8 +27,8 @@ export class AuthorizationService implements ServeAuthentication {
         const expiringToken = new ExpiringJwtToken(
             jwtToken.catEmployeeId,
             jwtToken.token,
-            Date.now() + jwtToken.expiresInMs)
-        this.storage.setItem(jwtTokenKey, JSON.stringify(expiringToken))
+            Date.now() + jwtToken.expiresInMs);
+        this.storage.setItem(jwtTokenKey, JSON.stringify(expiringToken));
         return jwtToken;
     }
 
@@ -48,10 +48,10 @@ export class AuthorizationService implements ServeAuthentication {
     }
 }
 
-let internalInstance: AuthorizationService
+let internalInstance: AuthorizationService;
 
 export const instance = () => {
     if (!internalInstance)
         internalInstance = new AuthorizationService(localStorage);
     return internalInstance;
-}
+};
