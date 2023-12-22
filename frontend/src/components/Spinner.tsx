@@ -8,6 +8,8 @@ const Styled = styled.div`
         }
     }
 
+    box-sizing: border-box;
+
     display: inline-block;
     width: 2rem;
     height: 2rem;
@@ -15,8 +17,14 @@ const Styled = styled.div`
     border-radius: 50%;
     animation: 0.75s linear infinite spinner-border;
 
+    color: ${(props) => props.theme.primary};
     border: 0.25em solid currentcolor;
     border-right-color: transparent;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    line-height: 24px;
 `;
 
 export function Spinner(props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
