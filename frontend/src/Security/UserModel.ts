@@ -1,30 +1,29 @@
-import {User} from "./User";
-import {ServeAuthentication} from "./ServeAuthentication";
-import {ReadonlyBehaviorSubject} from "../ReadonlyBehaviorSubject";
-import {BehaviorSubject} from "rxjs";
-import {instance as auth} from "../Security/AuthorizationService";
-import {InvalidTokenException} from "./InvalidTokenException";
-import {JwtToken} from "../../../transfer/JwtToken";
+import { User } from "./User";
+import { ServeAuthentication } from "./ServeAuthentication";
+import { ReadOnlyBehaviorSubject } from "../ReadOnlyBehaviorSubject";
+import { BehaviorSubject } from "rxjs";
+import { instance as auth } from "../Security/AuthorizationService";
+import { InvalidTokenException } from "./InvalidTokenException";
+import { JwtToken } from "../../../transfer/JwtToken";
 
 interface UserModel {
-    get isLoggedIn(): ReadonlyBehaviorSubject<boolean>;
+    get isLoggedIn(): ReadOnlyBehaviorSubject<boolean>;
 
-    get catEmployeeId(): ReadonlyBehaviorSubject<number | null>;
+    get catEmployeeId(): ReadOnlyBehaviorSubject<number | null>;
 
     authenticate(user: User): Promise<JwtToken | null>;
 }
 
 class UserViewModel implements UserModel {
-
     private readonly isLoggedInSubject: BehaviorSubject<boolean>;
     private readonly catEmployeeIdSubject: BehaviorSubject<number | null>;
 
     constructor(private readonly authentication: ServeAuthentication) {
-        this.isLoggedInSubject =  new BehaviorSubject(authentication.isLoggedIn());
+        this.isLoggedInSubject = new BehaviorSubject(authentication.isLoggedIn());
         this.catEmployeeIdSubject = new BehaviorSubject(authentication.getUserToken()?.catEmployeeId ?? null);
     }
 
-    get catEmployeeId(): ReadonlyBehaviorSubject<number | null> {
+    get catEmployeeId(): ReadOnlyBehaviorSubject<number | null> {
         return this.catEmployeeIdSubject;
     }
 
@@ -42,10 +41,10 @@ class UserViewModel implements UserModel {
             throw new InvalidTokenException(jwtToken);
         }
 
-        const authHeader = {Authorization: `Bearer ${jwtToken.token}`};
+        const authHeader = { Authorization: `Bearer ${jwtToken.token}` };
 
         const authInit = init
-            ? Object.assign(init, {headers: init.headers ? Object.assign(init?.headers, authHeader) : authHeader})
+            ? Object.assign(init, { headers: init.headers ? Object.assign(init?.headers, authHeader) : authHeader })
             : { headers: authHeader };
         const response = await fetch(input, authInit);
 
@@ -57,7 +56,7 @@ class UserViewModel implements UserModel {
         return response;
     }
 
-    get isLoggedIn(): ReadonlyBehaviorSubject<boolean> {
+    get isLoggedIn(): ReadOnlyBehaviorSubject<boolean> {
         return this.isLoggedInSubject;
     }
 
@@ -71,8 +70,7 @@ class UserViewModel implements UserModel {
 let internalInstance: UserViewModel;
 
 function instance(): UserViewModel {
-    if (!internalInstance)
-        internalInstance = new UserViewModel(auth());
+    if (!internalInstance) internalInstance = new UserViewModel(auth());
     return internalInstance;
 }
 
