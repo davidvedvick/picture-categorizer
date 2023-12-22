@@ -1,11 +1,11 @@
-import {RowDataPacket} from "mysql2/promise";
-import fg from 'fast-glob';
-import fs from 'fs/promises'
-import {ConnectionOptions} from "mysql2";
-import mysql from 'mysql2/promise';
+import { RowDataPacket } from "mysql2/promise";
+import fg from "fast-glob";
+import fs from "fs/promises";
+import { ConnectionOptions } from "mysql2";
+import mysql from "mysql2/promise";
 import path from "path";
 
-export default async function(options: ConnectionOptions) {
+export default async function (options: ConnectionOptions) {
     const files = await fg.async("migrations/*.sql");
     const migrationOptions = Object.assign({} as ConnectionOptions, options);
     migrationOptions.multipleStatements = true;
@@ -22,10 +22,12 @@ export default async function(options: ConnectionOptions) {
 
         for (const file of files.sort()) {
             const fileName = path.basename(file);
-            const [results, _] = await connection.execute<RowDataPacket[]>(
+            const [results] = await connection.execute<RowDataPacket[]>(
                 `SELECT *
                  FROM migrations
-                 WHERE file = ?`, [fileName]);
+                 WHERE file = ?`,
+                [fileName],
+            );
 
             if (results.length > 0) continue;
 
@@ -36,7 +38,8 @@ export default async function(options: ConnectionOptions) {
             await connection.execute(
                 `INSERT INTO migrations (file, executed_on)
                  VALUES (?, ?)`,
-                [fileName, new Date().toISOString().slice(0, 19).replace('T', ' ')]);
+                [fileName, new Date().toISOString().slice(0, 19).replace("T", " ")],
+            );
         }
     } finally {
         connection.destroy();
