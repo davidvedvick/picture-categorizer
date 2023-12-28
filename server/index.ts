@@ -1,6 +1,6 @@
 import express, { json, urlencoded } from "express";
 import PictureRoutes from "./pictures/PictureRoutes.js";
-import { PictureRepository } from "./pictures/PictureRepository.js";
+import { PictureRepositoryMySql } from "./pictures/PictureRepository.js";
 import { PictureService } from "./pictures/PictureService.js";
 import mysql from "mysql2/promise";
 import { CatEmployeeRepositoryMySql } from "./users/CatEmployeeRepository.js";
@@ -48,7 +48,7 @@ const port = 5000;
 
     const pool = mysql.createPool(config.db);
 
-    const pictureRepository = new PictureRepository(pool);
+    const pictureRepository = new PictureRepositoryMySql(pool);
     const catEmployeeRepository = new CatEmployeeRepositoryMySql(pool);
     const pictureTagRepository = new PictureTagRepository(pool);
     const pictureService = new PictureService(pictureRepository, catEmployeeRepository);
