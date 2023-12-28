@@ -1,8 +1,8 @@
-import type {EncoderConfig} from "./security/EncoderConfig.js";
-import {createRequire} from 'node:module';
-import {AuthenticationConfiguration} from "./security/AuthenticationConfiguration.js";
+import type { EncoderConfig } from "./security/EncoderConfig.js";
+import { createRequire } from "node:module";
+import { AuthenticationConfiguration } from "./security/AuthenticationConfiguration.js";
 import * as fs from "fs";
-import {ConnectionOptions} from "mysql2";
+import { ConnectionOptions } from "mysql2";
 
 function isFileAccessible(file: fs.PathLike) {
     try {
@@ -16,24 +16,24 @@ function isFileAccessible(file: fs.PathLike) {
 
 export interface AppConfig {
     authentication: AuthenticationConfiguration;
-    db: ConnectionOptions,
+    db: ConnectionOptions & { file: string };
     security: {
-        encoder: EncoderConfig,
-    }
+        encoder: EncoderConfig;
+    };
 }
 
 let config = {
     security: {
         encoder: {
             saltGenerations: 10,
-        }
-    }
+        },
+    },
 } as AppConfig;
 
-const appConfigFile = './app-config.json';
+const appConfigFile = "./app-config.json";
 if (isFileAccessible(appConfigFile)) {
     const require = createRequire(import.meta.url);
-    config = Object.assign(config, require('./app-config.json'));
+    config = Object.assign(config, require("./app-config.json"));
 }
 
 export default {
@@ -43,11 +43,12 @@ export default {
     db: {
         uri: process.env.DATASOURCE_URL ?? config.db.uri,
         user: process.env.DATASOURCE_USERNAME ?? config.db.user,
-        password: process.env.DATASOURCE_PASSWORD ?? config.db.password
+        password: process.env.DATASOURCE_PASSWORD ?? config.db.password,
+        file: process.env.SQLITE_DB_FILE ?? config.db.file,
     },
     security: {
         encoder: {
-            saltGenerations: process.env.SALT_GENERATIONS ?? config.security.encoder.saltGenerations
-        }
-    }
+            saltGenerations: process.env.SALT_GENERATIONS ?? config.security.encoder.saltGenerations,
+        },
+    },
 } as AppConfig;
