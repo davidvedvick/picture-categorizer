@@ -18,7 +18,7 @@ import { ResizingPictureFileService } from "./pictures/ResizingPictureFileServic
 import { CachingResizedPictureFileService } from "./pictures/CachingPictureFileService.js";
 import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import { PictureTagService } from "./pictures/tags/PictureTagService.js";
-import { PictureTagRepository } from "./pictures/tags/PictureTagRepository.js";
+import { PictureTagRepositoryMySql } from "./pictures/tags/PictureTagRepository.js";
 import { TagService } from "./pictures/tags/TagService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +50,7 @@ const port = 5000;
 
     const pictureRepository = new PictureRepositoryMySql(pool);
     const catEmployeeRepository = new CatEmployeeRepositoryMySql(pool);
-    const pictureTagRepository = new PictureTagRepository(pool);
+    const pictureTagRepository = new PictureTagRepositoryMySql(pool);
     const pictureService = new PictureService(pictureRepository, catEmployeeRepository);
     const jwtTokenManagement = new JwtTokenManagement(config.authentication);
 
