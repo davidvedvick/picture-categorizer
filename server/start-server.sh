@@ -1,1 +1,1 @@
-node index.cjs
+node index.js

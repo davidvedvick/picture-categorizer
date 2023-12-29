@@ -20,6 +20,7 @@ import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import { PictureTagService } from "./pictures/tags/PictureTagService.js";
 import { PictureTagRepositoryMySql } from "./pictures/tags/PictureTagRepository.js";
 import { TagService } from "./pictures/tags/TagService.js";
+import Database from "better-sqlite3";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,7 +45,8 @@ app.use(urlencoded({ extended: true }));
 const port = 5000;
 
 (async () => {
-    await migrator(config.db);
+    const database = new Database(config.db.file);
+    await migrator(database);
 
     const pool = mysql.createPool(config.db);
 

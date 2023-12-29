@@ -1,47 +1,40 @@
-import { RowDataPacket } from "mysql2/promise";
 import fg from "fast-glob";
 import fs from "fs/promises";
-import { ConnectionOptions } from "mysql2";
-import mysql from "mysql2/promise";
 import path from "path";
+import { Database } from "better-sqlite3";
 
-export default async function (options: ConnectionOptions) {
+export default async function (database: Database) {
     const files = await fg.async("migrations/*.sql");
-    const migrationOptions = Object.assign({} as ConnectionOptions, options);
-    migrationOptions.multipleStatements = true;
-    const connection = await mysql.createConnection(migrationOptions);
 
-    try {
-        await connection.execute(`
-            create table if not exists migrations
-            (
-                id          MEDIUMINT AUTO_INCREMENT UNIQUE primary key,
-                file        varchar(2000) UNIQUE,
-                executed_on DATETIME
-            );`);
+    database.exec(`
+        create table if not exists migrations
+        (
+            id          MEDIUMINT AUTO_INCREMENT UNIQUE primary key,
+            file        varchar(2000) UNIQUE,
+            executed_on DATETIME
+        );`);
 
-        for (const file of files.sort()) {
-            const fileName = path.basename(file);
-            const [results] = await connection.execute<RowDataPacket[]>(
-                `SELECT *
-                 FROM migrations
-                 WHERE file = ?`,
-                [fileName],
-            );
+    const resultsQuery = database.prepare<string>(
+        `SELECT *
+         FROM migrations
+         WHERE file = ?`,
+    );
 
-            if (results.length > 0) continue;
+    const migrationRecordInsert = database.prepare<[string, string]>(
+        `INSERT INTO migrations (file, executed_on)
+         VALUES (?, ?)`,
+    );
 
-            const buffer = await fs.readFile(file);
-            const sql = buffer.toString();
-            await connection.query(sql);
+    for (const file of files.sort()) {
+        const fileName = path.basename(file);
+        const result = resultsQuery.get(file);
 
-            await connection.execute(
-                `INSERT INTO migrations (file, executed_on)
-                 VALUES (?, ?)`,
-                [fileName, new Date().toISOString().slice(0, 19).replace("T", " ")],
-            );
-        }
-    } finally {
-        connection.destroy();
+        if (result) continue;
+
+        const buffer = await fs.readFile(file);
+        const sql = buffer.toString();
+        database.exec(sql);
+
+        migrationRecordInsert.run(fileName, new Date().toISOString().slice(0, 19).replace("T", " "));
     }
 }

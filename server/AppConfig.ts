@@ -44,7 +44,7 @@ export default {
         uri: process.env.DATASOURCE_URL ?? config.db.uri,
         user: process.env.DATASOURCE_USERNAME ?? config.db.user,
         password: process.env.DATASOURCE_PASSWORD ?? config.db.password,
-        file: process.env.SQLITE_DB_FILE ?? config.db.file,
+        file: process.env.SQLITE_DB_FILE ?? config.db.file ?? "pics.db",
     },
     security: {
         encoder: {

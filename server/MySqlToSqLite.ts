@@ -4,6 +4,7 @@ import config from "./AppConfig.js";
 import Database from "better-sqlite3";
 import { PictureRepositoryMySql, PictureRepositorySqLite } from "./pictures/PictureRepository.js";
 import { PictureTagRepositoryMySql, PictureTagRepositorySqLite } from "./pictures/tags/PictureTagRepository.js";
+import migrator from "./migrator.js";
 
 const pool = mysql.createPool(config.db);
 const catEmployeesMySql = new CatEmployeeRepositoryMySql(pool);
@@ -16,6 +17,8 @@ const picturesSqLite = new PictureRepositorySqLite(database);
 const pictureTagsSqLite = new PictureTagRepositorySqLite(database);
 
 (async () => {
+    await migrator(database);
+
     const catEmployees = await catEmployeesMySql.getAll();
     for (const catEmployee of catEmployees) await catEmployeeSqLite.save(catEmployee);
 
