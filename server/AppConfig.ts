@@ -2,7 +2,6 @@ import type { EncoderConfig } from "./security/EncoderConfig.js";
 import { createRequire } from "node:module";
 import { AuthenticationConfiguration } from "./security/AuthenticationConfiguration.js";
 import * as fs from "fs";
-import { ConnectionOptions } from "mysql2";
 
 function isFileAccessible(file: fs.PathLike) {
     try {
@@ -16,7 +15,7 @@ function isFileAccessible(file: fs.PathLike) {
 
 export interface AppConfig {
     authentication: AuthenticationConfiguration;
-    db: ConnectionOptions & { file: string };
+    db: { file: string };
     security: {
         encoder: EncoderConfig;
     };
@@ -41,9 +40,6 @@ export default {
         secret: process.env.APP_AUTHENTICATION_SECRET ?? config.authentication.secret,
     },
     db: {
-        uri: process.env.DATASOURCE_URL ?? config.db.uri,
-        user: process.env.DATASOURCE_USERNAME ?? config.db.user,
-        password: process.env.DATASOURCE_PASSWORD ?? config.db.password,
         file: process.env.SQLITE_DB_FILE ?? config.db.file ?? "pics.db",
     },
     security: {

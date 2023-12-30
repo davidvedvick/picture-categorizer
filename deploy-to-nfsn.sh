@@ -16,7 +16,7 @@ rsync -avzh --delete --log-file=rsync-log --exclude=app-config.json --exclude='*
   ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected
 
 if grep -q -E '<f[\.\+stp]+[[:blank:]]package.*\.json' rsync-log; then
-  ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --production && npm cache clean'
+  ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --omit=dev && npm cache clean'
 fi
 
 ssh "$SSH_USER"@"$SSH_HOST" -t 'nfsn signal-daemon App term'
