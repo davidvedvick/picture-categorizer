@@ -66,10 +66,10 @@ class PictureListViewModel implements PictureListModel {
 
             const events = fromEvent(this.document, "scroll").pipe(
                 filter(() => {
-                    const fifthLastNote = this.document.querySelector("div.pictures div.picture:nth-last-child(5)");
-                    if (!fifthLastNote) return false;
+                    const fifthLastPicture = this.document.querySelector("div.pictures div.picture:nth-last-child(5)");
+                    if (!fifthLastPicture) return false;
 
-                    const rect = fifthLastNote.getBoundingClientRect();
+                    const rect = fifthLastPicture.getBoundingClientRect();
                     return rect.top <= 0;
                 }),
             );

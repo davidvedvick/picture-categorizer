@@ -12,8 +12,8 @@ fi
 
 chmod 755 _artifacts
 
-rsync -avzh --delete --log-file=rsync-log --exclude=app-config.json --exclude='*specs/*' --exclude=node_modules  \
-  ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected
+rsync -avzh --delete --log-file=rsync-log --exclude=app-config.json --exclude='*specs*' --exclude=node_modules  \
+  ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected/app
 
 if grep -q -E '<f[\.\+stp]+[[:blank:]]package.*\.json' rsync-log; then
   ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --omit=dev && npm cache clean'
