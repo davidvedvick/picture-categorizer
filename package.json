@@ -7,7 +7,7 @@
         "prepare": "husky install",
         "postinstall": "husky install",
         "test": "npm --prefix server run test",
-        "publish": "npm run test && (npm --prefix transfer run build) && ((npm --prefix server run build); (npm --prefix frontend run build && cp -r ./frontend/build ./server/build/public))",
+        "publish": "npm run test && (npm --prefix transfer run build) && ((npm --prefix server run publish); (npm --prefix frontend run build && cp -r ./frontend/build ./server/build/public))",
         "serve": "NODE_ENV=development npm run publish && cd server && cp app-config.json build && cd build && sh ./start-server.sh"
     },
     "author": "David Vedvick",

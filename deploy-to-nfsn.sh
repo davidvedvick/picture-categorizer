@@ -15,7 +15,9 @@ chmod 755 _artifacts
 rsync -avzh --delete --log-file=rsync-log --exclude app-config.json \
   ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected
 
-ssh "$SSH_USER"@"$SSH_HOST" -t 'nfsn signal-daemon App term'
+if grep -q -E '<f[\.\+stp]+[[:blank:]]package.*\.json' rsync-log; then
+  ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --production && (npm cache clean & nfsn signal-daemon App term)'
+fi
 
 EXIT_CODE=${PIPESTATUS[0]}
 
