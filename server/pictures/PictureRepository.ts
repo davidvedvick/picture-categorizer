@@ -72,7 +72,8 @@ export class PictureRepositorySqLite implements ManagePictures {
 
     async countAll(): Promise<number> {
         const statement = this.database.prepare("SELECT COUNT(*) as count FROM picture");
-        return statement.get() as number;
+        const result = statement.get() as { count: number };
+        return result.count;
     }
 
     async findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
@@ -85,7 +86,7 @@ export class PictureRepositorySqLite implements ManagePictures {
         }
 
         const statement = this.database.prepare<[number | null, number | null]>(sql);
-        return statement.all(pageNumber, offset) as Picture[];
+        return statement.all(offset, pageSize) as Picture[];
     }
 
     async findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<Picture | null> {
@@ -107,7 +108,8 @@ export class PictureRepositorySqLite implements ManagePictures {
     async findFileById(id: number): Promise<Uint8Array> {
         const statement = this.database.prepare<number>("SELECT file FROM picture WHERE id = ?");
 
-        return (statement.get(id) as Uint8Array) ?? Buffer.of();
+        const result = statement.get(id) as { file: Uint8Array };
+        return result?.file ?? Buffer.of();
     }
 
     async save(picture: Picture): Promise<Picture> {
