@@ -1,9 +1,8 @@
 import express, { json, urlencoded } from "express";
 import PictureRoutes from "./pictures/PictureRoutes.js";
-import { PictureRepositoryMySql } from "./pictures/PictureRepository.js";
+import { PictureRepositorySqLite } from "./pictures/PictureRepository.js";
 import { PictureService } from "./pictures/PictureService.js";
-import mysql from "mysql2/promise";
-import { CatEmployeeRepositoryMySql } from "./users/CatEmployeeRepository.js";
+import { CatEmployeeRepositorySqLite } from "./users/CatEmployeeRepository.js";
 import CatEmployeeRoutes from "./users/CatEmployeeRoutes.js";
 import CatEmployeeEntry from "./users/CatEmployeeEntry.js";
 import BCryptEncoder from "./security/BCryptEncoder.js";
@@ -18,7 +17,7 @@ import { ResizingPictureFileService } from "./pictures/ResizingPictureFileServic
 import { CachingResizedPictureFileService } from "./pictures/CachingPictureFileService.js";
 import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import { PictureTagService } from "./pictures/tags/PictureTagService.js";
-import { PictureTagRepositoryMySql } from "./pictures/tags/PictureTagRepository.js";
+import { PictureTagRepositorySqLite } from "./pictures/tags/PictureTagRepository.js";
 import { TagService } from "./pictures/tags/TagService.js";
 import Database from "better-sqlite3";
 
@@ -46,13 +45,12 @@ const port = 5000;
 
 (async () => {
     const database = new Database(config.db.file);
+    database.pragma("journal_mode = WAL");
     await migrator(database);
 
-    const pool = mysql.createPool(config.db);
-
-    const pictureRepository = new PictureRepositoryMySql(pool);
-    const catEmployeeRepository = new CatEmployeeRepositoryMySql(pool);
-    const pictureTagRepository = new PictureTagRepositoryMySql(pool);
+    const pictureRepository = new PictureRepositorySqLite(database);
+    const catEmployeeRepository = new CatEmployeeRepositorySqLite(database);
+    const pictureTagRepository = new PictureTagRepositorySqLite(database);
     const pictureService = new PictureService(pictureRepository, catEmployeeRepository);
     const jwtTokenManagement = new JwtTokenManagement(config.authentication);
 

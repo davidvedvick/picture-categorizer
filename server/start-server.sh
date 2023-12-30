@@ -1,1 +1,3 @@
-node index.js
+#!/bin/sh
+
+exec node index.js --run-in-foreground
