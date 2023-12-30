@@ -2,6 +2,10 @@ import type { EncoderConfig } from "./security/EncoderConfig.js";
 import { createRequire } from "node:module";
 import { AuthenticationConfiguration } from "./security/AuthenticationConfiguration.js";
 import * as fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function isFileAccessible(file: fs.PathLike) {
     try {
@@ -29,10 +33,10 @@ let config = {
     },
 } as AppConfig;
 
-const appConfigFile = "./app-config.json";
+const appConfigFile = join(__dirname, "./app-config.json");
 if (isFileAccessible(appConfigFile)) {
     const require = createRequire(import.meta.url);
-    config = Object.assign(config, require("./app-config.json"));
+    config = Object.assign(config, require(appConfigFile));
 }
 
 export default {
