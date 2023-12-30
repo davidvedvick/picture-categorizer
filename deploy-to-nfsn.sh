@@ -12,12 +12,14 @@ fi
 
 chmod 755 _artifacts
 
-rsync -avzh --delete --log-file=rsync-log --exclude app-config.json --exclude '*specs/*' \
+rsync -avzh --delete --log-file=rsync-log --exclude=app-config.json --exclude='*specs/*' --exclude=node_modules  \
   ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected
 
 if grep -q -E '<f[\.\+stp]+[[:blank:]]package.*\.json' rsync-log; then
-  ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --production && (npm cache clean & nfsn signal-daemon App term)'
+  ssh "$SSH_USER"@"$SSH_HOST" -t 'cd /home/protected && npm install --production && npm cache clean'
 fi
+
+ssh "$SSH_USER"@"$SSH_HOST" -t 'nfsn signal-daemon App term'
 
 EXIT_CODE=${PIPESTATUS[0]}
 
