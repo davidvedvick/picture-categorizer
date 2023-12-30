@@ -26,6 +26,12 @@ ARG DEPENDENCY=/workspace/server/build
 COPY --from=build ${DEPENDENCY} /
 
 FROM node:20.9.0
+
 VOLUME /tmp
+
+COPY --from=staging /package.json /
+RUN npm install --production
+
 COPY --from=staging / /
-ENTRYPOINT ["node","index.cjs"]
+
+ENTRYPOINT ["sh", "start-server.sh"]

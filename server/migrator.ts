@@ -9,7 +9,7 @@ export default async function (database: Database) {
     database.exec(`
         create table if not exists migrations
         (
-            id          MEDIUMINT AUTO_INCREMENT UNIQUE primary key,
+            id          INT primary key,
             file        varchar(2000) UNIQUE,
             executed_on DATETIME
         );`);
@@ -27,8 +27,8 @@ export default async function (database: Database) {
 
     for (const file of files.sort()) {
         const fileName = path.basename(file);
-        const result = resultsQuery.get(file);
 
+        const result = resultsQuery.get(fileName);
         if (result) continue;
 
         const buffer = await fs.readFile(file);

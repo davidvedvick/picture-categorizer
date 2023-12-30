@@ -5,7 +5,7 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "build": "rm -rf build && tsc && (cp start-server.sh ./build & cp -r ./migrations ./build)",
+        "build": "rm -rf build && tsc && (cp package.json ./build & cp start-server.sh ./build & cp -r ./migrations ./build)",
         "test": "jest",
         "serve-backend": "NODE_ENV=development npm run build && cp app-config.json build && cd build && sh ./start-server.sh"
     },
