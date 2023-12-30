@@ -30,7 +30,7 @@ FROM node:20.9.0
 VOLUME /tmp
 
 COPY --from=staging /package.json /
-RUN npm install --production
+RUN npm install --omit=dev
 
 COPY --from=staging / /
 
