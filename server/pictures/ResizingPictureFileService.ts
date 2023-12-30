@@ -1,6 +1,6 @@
 import PictureFile from "./PictureFile.js";
-import Jimp from "jimp";
 import { ServePictureFiles, ServeResizedPictureFiles } from "./ServePictureFiles.js";
+import sharp, { ResizeOptions } from "sharp";
 
 export class ResizingPictureFileService implements ServeResizedPictureFiles {
     constructor(private readonly inner: ServePictureFiles) {}
@@ -10,12 +10,18 @@ export class ResizingPictureFileService implements ServeResizedPictureFiles {
 
         if (!pictureFile) return null;
 
-        const image = await Jimp.read(Buffer.from(pictureFile.file));
+        const image = sharp(pictureFile.file);
+
+        const metadata = await image.metadata();
+
+        const resizeOptions: ResizeOptions = { fit: "inside" };
 
         const resizedImage =
-            image.getWidth() > image.getHeight() ? image.resize(400, Jimp.AUTO) : image.resize(Jimp.AUTO, 400);
+            !metadata.width || !metadata.height || metadata.width > metadata.height
+                ? image.resize(400, null, resizeOptions)
+                : image.resize(null, 400, resizeOptions);
 
-        const resizedImageBuffer = await resizedImage.getBufferAsync(pictureFile.mimeType);
+        const resizedImageBuffer = await resizedImage.toBuffer();
 
         return {
             file: resizedImageBuffer,
