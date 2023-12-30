@@ -24,7 +24,7 @@ const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
 const ForkTsCheckerWebpackPlugin =
     process.env.TSC_COMPILE_ON_ERROR === "true"
         ? require("react-dev-utils/ForkTsCheckerWarningWebpackPlugin")
-        : require("react-dev-utils/ForkTsCheckerWebpackPlugin");
+        : require("fork-ts-checker-webpack-plugin");
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 
 const createEnvironmentHash = require("./webpack/persistentCache/createEnvironmentHash");
