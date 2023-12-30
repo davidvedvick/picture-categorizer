@@ -54,9 +54,9 @@ export function PictureList(props: PictureListProperties) {
     }, [props.initialPictureList]);
 
     return (
-        <Pictures>
+        <Pictures className="pictures">
             {pictures.map((p) => (
-                <PictureCard key={p.id}>
+                <PictureCard key={p.id} className="picture">
                     <a target="_blank" href={`/api/pictures/${p.id}/file`} title={p.fileName} rel="noreferrer">
                         <img
                             src={`/api/pictures/${p.id}/preview`}
