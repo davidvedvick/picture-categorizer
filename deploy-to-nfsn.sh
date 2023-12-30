@@ -12,7 +12,7 @@ fi
 
 chmod 755 _artifacts
 
-rsync -avzh --delete --log-file=rsync-log --exclude app-config.json \
+rsync -avzh --delete --log-file=rsync-log --exclude app-config.json --exclude '*specs/*' \
   ./_artifacts/ "$SSH_USER"@"$SSH_HOST":/home/protected
 
 if grep -q -E '<f[\.\+stp]+[[:blank:]]package.*\.json' rsync-log; then
