@@ -1,9 +1,10 @@
-import { parentPort } from "worker_threads";
+import { parentPort, threadId } from "worker_threads";
 import Jimp from "jimp";
 import { ResizeMessage } from "./ResizeMessage.js";
 
-const handler = async (message: ResizeMessage | string) => {
+async function handler(message: ResizeMessage | string) {
     if (message === "shutdown") {
+        console.log(`Worker ${threadId} is shutting down.`);
         parentPort?.off("message", handler);
         process.exit();
     }
@@ -21,6 +22,6 @@ const handler = async (message: ResizeMessage | string) => {
         file: resizedImageBuffer,
         mimeType: mimeType,
     } as ResizeMessage);
-};
+}
 
 parentPort?.on("message", handler);

@@ -25,8 +25,7 @@ const queue: Job[] = [];
  */
 
 interface LocalWorker {
-    takeWork(): Promise<void>;
-    isActive(): boolean;
+    takeWork(): void;
 }
 
 let workers: LocalWorker[] = [];
@@ -34,14 +33,14 @@ let workers: LocalWorker[] = [];
 const cpus = os.cpus();
 async function drainQueue() {
     for (const worker of workers) {
-        await worker.takeWork();
+        worker.takeWork();
     }
 
     while (queue.length && workers.length < cpus.length) {
         workers.push(await spawn());
 
         for (const worker of workers) {
-            await worker.takeWork();
+            worker.takeWork();
         }
     }
 }
@@ -52,37 +51,37 @@ async function drainQueue() {
 
 async function spawn() {
     const worker = new Worker(join(__dirname, "ResizingPictureWorker.js"));
+    const threadId = worker.threadId;
 
     let job: Job | undefined; // Current item from the queue
     let error: Error | null = null; // Error that caused the worker to crash
 
-    function promiseShutdown() {
-        // pre-emptively take worker out of pool
-        workers = workers.filter((w) => w.takeWork !== takeWork);
+    function scheduleShutdown() {
+        setTimeout(() => {
+            if (queue.length) {
+                takeWork();
+                return;
+            }
 
-        return new Promise<void>((resolve, reject) => {
-            worker.on("exit", (code) => {
-                if (code === 0) {
-                    resolve();
-                    return;
-                }
+            if (job || worker.threadId == -1) {
+                // -1 signals worker is already shutdown.
+                return;
+            }
 
-                if (code !== 0) {
-                    reject(error || new Error(`worker died with code ${code}`));
-                    console.error(`worker exited with code ${code}`);
-                }
-            });
+            console.log(`Shutting down worker ${threadId}.`);
+            // pre-emptively take worker out of pool
+            workers = workers.filter((w) => w.takeWork !== takeWork);
             worker.postMessage("shutdown");
-        });
+        }, 60_000);
     }
 
-    async function takeWork() {
+    function takeWork() {
         if (job) return;
 
         job = queue.shift();
         // Without a job, shutdown
         if (!job) {
-            await promiseShutdown();
+            scheduleShutdown();
             return;
         }
 
@@ -107,15 +106,14 @@ async function spawn() {
         .on("exit", (code) => {
             workers = workers.filter((w) => w.takeWork !== takeWork);
 
+            console.log(`Worker ${threadId} exited with code ${code}.`);
             if (code !== 0) {
                 job?.reject(error || new Error(`worker died with code ${code}`));
-                console.error(`worker exited with code ${code}`);
             }
         });
 
     return {
         takeWork,
-        isActive: () => !!job,
     };
 }
 
