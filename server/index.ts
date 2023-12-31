@@ -13,7 +13,7 @@ import path, { dirname } from "path";
 import compression from "compression";
 import { fileURLToPath } from "url";
 import migrator from "./migrator.js";
-import { ResizingPictureFileService } from "./pictures/ResizingPictureFileService.js";
+import { ResizingPictureFileService } from "./pictures/resizing/ResizingPictureFileService.js";
 import { CachingResizedPictureFileService } from "./pictures/CachingPictureFileService.js";
 import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import { PictureTagService } from "./pictures/tags/PictureTagService.js";
