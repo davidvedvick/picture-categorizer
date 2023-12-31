@@ -10,7 +10,7 @@ export class ResizingPictureFileService implements ServeResizedPictureFiles {
 
         if (!pictureFile) return null;
 
-        const image = await Jimp.read(Buffer.from(pictureFile.file));
+        const image = await Jimp.read(Buffer.from(pictureFile.file.buffer));
 
         const resizedImage =
             image.getWidth() > image.getHeight() ? image.resize(400, Jimp.AUTO) : image.resize(Jimp.AUTO, 400);
