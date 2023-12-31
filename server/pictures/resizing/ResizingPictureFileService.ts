@@ -25,7 +25,7 @@ const queue: Job[] = [];
  */
 
 interface LocalWorker {
-    takeWork(): void;
+    takeWork(): Promise<void>;
     isActive(): boolean;
 }
 
@@ -34,14 +34,14 @@ let workers: LocalWorker[] = [];
 const cpus = os.cpus();
 async function drainQueue() {
     for (const worker of workers) {
-        worker.takeWork();
+        await worker.takeWork();
     }
 
     while (queue.length && workers.length < cpus.length) {
         workers.push(await spawn());
 
         for (const worker of workers) {
-            worker.takeWork();
+            await worker.takeWork();
         }
     }
 }
@@ -56,15 +56,37 @@ async function spawn() {
     let job: Job | undefined; // Current item from the queue
     let error: Error | null = null; // Error that caused the worker to crash
 
-    function takeWork() {
+    function promiseShutdown() {
+        // pre-emptively take worker out of pool
+        workers = workers.filter((w) => w.takeWork !== takeWork);
+
+        return new Promise<void>((resolve, reject) => {
+            worker.on("exit", (code) => {
+                if (code === 0) {
+                    resolve();
+                    return;
+                }
+
+                if (code !== 0) {
+                    reject(error || new Error(`worker died with code ${code}`));
+                    console.error(`worker exited with code ${code}`);
+                }
+            });
+            worker.postMessage("shutdown");
+        });
+    }
+
+    async function takeWork() {
         if (job) return;
 
-        // If there's a job in the queue, send it to the worker
         job = queue.shift();
+        // Without a job, shutdown
         if (!job) {
+            await promiseShutdown();
             return;
         }
 
+        // If there's a job in the queue, send it to the worker
         worker.postMessage(job.message);
     }
 
@@ -85,9 +107,8 @@ async function spawn() {
         .on("exit", (code) => {
             workers = workers.filter((w) => w.takeWork !== takeWork);
 
-            job?.reject(error || new Error("worker died"));
-
             if (code !== 0) {
+                job?.reject(error || new Error(`worker died with code ${code}`));
                 console.error(`worker exited with code ${code}`);
             }
         });

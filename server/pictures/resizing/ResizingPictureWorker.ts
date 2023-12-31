@@ -2,25 +2,25 @@ import { parentPort } from "worker_threads";
 import Jimp from "jimp";
 import { ResizeMessage } from "./ResizeMessage.js";
 
-// eslint-disable-next-line prefer-const
-let timeout: NodeJS.Timeout | undefined;
+const handler = async (message: ResizeMessage | string) => {
+    if (message === "shutdown") {
+        parentPort?.off("message", handler);
+        process.exit();
+    }
 
-const listener = parentPort?.on("message", async (message: ResizeMessage) => {
-    timeout?.refresh();
+    const { file, mimeType } = message as ResizeMessage;
 
-    const image = await Jimp.read(Buffer.from(message.file));
+    const image = await Jimp.read(Buffer.from(file));
 
     const resizedImage =
         image.getWidth() > image.getHeight() ? image.resize(400, Jimp.AUTO) : image.resize(Jimp.AUTO, 400);
 
-    const resizedImageBuffer = await resizedImage.getBufferAsync(message.mimeType);
+    const resizedImageBuffer = await resizedImage.getBufferAsync(mimeType);
 
     parentPort?.postMessage({
         file: resizedImageBuffer,
-        mimeType: message.mimeType,
+        mimeType: mimeType,
     } as ResizeMessage);
-});
+};
 
-timeout = setTimeout(() => {
-    listener?.close();
-}, 60_000);
+parentPort?.on("message", handler);
