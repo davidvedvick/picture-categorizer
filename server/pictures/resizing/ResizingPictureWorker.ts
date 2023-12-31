@@ -10,7 +10,7 @@ const handler = async (message: ResizeMessage | string) => {
 
     const { file, mimeType } = message as ResizeMessage;
 
-    const image = await Jimp.read(Buffer.from(file));
+    const image = await Jimp.read(file instanceof Buffer ? file : Buffer.from(file.buffer));
 
     const resizedImage =
         image.getWidth() > image.getHeight() ? image.resize(400, Jimp.AUTO) : image.resize(Jimp.AUTO, 400);

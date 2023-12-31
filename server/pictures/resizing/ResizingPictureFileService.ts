@@ -141,7 +141,7 @@ export class ResizingPictureFileService implements ServeResizedPictureFiles {
         const resizedImageBuffer = await promiseResize({ ...pictureFile });
 
         return {
-            file: Buffer.from(resizedImageBuffer),
+            file: resizedImageBuffer instanceof Buffer ? resizedImageBuffer : Buffer.from(resizedImageBuffer.buffer),
             fileName: pictureFile.fileName,
             mimeType: pictureFile.mimeType,
         };
