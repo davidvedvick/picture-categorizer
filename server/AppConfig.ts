@@ -22,6 +22,7 @@ export interface AppConfig {
     db: { file: string };
     security: {
         encoder: EncoderConfig;
+        wellKnownLocation: string;
     };
 }
 
@@ -50,5 +51,6 @@ export default {
         encoder: {
             saltGenerations: process.env.SALT_GENERATIONS ?? config.security.encoder.saltGenerations,
         },
+        wellKnownLocation: process.env.WELL_KNOWN_LOCATION ?? config.security.wellKnownLocation,
     },
 } as AppConfig;
