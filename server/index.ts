@@ -41,6 +41,8 @@ app.use(fileUpload());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+if (config.security.wellKnownLocation) app.use("/.well-known", express.static(config.security.wellKnownLocation));
+
 const port = 5000;
 
 (async () => {
