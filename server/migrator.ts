@@ -9,7 +9,7 @@ export default async function (database: Database) {
     database.exec(`
         create table if not exists migrations
         (
-            id          INT primary key,
+            id          INTEGER primary key,
             file        varchar(2000) UNIQUE,
             executed_on DATETIME
         );`);

@@ -58,7 +58,11 @@ const port = 5000;
         app,
         pictureService,
         pictureService,
-        new CachingResizedPictureFileService(new ResizingPictureFileService(pictureService)),
+        new CachingResizedPictureFileService(
+            new ResizingPictureFileService(pictureService),
+            pictureRepository,
+            database,
+        ),
         jwtTokenManagement,
     );
 
