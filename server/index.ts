@@ -41,6 +41,8 @@ app.use(fileUpload());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+if (config.security.wellKnownLocation) app.use("/.well-known", express.static(config.security.wellKnownLocation));
+
 const port = 5000;
 
 (async () => {
@@ -58,7 +60,11 @@ const port = 5000;
         app,
         pictureService,
         pictureService,
-        new CachingResizedPictureFileService(new ResizingPictureFileService(pictureService)),
+        new CachingResizedPictureFileService(
+            new ResizingPictureFileService(pictureService),
+            pictureRepository,
+            database,
+        ),
         jwtTokenManagement,
     );
 
