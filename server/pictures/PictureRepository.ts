@@ -48,10 +48,10 @@ export class PictureRepository implements ManagePictures {
         return (statement.get(id) as Picture) ?? null;
     }
 
-    async findFileById(id: number): Promise<Uint8Array> {
+    async findFileById(id: number): Promise<Buffer> {
         const statement = this.database.prepare<number>("SELECT file FROM picture WHERE id = ?");
 
-        const result = statement.get(id) as { file: Uint8Array };
+        const result = statement.get(id) as { file: Buffer };
         return result?.file ?? Buffer.of();
     }
 

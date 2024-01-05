@@ -14,12 +14,13 @@ import compression from "compression";
 import { fileURLToPath } from "url";
 import migrator from "./migrator.js";
 import { ResizingPictureFileService } from "./pictures/resizing/ResizingPictureFileService.js";
-import { CachingResizedPictureFileService } from "./pictures/CachingPictureFileService.js";
 import PictureTagRoutes from "./pictures/tags/PictureTagRoutes.js";
 import { PictureTagService } from "./pictures/tags/PictureTagService.js";
 import { PictureTagRepository } from "./pictures/tags/PictureTagRepository.js";
 import { TagService } from "./pictures/tags/TagService.js";
 import Database from "better-sqlite3";
+import { ResizedPictureRepository } from "./pictures/resizing/ResizedPictureRepository.js";
+import { ResizePictureProcessor } from "./pictures/resizing/ResizePictureProcessor.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -60,10 +61,10 @@ const port = 5000;
         app,
         pictureService,
         pictureService,
-        new CachingResizedPictureFileService(
-            new ResizingPictureFileService(pictureService),
+        new ResizingPictureFileService(
+            new ResizedPictureRepository(database),
             pictureRepository,
-            database,
+            new ResizePictureProcessor(),
         ),
         jwtTokenManagement,
     );

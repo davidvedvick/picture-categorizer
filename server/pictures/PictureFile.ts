@@ -1,5 +1,5 @@
-export default interface PictureFile {
+export interface PictureFile {
     fileName: string;
-    file: Uint8Array;
+    file: Buffer;
     mimeType: string;
 }
