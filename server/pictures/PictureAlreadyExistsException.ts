@@ -1,5 +1,5 @@
 import CatEmployee from "../users/CatEmployee.js";
-import PictureFile from "./PictureFile.js";
+import { PictureFile } from "./PictureFile.js";
 
 export class PictureAlreadyExistsException extends Error {
     constructor(pictureFile: PictureFile, catEmployee: CatEmployee) {

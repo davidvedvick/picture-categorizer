@@ -1,15 +1,15 @@
-import {Picture} from "./Picture.js";
+import { Picture } from "./Picture.js";
 
 export interface ManagePictures {
-    findById(id: number): Promise<Picture | null>
+    findById(id: number): Promise<Picture | null>;
 
-    findFileById(id: number): Promise<Uint8Array>
+    findFileById(id: number): Promise<Buffer>;
 
-    findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<Picture | null>
+    findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<Picture | null>;
 
-    findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]>
+    findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]>;
 
-    countAll(): Promise<number>
+    countAll(): Promise<number>;
 
-    save(picture: Picture): Promise<Picture>
+    save(picture: Picture): Promise<Picture>;
 }
