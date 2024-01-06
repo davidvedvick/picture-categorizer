@@ -38,7 +38,7 @@ export class ResizePictureProcessor implements ProcessPictureResizeRequests {
                     ...resizePictureRequest,
                 });
             } catch (e) {
-                console.error(`An error occurred inserting the resized picture request: ${resizePictureRequest}`);
+                console.error(`An error occurred inserting the resized picture request ${resizePictureRequest}: `, e);
             }
         }
 
