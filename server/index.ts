@@ -52,6 +52,7 @@ const port = 5000;
     await migrator(database);
 
     const pictureRepository = new PictureRepository(database);
+    const resizePictureRepository = new ResizedPictureRepository(database);
     const catEmployeeRepository = new CatEmployeeRepository(database);
     const pictureTagRepository = new PictureTagRepository(database);
     const pictureService = new PictureService(pictureRepository, catEmployeeRepository);
@@ -62,9 +63,9 @@ const port = 5000;
         pictureService,
         pictureService,
         new ResizingPictureFileService(
-            new ResizedPictureRepository(database),
+            resizePictureRepository,
             pictureRepository,
-            new ResizePictureProcessor(),
+            new ResizePictureProcessor(resizePictureRepository, pictureRepository),
         ),
         jwtTokenManagement,
     );
