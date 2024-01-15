@@ -16,6 +16,8 @@ const promiseExec = (command) =>
     });
 
 (async () => {
+    await promiseExec("npm run test");
+
     await promiseExec("npm --prefix transfer run build");
     await Promise.all([promiseExec("npm --prefix server run publish"), promiseExec("npm --prefix frontend run build")]);
 

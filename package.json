@@ -8,7 +8,7 @@
         "prepare": "husky install",
         "postinstall": "husky install",
         "test": "npm --prefix server run test",
-        "publish": "npm run test && node publish.js",
+        "build": "node build.js",
         "serve": "NODE_ENV=development npm run publish && cd server && cp app-config.json build && cd build && sh ./start-server.sh"
     },
     "author": "David Vedvick",
