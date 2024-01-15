@@ -7,8 +7,10 @@ several different iterations:
 1. Originally developed in Kotlin + Spring Boot as a fun software engineering project for my master's.
 2. Next, the server back-end was migrated to Ktor to improve resource usage as Spring Boot has pretty heavy resource requirements.
 3. Then the server back-end was migrated to ExpressJS/Typescript to further improve resource usage (this surprised me as well).
-4. Finally, to even further reduce resource requirements and improve the portability of the application, the database was
+4. Finally, to further reduce resource requirements and improve the portability of the application, the database was
 migrated to SQLite from MySQL.
+
+![Catpics in action!](./catpics-in-action.png)
 
 Given all of these migrations, there may be some artifacts from previous iterations that don't quite make sense in its
 current form. If you see them, submit a PR to clean them up!
