@@ -1,10 +1,21 @@
-# catpics
+# Picture Categorizer
 
-catpics is public image gallery software devoted entirely to those animals we most love, cats! 
+Picture Categorizer is public image gallery software. An instance of Picture Categorizer runs at [Catpics!](https://catpics.fun),
+devoted entirely to those animals we most love, cats! To best serve our cat overlords, Picture Categorizer has gone through
+several different iterations:
+
+1. Originally developed in Kotlin + Spring Boot as a fun software engineering project for my master's.
+2. Next, the server back-end was migrated to Ktor to improve resource usage as Spring Boot has pretty heavy resource requirements.
+3. Then the server back-end was migrated to ExpressJS/Typescript to further improve resource usage (this surprised me as well).
+4. Finally, to even further reduce resource requirements and improve the portability of the application, the database was
+migrated to SQLite from MySQL.
+
+Given all of these migrations, there may be some artifacts from previous iterations that don't quite make sense in its
+current form. If you see them, submit a PR to clean them up!
 
 # Development
 
-[![Gradle](https://github.com/davidvedvick/picture-categorizer/actions/workflows/gradle.yml/badge.svg)](https://github.com/davidvedvick/picture-categorizer/actions/workflows/dockerbuild.yml)
+[![Docker Build](https://github.com/davidvedvick/picture-categorizer/actions/workflows/dockerbuild.yml/badge.svg)](https://github.com/davidvedvick/picture-categorizer/actions/workflows/dockerbuild.yml)
 
 ## Getting Started
 
@@ -13,36 +24,38 @@ and testing purposes.
 
 ### Prerequisites
 
-Docker and NodeJS 16+ is required to develop catpics.
+NodeJS 16+ is required to develop catpics. For full builds, docker is required.
 
-### Installing
+### Building
 
-1. Clone this repository.
-2. Install Eclipse or IntelliJ IDEA.
-3. Build and run!
+To run a CI build like it is run in Github, run the following command:
+
+```shell
+./build-github.sh
+```
 
 ## Running a Development Environment
 
-This application was developed with IntelliJ IDEA and will thus likely be easiest to run
-for development with IntelliJ IDEA. To run a development environment locally, do the following:
+The application consists of a frontend which runs within the client's web brwowser, and a backend which runs in NodeJS.
+Both components are written in Typescript.  The two components of the application can be run separately from the repository 
+root:
 
-1. Start MariaDB. If you run your MariaDB instance without Docker, then adjust `app-config.json` as necessary.
-To run it **with** Docker, you can just run the following command:
+Backend server: open a command prompt in the root folder and run this command:
 
 ```shell
-docker compose up db
+npm --prefix=server run serve-backend
 ```
 
-2. Start the backend server. Open a command prompt in the `server` folder and run this command:
+Frontend (development server): This is as easy as opening a command prompt in the folder `frontend` and running this command:
 
 ```shell
-npm run serve-backend
+npm --prefix=frontend run start
 ```
 
-3. Start the frontend server. This is as easy as opening a command prompt in the folder `frontend` and running this command:
+The two components can be bundled and served together using the following command in the repository root:
 
 ```shell
-npm start
+npm run serve
 ```
 
 ## Running the tests
@@ -51,14 +64,6 @@ Run the tests via the IDE or in a command line with this command:
 
 ```shell
 npm run test
-```
-
-## Running the Build
-
-Your IDE can perform the build. To run a CI build like it is run in Github, run the following command:
-
-```shell script
-./gradlew test build
 ```
 
 ## Deployment
@@ -93,5 +98,4 @@ process for submitting pull requests to us.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE)
-file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

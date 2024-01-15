@@ -2,17 +2,6 @@ version: '3.1'
 
 services:
 
-  db:
-    image: mariadb:10.6
-    restart: always
-    ports:
-      - "3306:3306"
-    environment:
-      MARIADB_DATABASE: catpics
-      MARIADB_USER: ${DB_USER:-cat}
-      MARIADB_PASSWORD: ${DB_PASSWORD:-scratch}
-      MARIADB_ROOT_PASSWORD: root
-
   web:
     build:
       context: .
@@ -22,13 +11,8 @@ services:
     volumes:
         - data:/etc/data
     environment:
-      DATASOURCE_URL: mysql://db:3306/catpics
-      DATASOURCE_USERNAME: ${DB_USER:-cat}
-      DATASOURCE_PASSWORD: ${DB_USER:-scratch}
       SQLITE_DB_FILE: /etc/data/pics.db
       APP_AUTHENTICATION_SECRET: ${APP_AUTHENTICATION_SECRET:-5037723c-f5f8-49c4-b161-d29733d034ff}
-    depends_on:
-      - db
 
 volumes:
   data:
