@@ -1,7 +1,8 @@
-use super::Picture;
+use crate::pictures::picture::Picture;
+use super::picture;
 
-trait ManagePictures {
-    async fn find_by_id(id: u64) -> Option<Result<Picture, warp::Error>>;
+pub trait ManagePictures {
+    async fn find_by_id(&self, id: i64) -> Result<Option<Picture>, warp::Error>;
 
     async fn find_file_by_id(id: u64) -> Option<Result<Vec<u8>, warp::Error>>;
 
