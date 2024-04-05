@@ -21,13 +21,17 @@ impl<TRepo: ManagePictures> ServePictureInformation for PictureService<TRepo> {
         page_number: Option<i32>,
         page_size: Option<i32>,
     ) -> Result<Page<PictureInformation>, impl std::fmt::Debug> {
-        let future_picture_count = self.picture_repository.count_all();
+        let future_pictures = self.picture_repository.find_all(page_number, page_size);
 
-        match self
-            .picture_repository
-            .find_all(page_number, page_size)
-            .await
-        {
+        let is_last = match (page_number, page_size) {
+            (Some(n), Some(s)) => match self.picture_repository.count_all().await {
+                Ok(count) => count <= ((n + 1) * s) as i64,
+                Err(e) => return Err(e),
+            },
+            _ => true,
+        };
+
+        match future_pictures.await {
             Ok(pictures) => Ok(Page {
                 content: pictures
                     .iter()
@@ -38,13 +42,7 @@ impl<TRepo: ManagePictures> ServePictureInformation for PictureService<TRepo> {
                     })
                     .collect(),
                 number: page_number.unwrap_or(0),
-                last: match (page_number, page_size) {
-                    (Some(n), Some(s)) => match future_picture_count.await {
-                        Ok(count) => count <= ((n + 1) * s) as i64,
-                        Err(e) => return Err(e),
-                    },
-                    _ => true,
-                },
+                last: is_last,
             }),
             Err(e) => Err(e),
         }
