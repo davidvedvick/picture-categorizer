@@ -81,23 +81,23 @@ impl<TRepo: ManagePictures> ServePictureFiles for PictureService<TRepo> {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Once;
+
+    use async_once::AsyncOnce;
+    use lazy_static::lazy_static;
+    use mockall::predicate;
+    use once_cell::sync::Lazy;
+    use tokio::runtime::Builder;
+
+    use crate::pictures::manage_pictures::MockManagePictures;
+    use crate::pictures::picture::Picture;
+
     use super::*;
 
     mod given_a_user {
         use super::*;
 
         mod when_adding_the_users_pictures {
-            use std::sync::Once;
-
-            use async_once::AsyncOnce;
-            use lazy_static::lazy_static;
-            use mockall::predicate;
-            use once_cell::sync::Lazy;
-            use tokio::runtime::Builder;
-
-            use crate::pictures::manage_pictures::MockManagePictures;
-            use crate::pictures::picture::Picture;
-
             use super::*;
 
             static INIT: Once = Once::new();
@@ -141,7 +141,7 @@ mod tests {
             }
 
             #[test]
-            fn then_the_added_pictures_are_correct() {
+            fn then_the_pictures_are_correct() {
                 let rt = Builder::new_current_thread().build().unwrap();
                 rt.block_on(async {
                     let page = PICTURE_INFO.get().await;
@@ -183,17 +183,6 @@ mod tests {
         }
 
         mod when_getting_the_last_page {
-            use std::sync::Once;
-
-            use async_once::AsyncOnce;
-            use lazy_static::lazy_static;
-            use mockall::predicate;
-            use once_cell::sync::Lazy;
-            use tokio::runtime::Builder;
-
-            use crate::pictures::manage_pictures::MockManagePictures;
-            use crate::pictures::picture::Picture;
-
             use super::*;
 
             static INIT: Once = Once::new();
@@ -253,6 +242,103 @@ mod tests {
                 rt.block_on(async {
                     let page = PICTURE_INFO.get().await;
                     assert_eq!(page.number, 1)
+                });
+            }
+        }
+
+        mod when_getting_all_picture_information {
+            use super::*;
+
+            static INIT: Once = Once::new();
+
+            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+                let mut mock = MockManagePictures::new();
+                mock.expect_find_all()
+                    .with(predicate::eq(None), predicate::eq(None))
+                    .returning(|n, s| {
+                        Ok(vec![
+                            Picture {
+                                id: 892,
+                                file_name: "2onzuNJ".to_string(),
+                                cat_employee_id: 445,
+                                file: vec![],
+                                mime_type: "".to_string(),
+                            },
+                            Picture {
+                                id: 895,
+                                cat_employee_id: 35,
+                                file_name: "dlg0fWB".to_string(),
+                                file: vec![],
+                                mime_type: "".to_string(),
+                            },
+                            Picture {
+                                id: 69,
+                                cat_employee_id: 398,
+                                file_name: "qm4ZjAGAgb".to_string(),
+                                file: vec![],
+                                mime_type: "".to_string(),
+                            },
+                        ])
+                    });
+
+                mock.expect_count_all().returning(|| Ok(-127i64));
+
+                PictureService::new(mock)
+            });
+
+            lazy_static! {
+                static ref PICTURE_INFO: AsyncOnce<Page<PictureInformation>> =
+                    AsyncOnce::new(async {
+                        PICTURE_SERVICE
+                            .get_picture_information(None, None)
+                            .await
+                            .unwrap()
+                    });
+            }
+
+            #[test]
+            fn then_the_pictures_are_correct() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let page = PICTURE_INFO.get().await;
+                    assert_eq!(
+                        page.content,
+                        vec![
+                            PictureInformation {
+                                id: 892,
+                                file_name: "2onzuNJ".to_string(),
+                                cat_employee_id: 445,
+                            },
+                            PictureInformation {
+                                id: 895,
+                                cat_employee_id: 35,
+                                file_name: "dlg0fWB".to_string(),
+                            },
+                            PictureInformation {
+                                id: 69,
+                                cat_employee_id: 398,
+                                file_name: "qm4ZjAGAgb".to_string(),
+                            },
+                        ]
+                    );
+                });
+            }
+
+            #[test]
+            fn then_it_is_the_last_page() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let page = PICTURE_INFO.get().await;
+                    assert_eq!(page.last, true)
+                });
+            }
+
+            #[test]
+            fn then_it_is_the_correct_page_number() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let page = PICTURE_INFO.get().await;
+                    assert_eq!(page.number, 0)
                 });
             }
         }
