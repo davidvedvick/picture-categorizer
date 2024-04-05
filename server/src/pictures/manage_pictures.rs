@@ -7,7 +7,7 @@ use crate::pictures::picture::Picture;
 pub trait ManagePictures {
     async fn find_by_id(&self, id: i64) -> DataAccessResult<Option<Picture>>;
 
-    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Option<Vec<u8>>>;
+    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Vec<u8>>;
 
     async fn find_by_cat_employee_id_and_file_name(
         &self,

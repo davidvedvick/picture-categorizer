@@ -51,7 +51,7 @@ impl ManagePictures for PictureRepository {
         Ok(picture_option)
     }
 
-    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Option<Vec<u8>>> {
+    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Vec<u8>> {
         let mut statement = self
             .connection
             .prepare("SELECT file FROM picture WHERE id = ?")?;
@@ -60,10 +60,10 @@ impl ManagePictures for PictureRepository {
 
         if let Ok(State::Row) = statement.next() {
             let result = statement.read::<Vec<u8>, usize>(0).unwrap();
-            return Ok(Some(result));
+            return Ok(result);
         }
 
-        Ok(None)
+        Ok(vec![])
     }
 
     async fn find_by_cat_employee_id_and_file_name(

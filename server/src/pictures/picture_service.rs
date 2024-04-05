@@ -68,12 +68,11 @@ impl<TRepo: ManagePictures> ServePictureFiles for PictureService<TRepo> {
         };
 
         match future_picture.await {
-            Ok(Some(file)) => Ok(Some(PictureFile {
+            Ok(file) => Ok(Some(PictureFile {
                 file_name: picture.file_name,
                 file,
                 mime_type: picture.mime_type,
             })),
-            Ok(None) => Ok(None),
             Err(e) => Err(e),
         }
     }
@@ -339,6 +338,64 @@ mod tests {
                 rt.block_on(async {
                     let page = PICTURE_INFO.get().await;
                     assert_eq!(page.number, 0)
+                });
+            }
+        }
+
+        mod when_getting_a_picture {
+            use super::*;
+
+            static INIT: Once = Once::new();
+
+            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+                let mut mock = MockManagePictures::new();
+
+                mock.expect_find_by_id()
+                    .with(predicate::eq(644))
+                    .returning(|id| {
+                        Ok(Some(Picture {
+                            id: 644,
+                            mime_type: "zXHTufH".to_string(),
+                            cat_employee_id: 99,
+                            file_name: "9ZVugNotp".to_string(),
+                            file: vec![],
+                        }))
+                    });
+
+                mock.expect_find_file_by_id()
+                    .with(predicate::eq(644))
+                    .returning(|id| {
+                        Ok(vec![
+                            (322 % 128) as u8,
+                            (379 % 128) as u8,
+                            (706 % 128) as u8,
+                        ])
+                    });
+
+                mock.expect_count_all().returning(|| Ok(-127i64));
+
+                PictureService::new(mock)
+            });
+
+            lazy_static! {
+                static ref PICTURE_FILE: AsyncOnce<PictureFile> = AsyncOnce::new(async {
+                    PICTURE_SERVICE
+                        .get_picture_file(644)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                });
+            }
+
+            #[test]
+            fn then_the_picture_is_correct() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let page = PICTURE_FILE.get().await;
+                    assert_eq!(
+                        page.file,
+                        vec![(322 % 128) as u8, (379 % 128) as u8, (706 % 128) as u8]
+                    )
                 });
             }
         }
