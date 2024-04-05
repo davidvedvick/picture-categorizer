@@ -27,9 +27,13 @@ pub async fn get_pictures_handler(
     let connection = Connection::open_thread_safe(connection_configuration.file).unwrap();
     let picture_repo = PictureRepository::new(connection);
     let picture_service = PictureService::new(picture_repo);
-    let pictures = picture_service
+    let pictures = match picture_service
         .get_picture_information(query.page, query.size)
-        .await;
+        .await
+    {
+        Ok(p) => p,
+        Err(e) => return Err(custom(Unknown)),
+    };
 
     Ok(json(&pictures))
 }
@@ -44,10 +48,11 @@ pub async fn get_picture_file_handler(
     let option = picture_service.get_picture_file(id).await;
 
     match option {
-        Some(p) => Ok(Response::builder()
+        Ok(Some(p)) => Ok(Response::builder()
             .header("cache-control", "public, max-age=31536000, immutable")
             .body(p.file)),
-        None => Err(reject::not_found()),
+        Ok(None) => Err(reject::not_found()),
+        Err(e) => Err(custom(Unknown)),
     }
 }
 

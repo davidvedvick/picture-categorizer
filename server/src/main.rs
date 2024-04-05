@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate lazy_static;
+
 use std::convert::Infallible;
 
 use warp::{http::StatusCode, query, Filter};

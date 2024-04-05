@@ -1,6 +1,6 @@
 use sqlite::{ConnectionThreadSafe, Row, State};
-use warp::Error;
 
+use crate::errors::DataAccessResult;
 use crate::pictures::manage_pictures::ManagePictures;
 use crate::pictures::picture::Picture;
 
@@ -37,7 +37,7 @@ FROM picture
 ";
 
 impl ManagePictures for PictureRepository {
-    async fn find_by_id(&self, id: i64) -> Result<Option<Picture>, Error> {
+    async fn find_by_id(&self, id: i64) -> DataAccessResult<Option<Picture>> {
         let picture_option = self
             .connection
             .prepare(format!("{} WHERE id = ?", SELECT_FROM_PICTURES).as_str())
@@ -51,11 +51,10 @@ impl ManagePictures for PictureRepository {
         Ok(picture_option)
     }
 
-    async fn find_file_by_id(&self, id: i64) -> Result<Option<Vec<u8>>, Error> {
+    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Option<Vec<u8>>> {
         let mut statement = self
             .connection
-            .prepare("SELECT file FROM picture WHERE id = ?")
-            .unwrap();
+            .prepare("SELECT file FROM picture WHERE id = ?")?;
 
         statement.bind((1, id)).unwrap();
 
@@ -68,9 +67,10 @@ impl ManagePictures for PictureRepository {
     }
 
     async fn find_by_cat_employee_id_and_file_name(
+        &self,
         cat_employee_id: i64,
         file_name: String,
-    ) -> Result<Option<Picture>, Error> {
+    ) -> DataAccessResult<Option<Picture>> {
         todo!()
     }
 
@@ -78,12 +78,11 @@ impl ManagePictures for PictureRepository {
         &self,
         page_number: Option<i32>,
         page_size: Option<i32>,
-    ) -> Result<Vec<Picture>, Error> {
+    ) -> DataAccessResult<Vec<Picture>> {
         if page_number == None || page_size == None {
             let pictures = self
                 .connection
-                .prepare(SELECT_FROM_PICTURES)
-                .unwrap()
+                .prepare(SELECT_FROM_PICTURES)?
                 .into_iter()
                 .map(row_to_picture)
                 .collect::<Vec<Picture>>();
@@ -98,24 +97,28 @@ impl ManagePictures for PictureRepository {
             .prepare(format!(
                 "{} ORDER BY id DESC LIMIT ?,?",
                 SELECT_FROM_PICTURES
-            ))
-            .unwrap()
+            ))?
             .into_iter()
-            .bind((1, offset))
-            .unwrap()
-            .bind((2, page_size.unwrap() as i64))
-            .unwrap()
+            .bind((1, offset))?
+            .bind((2, page_size.unwrap() as i64))?
             .map(row_to_picture)
             .collect::<Vec<Picture>>();
 
         Ok(pictures)
     }
 
-    async fn count_all() -> Result<i64, Error> {
-        todo!()
+    async fn count_all(&self) -> DataAccessResult<i64> {
+        let mut statement = self.connection.prepare("SELECT COUNT(*) FROM picture")?;
+
+        if let Ok(State::Row) = statement.next() {
+            let result = statement.read::<i64, usize>(0)?;
+            return Ok(result);
+        }
+
+        return Ok(0);
     }
 
-    async fn save(picture: Picture) -> Result<Picture, Error> {
+    async fn save(&self, picture: Picture) -> DataAccessResult<Picture> {
         todo!()
     }
 }

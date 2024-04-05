@@ -8,15 +8,15 @@ pub trait ServePictureInformation {
         &self,
         page_number: Option<i32>,
         page_size: Option<i32>,
-    ) -> Page<PictureInformation>;
+    ) -> Result<Page<PictureInformation>, impl std::fmt::Debug>;
 
     async fn add_picture(
         &self,
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
-    ) -> PictureInformation;
+    ) -> Result<PictureInformation, impl std::fmt::Debug>;
 }
 
 pub trait ServePictureFiles {
-    async fn get_picture_file(&self, id: i64) -> Option<PictureFile>;
+    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl std::fmt::Debug>;
 }

@@ -1,8 +1,9 @@
 use std::convert::Infallible;
+
 use serde::Serialize;
+use thiserror::Error;
 use warp::http::StatusCode;
 use warp::{Rejection, Reply};
-use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -10,8 +11,16 @@ pub enum Error {
     ReadFileError(#[from] std::io::Error),
 
     #[error("Unknown")]
-    Unknown
+    Unknown,
 }
+
+#[derive(Error, Debug)]
+pub enum DataAccessError {
+    #[error("data access error: {0}")]
+    DataAccessError(#[from] sqlite::Error),
+}
+
+pub type DataAccessResult<T> = Result<T, DataAccessError>;
 
 pub type RejectableResult<T> = Result<T, Rejection>;
 
