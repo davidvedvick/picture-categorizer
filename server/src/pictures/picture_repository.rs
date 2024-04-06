@@ -1,5 +1,6 @@
-use sqlite::{ConnectionThreadSafe, Row, State};
+use sqlite::{BindableWithIndex, ConnectionThreadSafe, Row, State};
 
+use crate::errors::DataAccessError::{DataAccessError, UnexpectedCompletionError};
 use crate::errors::DataAccessResult;
 use crate::pictures::manage_pictures::ManagePictures;
 use crate::pictures::picture::Picture;
@@ -40,11 +41,9 @@ impl ManagePictures for PictureRepository {
     async fn find_by_id(&self, id: i64) -> DataAccessResult<Option<Picture>> {
         let picture_option = self
             .connection
-            .prepare(format!("{} WHERE id = ?", SELECT_FROM_PICTURES).as_str())
-            .unwrap()
+            .prepare(format!("{} WHERE id = ?", SELECT_FROM_PICTURES).as_str())?
             .into_iter()
-            .bind((1, id))
-            .unwrap()
+            .bind((1, id))?
             .map(row_to_picture)
             .next();
 
@@ -119,6 +118,31 @@ impl ManagePictures for PictureRepository {
     }
 
     async fn save(&self, picture: Picture) -> DataAccessResult<Picture> {
-        todo!()
+        let mut statement = self.connection.prepare(
+            "INSERT INTO picture (cat_employee_id, file_name, file, mime_type)
+             VALUES (?, ?, ?, ?);
+
+             SELECT last_insert_rowid()",
+        )?;
+
+        statement.bind((1, picture.cat_employee_id))?;
+        statement.bind((2, picture.file_name.as_str()))?;
+        statement.bind((3, picture.file.as_slice()))?;
+        statement.bind((4, picture.mime_type.as_str()))?;
+
+        return match statement.next() {
+            Ok(State::Row) => {
+                let result = statement.read::<i64, usize>(0)?;
+                return Ok(Picture {
+                    id: result,
+                    file_name: picture.file_name,
+                    file: picture.file,
+                    mime_type: picture.mime_type,
+                    cat_employee_id: picture.cat_employee_id,
+                });
+            }
+            Ok(State::Done) => Err(UnexpectedCompletionError),
+            Err(e) => Err(DataAccessError(e)),
+        };
     }
 }

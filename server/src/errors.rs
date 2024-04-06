@@ -18,6 +18,9 @@ pub enum Error {
 pub enum DataAccessError {
     #[error("data access error: {0}")]
     DataAccessError(#[from] sqlite::Error),
+
+    #[error("operation completed unexpectedly")]
+    UnexpectedCompletionError,
 }
 
 pub type DataAccessResult<T> = Result<T, DataAccessError>;
