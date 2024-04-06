@@ -1,3 +1,3 @@
 pub struct EmailIdentifiedCatEmployee {
-    email: String,
+    pub(crate) email: String,
 }

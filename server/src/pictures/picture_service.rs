@@ -1,21 +1,31 @@
 use crate::page::Page;
 use crate::pictures::manage_pictures::ManagePictures;
+use crate::pictures::picture::Picture;
 use crate::pictures::picture_file::PictureFile;
 use crate::pictures::picture_information::PictureInformation;
 use crate::pictures::serve_pictures::{ServePictureFiles, ServePictureInformation};
 use crate::users::email_identified_cat_employee::EmailIdentifiedCatEmployee;
+use crate::users::manage_cat_employees::ManageCatEmployees;
 
-pub struct PictureService<TRepo: ManagePictures> {
-    picture_repository: TRepo,
+pub struct PictureService<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> {
+    picture_repository: TPicturesRepo,
+    cat_repository: TCatEmployeesRepo,
 }
 
-impl<TRepo: ManagePictures> PictureService<TRepo> {
-    pub fn new(picture_repository: TRepo) -> Self {
-        Self { picture_repository }
+impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees>
+    PictureService<TPicturesRepo, TCatEmployeesRepo>
+{
+    pub fn new(picture_repository: TPicturesRepo, cat_repository: TCatEmployeesRepo) -> Self {
+        Self {
+            picture_repository,
+            cat_repository,
+        }
     }
 }
 
-impl<TRepo: ManagePictures> ServePictureInformation for PictureService<TRepo> {
+impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> ServePictureInformation
+    for PictureService<TPicturesRepo, TCatEmployeesRepo>
+{
     async fn get_picture_information(
         &self,
         page_number: Option<i32>,
@@ -53,11 +63,46 @@ impl<TRepo: ManagePictures> ServePictureInformation for PictureService<TRepo> {
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
     ) -> Result<PictureInformation, impl std::fmt::Debug> {
-        Err("todo")
+        let cat_employee = self
+            .cat_repository
+            .find_by_email(authenticated_cat_employee.email)
+            .await;
+
+        let added_picture = self
+            .picture_repository
+            .save(Picture {
+                id: 0,
+                file_name: picture_file.file_name,
+                cat_employee_id: match cat_employee {
+                    Ok(Some(emp)) => emp.id,
+                    Ok(None) => {
+                        return Ok(PictureInformation {
+                            id: 0,
+                            cat_employee_id: 0,
+                            file_name: "".to_string(),
+                        })
+                    }
+                    Err(e) => return Err(e),
+                },
+                file: picture_file.file,
+                mime_type: picture_file.mime_type,
+            })
+            .await;
+
+        return match added_picture {
+            Ok(p) => Ok(PictureInformation {
+                id: p.id,
+                file_name: p.file_name,
+                cat_employee_id: p.cat_employee_id,
+            }),
+            Err(e) => return Err(e),
+        };
     }
 }
 
-impl<TRepo: ManagePictures> ServePictureFiles for PictureService<TRepo> {
+impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> ServePictureFiles
+    for PictureService<TPicturesRepo, TCatEmployeesRepo>
+{
     async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl std::fmt::Debug> {
         let future_picture = self.picture_repository.find_file_by_id(id);
 
@@ -90,18 +135,21 @@ mod tests {
 
     use crate::pictures::manage_pictures::MockManagePictures;
     use crate::pictures::picture::Picture;
+    use crate::users::manage_cat_employees::MockManageCatEmployees;
 
     use super::*;
 
-    mod given_a_user {
+    mod given_cat_pictures {
         use super::*;
 
-        mod when_adding_the_users_pictures {
+        mod when_getting_the_first_page {
             use super::*;
 
             static INIT: Once = Once::new();
 
-            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+            static PICTURE_SERVICE: Lazy<
+                PictureService<MockManagePictures, MockManageCatEmployees>,
+            > = Lazy::new(|| {
                 let mut mock = MockManagePictures::new();
                 mock.expect_find_all()
                     .with(predicate::eq(Some(0)), predicate::eq(Some(5)))
@@ -126,7 +174,7 @@ mod tests {
 
                 mock.expect_count_all().returning(|| Ok(10i64));
 
-                PictureService::new(mock)
+                PictureService::new(mock, MockManageCatEmployees::new())
             });
 
             lazy_static! {
@@ -186,7 +234,9 @@ mod tests {
 
             static INIT: Once = Once::new();
 
-            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+            static PICTURE_SERVICE: Lazy<
+                PictureService<MockManagePictures, MockManageCatEmployees>,
+            > = Lazy::new(|| {
                 let mut mock = MockManagePictures::new();
                 mock.expect_find_all()
                     .with(predicate::eq(Some(1)), predicate::eq(Some(3)))
@@ -204,7 +254,7 @@ mod tests {
 
                 mock.expect_count_all().returning(|| Ok(6i64));
 
-                PictureService::new(mock)
+                PictureService::new(mock, MockManageCatEmployees::new())
             });
 
             lazy_static! {
@@ -250,7 +300,9 @@ mod tests {
 
             static INIT: Once = Once::new();
 
-            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+            static PICTURE_SERVICE: Lazy<
+                PictureService<MockManagePictures, MockManageCatEmployees>,
+            > = Lazy::new(|| {
                 let mut mock = MockManagePictures::new();
                 mock.expect_find_all()
                     .with(predicate::eq(None), predicate::eq(None))
@@ -282,7 +334,7 @@ mod tests {
 
                 mock.expect_count_all().returning(|| Ok(-127i64));
 
-                PictureService::new(mock)
+                PictureService::new(mock, MockManageCatEmployees::new())
             });
 
             lazy_static! {
@@ -347,7 +399,9 @@ mod tests {
 
             static INIT: Once = Once::new();
 
-            static PICTURE_SERVICE: Lazy<PictureService<MockManagePictures>> = Lazy::new(|| {
+            static PICTURE_SERVICE: Lazy<
+                PictureService<MockManagePictures, MockManageCatEmployees>,
+            > = Lazy::new(|| {
                 let mut mock = MockManagePictures::new();
 
                 mock.expect_find_by_id()
@@ -374,7 +428,7 @@ mod tests {
 
                 mock.expect_count_all().returning(|| Ok(-127i64));
 
-                PictureService::new(mock)
+                PictureService::new(mock, MockManageCatEmployees::new())
             });
 
             lazy_static! {
@@ -395,6 +449,104 @@ mod tests {
                     assert_eq!(
                         page.file,
                         vec![(322 % 128) as u8, (379 % 128) as u8, (706 % 128) as u8]
+                    )
+                });
+            }
+        }
+    }
+
+    mod given_a_user {
+        use super::*;
+
+        mod when_adding_the_users_pictures {
+            use std::sync::Mutex;
+
+            use crate::users::cat_employee::CatEmployee;
+
+            use super::*;
+
+            static PICTURE_SERVICE: Lazy<
+                PictureService<MockManagePictures, MockManageCatEmployees>,
+            > = Lazy::new(|| {
+                let mut mock = MockManagePictures::new();
+
+                mock.expect_find_by_cat_employee_id_and_file_name()
+                    .returning(|e, f| Ok(None));
+
+                mock.expect_save().returning(|p| {
+                    PICTURES.lock().unwrap().push(p.clone());
+
+                    Ok(p)
+                });
+
+                mock.expect_count_all().returning(|| Ok(-127i64));
+
+                let mut employee_mock = MockManageCatEmployees::new();
+                employee_mock
+                    .expect_find_by_email()
+                    .with(predicate::eq("8N8k".to_string()))
+                    .returning(|e| {
+                        Ok(Some(CatEmployee {
+                            id: 920,
+                            password: "OaH1Su".to_string(),
+                            is_enabled: true,
+                            email: e,
+                        }))
+                    });
+
+                PictureService::new(mock, employee_mock)
+            });
+
+            lazy_static! {
+                static ref PICTURES: Mutex<Vec<Picture>> = Mutex::new(Vec::new());
+                static ref ADDED_PICTURE: AsyncOnce<PictureInformation> = AsyncOnce::new(async {
+                    PICTURE_SERVICE
+                        .add_picture(
+                            PictureFile {
+                                file_name: "KEDSlros".to_string(),
+                                file: vec![247, (761 % 256) as u8, (879 % 256) as u8, 11],
+                                mime_type: "pV9UkazC".to_string(),
+                            },
+                            EmailIdentifiedCatEmployee {
+                                email: "8N8k".to_string(),
+                            },
+                        )
+                        .await
+                        .unwrap()
+                });
+            }
+
+            #[test]
+            fn then_the_added_pictures_are_correct() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let picture = ADDED_PICTURE.get().await;
+                    assert_eq!(
+                        *picture,
+                        PictureInformation {
+                            id: 0,
+                            cat_employee_id: 920,
+                            file_name: "KEDSlros".to_string(),
+                        }
+                    )
+                });
+            }
+
+            #[test]
+            fn then_the_response_data_is_correct() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    ADDED_PICTURE.get().await;
+                    let pictures = PICTURES.lock().unwrap().clone();
+                    assert_eq!(
+                        pictures,
+                        vec![Picture {
+                            id: 0,
+                            file_name: "KEDSlros".to_string(),
+                            cat_employee_id: 920,
+                            file: vec![247, (761 % 256) as u8, (879 % 256) as u8, 11],
+                            mime_type: "pV9UkazC".to_string(),
+                        }]
                     )
                 });
             }
