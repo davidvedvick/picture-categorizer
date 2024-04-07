@@ -18,8 +18,6 @@ mod page;
 mod pictures;
 mod users;
 
-type ShareablePictureService = Arc<PictureService<PictureRepository, CatEmployeeRepository>>;
-
 fn with_cloned<T: Clone + Send>(
     clonable: T,
 ) -> impl Filter<Extract = (T,), Error = Infallible> + Clone {
@@ -34,16 +32,11 @@ async fn main() {
         file: "/home/david/.catpics/pics.db".to_string(),
     };
 
-    let picture_repo = match Connection::open_thread_safe(connection_configuration.clone().file) {
-        Ok(connection) => PictureRepository::new(connection),
-        Err(e) => return,
-    };
+    let connection = Arc::new(Connection::open_thread_safe(connection_configuration.file).unwrap());
 
-    let cat_employee_repo =
-        match Connection::open_thread_safe(connection_configuration.clone().file) {
-            Ok(connection) => CatEmployeeRepository::new(connection),
-            Err(e) => return,
-        };
+    let picture_repo = PictureRepository::new(connection.clone());
+
+    let cat_employee_repo = CatEmployeeRepository::new(connection.clone());
 
     let picture_service = Arc::new(PictureService::new(picture_repo, cat_employee_repo));
 

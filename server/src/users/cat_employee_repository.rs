@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use sqlite::{ConnectionThreadSafe, Row};
 
 use crate::errors::DataAccessResult;
@@ -5,11 +7,11 @@ use crate::users::cat_employee::CatEmployee;
 use crate::users::manage_cat_employees::ManageCatEmployees;
 
 pub struct CatEmployeeRepository {
-    connection: ConnectionThreadSafe,
+    connection: Arc<ConnectionThreadSafe>,
 }
 
 impl CatEmployeeRepository {
-    pub fn new(connection: ConnectionThreadSafe) -> Self {
+    pub fn new(connection: Arc<ConnectionThreadSafe>) -> Self {
         Self { connection }
     }
 }

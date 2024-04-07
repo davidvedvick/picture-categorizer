@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use sqlite::{BindableWithIndex, ConnectionThreadSafe, Row, State};
 
 use crate::errors::DataAccessError::{DataAccessError, UnexpectedCompletionError};
@@ -6,11 +8,11 @@ use crate::pictures::manage_pictures::ManagePictures;
 use crate::pictures::picture::Picture;
 
 pub struct PictureRepository {
-    connection: ConnectionThreadSafe,
+    connection: Arc<ConnectionThreadSafe>,
 }
 
 impl PictureRepository {
-    pub fn new(connection: ConnectionThreadSafe) -> Self {
+    pub fn new(connection: Arc<ConnectionThreadSafe>) -> Self {
         Self { connection }
     }
 }
