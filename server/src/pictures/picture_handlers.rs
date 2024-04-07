@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use serde::Deserialize;
 use sqlite::Connection;
 use warp::http::Response;
@@ -23,20 +25,8 @@ pub struct PageQuery {
 
 pub async fn get_pictures_handler(
     query: PageQuery,
-    connection_configuration: ConnectionConfiguration,
+    picture_service: Arc<PictureService<PictureRepository, CatEmployeeRepository>>,
 ) -> RejectableResult<impl Reply> {
-    let picture_repo = match Connection::open_thread_safe(connection_configuration.clone().file) {
-        Ok(connection) => PictureRepository::new(connection),
-        Err(e) => return Err(custom(Unknown)),
-    };
-
-    let cat_employee_repo =
-        match Connection::open_thread_safe(connection_configuration.clone().file) {
-            Ok(connection) => CatEmployeeRepository::new(connection),
-            Err(e) => return Err(custom(Unknown)),
-        };
-
-    let picture_service = PictureService::new(picture_repo, cat_employee_repo);
     let pictures = match picture_service
         .get_picture_information(query.page, query.size)
         .await
@@ -50,20 +40,8 @@ pub async fn get_pictures_handler(
 
 pub async fn get_picture_file_handler(
     id: i64,
-    connection_configuration: ConnectionConfiguration,
+    picture_service: Arc<PictureService<PictureRepository, CatEmployeeRepository>>,
 ) -> RejectableResult<impl Reply> {
-    let picture_repo = match Connection::open_thread_safe(connection_configuration.clone().file) {
-        Ok(connection) => PictureRepository::new(connection),
-        Err(e) => return Err(custom(Unknown)),
-    };
-
-    let cat_employee_repo =
-        match Connection::open_thread_safe(connection_configuration.clone().file) {
-            Ok(connection) => CatEmployeeRepository::new(connection),
-            Err(e) => return Err(custom(Unknown)),
-        };
-
-    let picture_service = PictureService::new(picture_repo, cat_employee_repo);
     let option = picture_service.get_picture_file(id).await;
 
     match option {

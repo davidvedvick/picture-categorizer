@@ -22,7 +22,7 @@ fn row_to_employee(row: Result<Row, impl std::fmt::Debug>) -> CatEmployee {
         id: result.read::<i64, _>("id"),
         email: result.read::<&str, _>("email").to_string(),
         password: result.read::<&str, _>("password").to_string(),
-        is_enabled: result.read::<bool, _>("is_enabled"),
+        is_enabled: result.read::<i64, _>("is_enabled") != 0,
     }
 }
 

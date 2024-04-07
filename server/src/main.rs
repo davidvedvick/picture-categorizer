@@ -2,16 +2,23 @@
 extern crate lazy_static;
 
 use std::convert::Infallible;
+use std::sync::Arc;
 
+use sqlite::Connection;
 use warp::{http::StatusCode, query, Filter};
 
 use crate::connection_config::ConnectionConfiguration;
+use crate::pictures::picture_repository::PictureRepository;
+use crate::pictures::picture_service::PictureService;
+use crate::users::cat_employee_repository::CatEmployeeRepository;
 
 mod connection_config;
 mod errors;
 mod page;
 mod pictures;
 mod users;
+
+type ShareablePictureService = Arc<PictureService<PictureRepository, CatEmployeeRepository>>;
 
 fn with_cloned<T: Clone + Send>(
     clonable: T,
@@ -27,22 +34,30 @@ async fn main() {
         file: "/home/david/.catpics/pics.db".to_string(),
     };
 
+    let picture_repo = match Connection::open_thread_safe(connection_configuration.clone().file) {
+        Ok(connection) => PictureRepository::new(connection),
+        Err(e) => return,
+    };
+
+    let cat_employee_repo =
+        match Connection::open_thread_safe(connection_configuration.clone().file) {
+            Ok(connection) => CatEmployeeRepository::new(connection),
+            Err(e) => return,
+        };
+
+    let picture_service = Arc::new(PictureService::new(picture_repo, cat_employee_repo));
+
     let get_picture_page_route = warp::path!("api" / "pictures")
         .and(query())
-        .and(with_cloned(connection_configuration.clone()))
+        .and(with_cloned(picture_service.clone()))
         .and_then(pictures::picture_handlers::get_pictures_handler);
 
-    let get_picture_route = warp::path!("api" / "pictures" / i64)
-        .and(with_cloned(connection_configuration.clone()))
-        .and_then(pictures::picture_handlers::get_picture_handler);
-
     let get_picture_file_route = warp::path!("api" / "pictures" / i64 / "file")
-        .and(with_cloned(connection_configuration.clone()))
+        .and(with_cloned(picture_service.clone()))
         .and_then(pictures::picture_handlers::get_picture_file_handler);
 
     let routes = health_route
         .or(get_picture_page_route)
-        .or(get_picture_route)
         .or(get_picture_file_route)
         .with(warp::cors().allow_any_origin())
         .recover(errors::handle_rejection);
