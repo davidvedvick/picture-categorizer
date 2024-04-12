@@ -1,6 +1,7 @@
+#[derive(Clone, Debug, PartialEq)]
 pub struct CatEmployee {
-    pub(crate) id: i64,
-    pub(crate) email: String,
-    pub(crate) password: String,
-    pub(crate) is_enabled: bool,
+    pub id: i64,
+    pub email: String,
+    pub password: String,
+    pub is_enabled: bool,
 }

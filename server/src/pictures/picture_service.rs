@@ -145,8 +145,6 @@ mod tests {
         mod when_getting_the_first_page {
             use super::*;
 
-            static INIT: Once = Once::new();
-
             static PICTURE_SERVICE: Lazy<
                 PictureService<MockManagePictures, MockManageCatEmployees>,
             > = Lazy::new(|| {
@@ -396,8 +394,6 @@ mod tests {
 
         mod when_getting_a_picture {
             use super::*;
-
-            static INIT: Once = Once::new();
 
             static PICTURE_SERVICE: Lazy<
                 PictureService<MockManagePictures, MockManageCatEmployees>,
