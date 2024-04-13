@@ -16,6 +16,7 @@ mod connection_config;
 mod errors;
 mod page;
 mod pictures;
+mod security;
 mod users;
 
 fn with_cloned<T: Clone + Send>(

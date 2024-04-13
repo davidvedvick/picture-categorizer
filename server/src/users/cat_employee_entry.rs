@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use thiserror::Error;
 
 use crate::errors::{DataAccessError, Error};
+use crate::security::text_encoder::TextEncoder;
 use crate::users::cat_employee::CatEmployee;
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::DisabledCatEmployee;
 use crate::users::manage_cat_employees::ManageCatEmployees;
@@ -32,18 +33,24 @@ pub trait AuthenticateCatEmployees {
     ) -> Result<AuthenticatedCatEmployee, CatAuthenticationError>;
 }
 
-pub struct CatEmployeeEntry<TCatEmployees: ManageCatEmployees> {
+pub struct CatEmployeeEntry<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> {
     cat_employees: TCatEmployees,
+    encoder: TEncoder,
 }
 
-impl<TCatEmployees: ManageCatEmployees> CatEmployeeEntry<TCatEmployees> {
-    pub fn new(cat_employees: TCatEmployees) -> Self {
-        Self { cat_employees }
+impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder>
+    CatEmployeeEntry<TCatEmployees, TEncoder>
+{
+    pub fn new(cat_employees: TCatEmployees, encoder: TEncoder) -> Self {
+        Self {
+            cat_employees,
+            encoder,
+        }
     }
 }
 
-impl<TCatEmployees: ManageCatEmployees> AuthenticateCatEmployees
-    for CatEmployeeEntry<TCatEmployees>
+impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEmployees
+    for CatEmployeeEntry<TCatEmployees, TEncoder>
 {
     async fn authenticate(
         &self,
@@ -54,7 +61,7 @@ impl<TCatEmployees: ManageCatEmployees> AuthenticateCatEmployees
             .save(CatEmployee {
                 id: 0,
                 email: employee_credentials.email,
-                password: employee_credentials.password,
+                password: self.encoder.encode(employee_credentials.password).await,
                 is_enabled: false,
             })
             .await;
@@ -78,9 +85,11 @@ mod tests {
             use std::sync::Mutex;
 
             use async_once::AsyncOnce;
+            use mockall::predicate;
             use once_cell::sync::Lazy;
             use tokio::runtime::Builder;
 
+            use crate::security::text_encoder::MockTextEncoder;
             use crate::users::cat_employee::CatEmployee;
             use crate::users::cat_employee_entry::{
                 AuthenticateCatEmployees, AuthenticatedCatEmployee, CatEmployeeCredentials,
@@ -88,7 +97,7 @@ mod tests {
             };
             use crate::users::manage_cat_employees::MockManageCatEmployees;
 
-            static EMPLOYEE_ENTRY: Lazy<CatEmployeeEntry<MockManageCatEmployees>> =
+            static EMPLOYEE_ENTRY: Lazy<CatEmployeeEntry<MockManageCatEmployees, MockTextEncoder>> =
                 Lazy::new(|| {
                     let mut manage_cat_employees = MockManageCatEmployees::new();
                     manage_cat_employees.expect_save().returning(|e| {
@@ -97,7 +106,13 @@ mod tests {
                         Ok(e)
                     });
 
-                    CatEmployeeEntry::new(manage_cat_employees)
+                    let mut text_encoder = MockTextEncoder::new();
+                    text_encoder
+                        .expect_encode()
+                        .with(predicate::eq("SOyRfcI".to_string()))
+                        .returning(|_| "eOLdjk".to_string());
+
+                    CatEmployeeEntry::new(manage_cat_employees, text_encoder)
                 });
 
             lazy_static! {
@@ -125,7 +140,7 @@ mod tests {
                         vec![CatEmployee {
                             id: 0,
                             email: "4Z00cpZ".to_string(),
-                            password: "SOyRfcI".to_string(),
+                            password: "eOLdjk".to_string(),
                             is_enabled: false,
                         }]
                     );
