@@ -8,12 +8,16 @@ use crate::users::cat_employee::CatEmployee;
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::{
     AuthorizedCatEmployee, DisabledCatEmployee, UnauthorizedCatEmployee,
 };
+use crate::users::cat_employee_entry::CatAuthenticationError::BadCatEmployeeCredentials;
 use crate::users::manage_cat_employees::ManageCatEmployees;
 
 #[derive(Error, Debug)]
 pub enum CatAuthenticationError {
     #[error("unexpected data access error")]
     UnexpectedDataAccessError(#[from] DataAccessError),
+
+    #[error("bad cat employee credentials")]
+    BadCatEmployeeCredentials(CatEmployeeCredentials),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -84,28 +88,31 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
             Err(e) => return Err(CatAuthenticationError::UnexpectedDataAccessError(e)),
         };
 
-        return if employee.is_enabled {
+        if employee.password.clone() == "" {
+            return Err(BadCatEmployeeCredentials(CatEmployeeCredentials {
+                email: employee.email,
+                password: employee_password.clone(),
+            }));
+        }
+
+        let cat_employee_credentials = CatEmployeeCredentials {
+            email: employee.email,
+            password: employee.password.clone(),
+        };
+
+        if employee.is_enabled {
             if self
                 .encoder
-                .matches(employee_password.clone(), employee.password.clone())
+                .matches(employee_password.clone(), employee.password)
                 .await
             {
-                Ok(AuthorizedCatEmployee(CatEmployeeCredentials {
-                    email: employee.email,
-                    password: employee.password,
-                }))
+                Ok(AuthorizedCatEmployee(cat_employee_credentials))
             } else {
-                Ok(UnauthorizedCatEmployee(CatEmployeeCredentials {
-                    email: employee.email,
-                    password: employee.password,
-                }))
+                Ok(UnauthorizedCatEmployee(cat_employee_credentials))
             }
         } else {
-            Ok(DisabledCatEmployee(CatEmployeeCredentials {
-                email: employee.email,
-                password: employee.password,
-            }))
-        };
+            Ok(DisabledCatEmployee(cat_employee_credentials))
+        }
     }
 }
 
@@ -397,6 +404,69 @@ mod tests {
                         );
                     });
                 }
+            }
+        }
+    }
+
+    mod given_an_existing_user_without_a_password {
+        use super::*;
+
+        mod when_logging_the_user_in {
+            use crate::users::cat_employee_entry::CatAuthenticationError::BadCatEmployeeCredentials;
+
+            use super::*;
+
+            static EMPLOYEE_ENTRY: Lazy<CatEmployeeEntry<MockManageCatEmployees, MockTextEncoder>> =
+                Lazy::new(|| {
+                    let mut manage_cat_employees = MockManageCatEmployees::new();
+                    manage_cat_employees
+                        .expect_find_by_email()
+                        .with(predicate::eq("ZtyPVt".to_string()))
+                        .returning(|e| {
+                            Ok(Some(CatEmployee {
+                                id: 315,
+                                email: e.to_string(),
+                                password: "".to_string(),
+                                is_enabled: true,
+                            }))
+                        });
+
+                    CatEmployeeEntry::new(manage_cat_employees, MockTextEncoder::new())
+                });
+
+            lazy_static! {
+                static ref BAD_CAT_EMPLOYEE_CREDENTIALS: AsyncOnce<CatEmployeeCredentials> =
+                    AsyncOnce::new(async {
+                        let result = EMPLOYEE_ENTRY
+                            .authenticate(CatEmployeeCredentials {
+                                email: "ZtyPVt".to_string(),
+                                password: "MnI875".to_string(),
+                            })
+                            .await;
+
+                        match result {
+                            Err(e) => match e {
+                                BadCatEmployeeCredentials(c) => c,
+                                _ => panic!(),
+                            },
+                            _ => panic!(),
+                        }
+                    });
+            }
+
+            #[test]
+            fn then_the_employee_is_not_authorized() {
+                let rt = Builder::new_current_thread().build().unwrap();
+                rt.block_on(async {
+                    let bad_credentials = BAD_CAT_EMPLOYEE_CREDENTIALS.get().await;
+                    assert_eq!(
+                        *bad_credentials,
+                        CatEmployeeCredentials {
+                            password: "MnI875".to_string(),
+                            email: "ZtyPVt".to_string(),
+                        }
+                    );
+                });
             }
         }
     }
