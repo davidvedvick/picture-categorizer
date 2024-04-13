@@ -6,7 +6,7 @@ use crate::errors::{DataAccessError, Error};
 use crate::security::text_encoder::TextEncoder;
 use crate::users::cat_employee::CatEmployee;
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::{
-    AuthorizedCatEmployee, DisabledCatEmployee,
+    AuthorizedCatEmployee, DisabledCatEmployee, UnauthorizedCatEmployee,
 };
 use crate::users::manage_cat_employees::ManageCatEmployees;
 
@@ -60,6 +60,7 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
         employee_credentials: CatEmployeeCredentials,
     ) -> Result<AuthenticatedCatEmployee, CatAuthenticationError> {
         let employee_email = employee_credentials.email;
+        let employee_password = employee_credentials.password;
 
         let employee = match self
             .cat_employees
@@ -71,8 +72,8 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
                 .cat_employees
                 .save(CatEmployee {
                     id: 0,
-                    email: employee_email.to_string(),
-                    password: self.encoder.encode(employee_credentials.password).await,
+                    email: employee_email.clone(),
+                    password: self.encoder.encode(employee_password.clone()).await,
                     is_enabled: false,
                 })
                 .await
@@ -84,10 +85,21 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
         };
 
         return if employee.is_enabled {
-            Ok(AuthorizedCatEmployee(CatEmployeeCredentials {
-                email: employee.email,
-                password: employee.password,
-            }))
+            if self
+                .encoder
+                .matches(employee_password.clone(), employee.password.clone())
+                .await
+            {
+                Ok(AuthorizedCatEmployee(CatEmployeeCredentials {
+                    email: employee.email,
+                    password: employee.password,
+                }))
+            } else {
+                Ok(UnauthorizedCatEmployee(CatEmployeeCredentials {
+                    email: employee.email,
+                    password: employee.password,
+                }))
+            }
         } else {
             Ok(DisabledCatEmployee(CatEmployeeCredentials {
                 email: employee.email,
@@ -108,6 +120,8 @@ mod tests {
 
     use crate::security::text_encoder::MockTextEncoder;
     use crate::users::cat_employee::CatEmployee;
+    use crate::users::cat_employee_entry::AuthenticatedCatEmployee::AuthorizedCatEmployee;
+    use crate::users::cat_employee_entry::AuthenticatedCatEmployee::UnauthorizedCatEmployee;
     use crate::users::cat_employee_entry::{
         AuthenticateCatEmployees, AuthenticatedCatEmployee, CatEmployeeCredentials,
         CatEmployeeEntry,
@@ -268,8 +282,6 @@ mod tests {
             use super::*;
 
             mod when_logging_the_user_in {
-                use crate::users::cat_employee_entry::AuthenticatedCatEmployee::AuthorizedCatEmployee;
-
                 use super::*;
 
                 static EMPLOYEE_ENTRY: Lazy<
@@ -319,6 +331,67 @@ mod tests {
                             *authenticated_employee,
                             AuthorizedCatEmployee(CatEmployeeCredentials {
                                 password: "MobWbSRg".to_string(),
+                                email: "2l9L".to_string(),
+                            })
+                        );
+                    });
+                }
+            }
+        }
+
+        mod and_the_password_does_not_match {
+            use super::*;
+
+            mod when_logging_the_user_in {
+                use super::*;
+
+                static EMPLOYEE_ENTRY: Lazy<
+                    CatEmployeeEntry<MockManageCatEmployees, MockTextEncoder>,
+                > = Lazy::new(|| {
+                    let mut manage_cat_employees = MockManageCatEmployees::new();
+                    manage_cat_employees
+                        .expect_find_by_email()
+                        .with(predicate::eq("2l9L".to_string()))
+                        .returning(|e| {
+                            Ok(Some(CatEmployee {
+                                id: 584,
+                                email: e.to_string(),
+                                password: "69FM2Vw".to_string(),
+                                is_enabled: true,
+                            }))
+                        });
+
+                    let mut text_encoder = MockTextEncoder::new();
+
+                    text_encoder
+                        .expect_matches()
+                        .returning(|r, e| r == "zc89" && e == "MobWbSRg");
+
+                    CatEmployeeEntry::new(manage_cat_employees, text_encoder)
+                });
+
+                lazy_static! {
+                    static ref AUTHENTICATED_CAT_EMPLOYEE: AsyncOnce<AuthenticatedCatEmployee> =
+                        AsyncOnce::new(async {
+                            EMPLOYEE_ENTRY
+                                .authenticate(CatEmployeeCredentials {
+                                    email: "2l9L".to_string(),
+                                    password: "zc89".to_string(),
+                                })
+                                .await
+                                .unwrap()
+                        });
+                }
+
+                #[test]
+                fn then_the_employee_is_not_authorized() {
+                    let rt = Builder::new_current_thread().build().unwrap();
+                    rt.block_on(async {
+                        let authenticated_employee = AUTHENTICATED_CAT_EMPLOYEE.get().await;
+                        assert_eq!(
+                            *authenticated_employee,
+                            UnauthorizedCatEmployee(CatEmployeeCredentials {
+                                password: "69FM2Vw".to_string(),
                                 email: "2l9L".to_string(),
                             })
                         );
