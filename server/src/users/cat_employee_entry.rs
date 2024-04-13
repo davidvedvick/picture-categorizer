@@ -3,18 +3,21 @@ use std::fmt::Debug;
 use thiserror::Error;
 
 use crate::errors::{DataAccessError, Error};
-use crate::security::text_encoder::TextEncoder;
+use crate::security::text_encoder::{TextEncoder, TextEncoderError};
 use crate::users::cat_employee::CatEmployee;
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::{
     AuthorizedCatEmployee, DisabledCatEmployee, UnauthorizedCatEmployee,
 };
-use crate::users::cat_employee_entry::CatAuthenticationError::BadCatEmployeeCredentials;
+use crate::users::cat_employee_entry::CatEntryError::BadCatEmployeeCredentials;
 use crate::users::manage_cat_employees::ManageCatEmployees;
 
 #[derive(Error, Debug)]
-pub enum CatAuthenticationError {
+pub enum CatEntryError {
     #[error("unexpected data access error")]
     UnexpectedDataAccessError(#[from] DataAccessError),
+
+    #[error("decoding error")]
+    DecodingError(#[from] TextEncoderError),
 
     #[error("bad cat employee credentials")]
     BadCatEmployeeCredentials(CatEmployeeCredentials),
@@ -37,7 +40,7 @@ pub trait AuthenticateCatEmployees {
     async fn authenticate(
         &self,
         employee_credentials: CatEmployeeCredentials,
-    ) -> Result<AuthenticatedCatEmployee, CatAuthenticationError>;
+    ) -> Result<AuthenticatedCatEmployee, CatEntryError>;
 }
 
 pub struct CatEmployeeEntry<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> {
@@ -62,7 +65,7 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
     async fn authenticate(
         &self,
         employee_credentials: CatEmployeeCredentials,
-    ) -> Result<AuthenticatedCatEmployee, CatAuthenticationError> {
+    ) -> Result<AuthenticatedCatEmployee, CatEntryError> {
         let employee_email = employee_credentials.email;
         let employee_password = employee_credentials.password;
 
@@ -77,15 +80,18 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
                 .save(CatEmployee {
                     id: 0,
                     email: employee_email.clone(),
-                    password: self.encoder.encode(employee_password.clone()).await,
+                    password: match self.encoder.encode(employee_password.clone()).await {
+                        Ok(encoded) => encoded,
+                        Err(e) => return Err(CatEntryError::DecodingError(e)),
+                    },
                     is_enabled: false,
                 })
                 .await
             {
                 Ok(e) => e,
-                Err(e) => return Err(CatAuthenticationError::UnexpectedDataAccessError(e)),
+                Err(e) => return Err(CatEntryError::UnexpectedDataAccessError(e)),
             },
-            Err(e) => return Err(CatAuthenticationError::UnexpectedDataAccessError(e)),
+            Err(e) => return Err(CatEntryError::UnexpectedDataAccessError(e)),
         };
 
         if employee.password.clone() == "" {
@@ -159,7 +165,7 @@ mod tests {
                     text_encoder
                         .expect_encode()
                         .with(predicate::eq("SOyRfcI".to_string()))
-                        .returning(|_| "eOLdjk".to_string());
+                        .returning(|_| Ok("eOLdjk".to_string()));
 
                     CatEmployeeEntry::new(manage_cat_employees, text_encoder)
                 });
@@ -238,7 +244,7 @@ mod tests {
                     text_encoder
                         .expect_encode()
                         .with(predicate::eq("SOyRfcI".to_string()))
-                        .returning(|_| "eOLdjk".to_string());
+                        .returning(|_| Ok("eOLdjk".to_string()));
 
                     text_encoder
                         .expect_matches()
@@ -412,7 +418,7 @@ mod tests {
         use super::*;
 
         mod when_logging_the_user_in {
-            use crate::users::cat_employee_entry::CatAuthenticationError::BadCatEmployeeCredentials;
+            use crate::users::cat_employee_entry::CatEntryError::BadCatEmployeeCredentials;
 
             use super::*;
 

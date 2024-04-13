@@ -125,8 +125,6 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Once;
-
     use async_once::AsyncOnce;
     use lazy_static::lazy_static;
     use mockall::predicate;
@@ -230,8 +228,6 @@ mod tests {
         mod when_getting_the_last_page {
             use super::*;
 
-            static INIT: Once = Once::new();
-
             static PICTURE_SERVICE: Lazy<
                 PictureService<MockManagePictures, MockManageCatEmployees>,
             > = Lazy::new(|| {
@@ -295,8 +291,6 @@ mod tests {
 
         mod when_getting_all_picture_information {
             use super::*;
-
-            static INIT: Once = Once::new();
 
             static PICTURE_SERVICE: Lazy<
                 PictureService<MockManagePictures, MockManageCatEmployees>,
