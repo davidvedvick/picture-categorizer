@@ -50,9 +50,18 @@ async fn main() {
         .and(with_cloned(picture_service.clone()))
         .and_then(pictures::picture_handlers::get_picture_file_handler);
 
+    let preview_picture_file_route = warp::path!("api" / "pictures" / i64 / "preview")
+        .and(with_cloned(picture_service.clone()))
+        .and_then(pictures::picture_handlers::get_picture_file_handler);
+
+    let get_picture_tags_route = warp::path!("api" / "pictures" / i64 / "tags")
+        .and_then(pictures::tags::picture_tag_handlers::get_picture_tags_handler);
+
     let routes = health_route
         .or(get_picture_page_route)
         .or(get_picture_file_route)
+        .or(preview_picture_file_route)
+        .or(get_picture_tags_route)
         .with(warp::cors().allow_any_origin())
         .recover(errors::handle_rejection);
 

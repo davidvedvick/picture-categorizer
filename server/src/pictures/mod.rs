@@ -6,3 +6,4 @@ mod picture_information;
 pub(crate) mod picture_repository;
 pub(crate) mod picture_service;
 mod serve_pictures;
+pub mod tags;
