@@ -1,5 +1,7 @@
 use std::convert::Infallible;
+use std::fmt::{Debug, Display};
 
+use serde::de::StdError;
 use serde::Serialize;
 use thiserror::Error;
 use warp::http::StatusCode;
@@ -10,14 +12,16 @@ pub enum Error {
     #[error("error reading file: {0}")]
     ReadFileError(#[from] std::io::Error),
 
-    #[error("Unknown")]
-    Unknown,
+    #[error(transparent)]
+    Unexpected(#[from] anyhow::Error),
 }
+
+impl warp::reject::Reject for Error {}
 
 #[derive(Error, Debug)]
 pub enum DataAccessError {
     #[error("data access error: {0}")]
-    DataAccessError(#[from] sqlite::Error),
+    DataAccessError(#[from] sqlx::Error),
 
     #[error("operation completed unexpectedly")]
     UnexpectedCompletionError,
@@ -26,8 +30,6 @@ pub enum DataAccessError {
 pub type DataAccessResult<T> = Result<T, DataAccessError>;
 
 pub type RejectableResult<T> = Result<T, Rejection>;
-
-impl warp::reject::Reject for Error {}
 
 #[derive(Serialize)]
 struct ErrorResponse {

@@ -1,30 +1,32 @@
-use std::sync::Arc;
+use mockall::automock;
+use sqlx::{Pool, Sqlite};
+use warp::hyper::body::HttpBody;
 
-use sqlite::{ConnectionThreadSafe, Row};
-
+use crate::errors::DataAccessError::DataAccessError;
 use crate::errors::DataAccessResult;
-use crate::users::cat_employee::CatEmployee;
-use crate::users::manage_cat_employees::ManageCatEmployees;
+
+#[derive(Clone, Debug, PartialEq, sqlx::FromRow)]
+pub struct CatEmployee {
+    pub id: i64,
+    pub email: String,
+    pub password: String,
+    pub is_enabled: bool,
+}
+
+#[automock]
+pub trait ManageCatEmployees {
+    async fn find_by_email(&self, email: String) -> DataAccessResult<Option<CatEmployee>>;
+
+    async fn save(&self, cat_employee: CatEmployee) -> DataAccessResult<CatEmployee>;
+}
 
 pub struct CatEmployeeRepository {
-    connection: Arc<ConnectionThreadSafe>,
+    connection: Pool<Sqlite>,
 }
 
 impl CatEmployeeRepository {
-    pub fn new(connection: Arc<ConnectionThreadSafe>) -> Self {
+    pub fn new(connection: Pool<Sqlite>) -> Self {
         Self { connection }
-    }
-}
-
-unsafe impl Sync for CatEmployeeRepository {}
-
-fn row_to_employee(row: Result<Row, impl std::fmt::Debug>) -> CatEmployee {
-    let result = row.unwrap();
-    CatEmployee {
-        id: result.read::<i64, _>("id"),
-        email: result.read::<&str, _>("email").to_string(),
-        password: result.read::<&str, _>("password").to_string(),
-        is_enabled: result.read::<i64, _>("is_enabled") != 0,
     }
 }
 
@@ -38,15 +40,11 @@ FROM cat_employee";
 
 impl ManageCatEmployees for CatEmployeeRepository {
     async fn find_by_email(&self, email: String) -> DataAccessResult<Option<CatEmployee>> {
-        let employee_option = self
-            .connection
-            .prepare(format!("{} WHERE email = ?", SELECT_FROM_CAT_EMPLOYEES).as_str())?
-            .into_iter()
-            .bind((1, email.as_str()))?
-            .map(row_to_employee)
-            .next();
-
-        Ok(employee_option)
+        sqlx::query_as::<_, CatEmployee>(&format!("{SELECT_FROM_CAT_EMPLOYEES} WHERE email = $1"))
+            .bind(email)
+            .fetch_optional(&self.connection)
+            .await
+            .map_err(DataAccessError)
     }
 
     async fn save(&self, cat_employee: CatEmployee) -> DataAccessResult<CatEmployee> {

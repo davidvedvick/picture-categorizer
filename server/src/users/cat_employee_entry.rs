@@ -4,12 +4,11 @@ use thiserror::Error;
 
 use crate::errors::{DataAccessError, Error};
 use crate::security::text_encoder::{TextEncoder, TextEncoderError};
-use crate::users::cat_employee::CatEmployee;
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::{
     AuthorizedCatEmployee, DisabledCatEmployee, UnauthorizedCatEmployee,
 };
 use crate::users::cat_employee_entry::CatEntryError::BadCatEmployeeCredentials;
-use crate::users::manage_cat_employees::ManageCatEmployees;
+use crate::users::cat_employee_repository::{CatEmployee, ManageCatEmployees};
 
 #[derive(Error, Debug)]
 pub enum CatEntryError {
@@ -132,14 +131,13 @@ mod tests {
     use tokio::runtime::Builder;
 
     use crate::security::text_encoder::MockTextEncoder;
-    use crate::users::cat_employee::CatEmployee;
     use crate::users::cat_employee_entry::AuthenticatedCatEmployee::AuthorizedCatEmployee;
     use crate::users::cat_employee_entry::AuthenticatedCatEmployee::UnauthorizedCatEmployee;
     use crate::users::cat_employee_entry::{
         AuthenticateCatEmployees, AuthenticatedCatEmployee, CatEmployeeCredentials,
         CatEmployeeEntry,
     };
-    use crate::users::manage_cat_employees::MockManageCatEmployees;
+    use crate::users::cat_employee_repository::{CatEmployee, MockManageCatEmployees};
 
     use super::*;
 

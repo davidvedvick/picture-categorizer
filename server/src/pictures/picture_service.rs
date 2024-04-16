@@ -1,11 +1,29 @@
+use serde::de::StdError;
+
 use crate::page::Page;
-use crate::pictures::manage_pictures::ManagePictures;
-use crate::pictures::picture::Picture;
 use crate::pictures::picture_file::PictureFile;
 use crate::pictures::picture_information::PictureInformation;
-use crate::pictures::serve_pictures::{ServePictureFiles, ServePictureInformation};
+use crate::pictures::picture_repository::{ManagePictures, Picture};
+use crate::users::cat_employee_repository::ManageCatEmployees;
 use crate::users::email_identified_cat_employee::EmailIdentifiedCatEmployee;
-use crate::users::manage_cat_employees::ManageCatEmployees;
+
+pub trait ServePictureInformation {
+    async fn get_picture_information(
+        &self,
+        page_number: Option<i32>,
+        page_size: Option<i32>,
+    ) -> Result<Page<PictureInformation>, impl StdError>;
+
+    async fn add_picture(
+        &self,
+        picture_file: PictureFile,
+        authenticated_cat_employee: EmailIdentifiedCatEmployee,
+    ) -> Result<PictureInformation, impl StdError>;
+}
+
+pub trait ServePictureFiles {
+    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl StdError>;
+}
 
 pub struct PictureService<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> {
     picture_repository: TPicturesRepo,
@@ -30,7 +48,7 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
         &self,
         page_number: Option<i32>,
         page_size: Option<i32>,
-    ) -> Result<Page<PictureInformation>, impl std::fmt::Debug> {
+    ) -> Result<Page<PictureInformation>, impl StdError> {
         let future_pictures = self.picture_repository.find_all(page_number, page_size);
 
         let is_last = match (page_number, page_size) {
@@ -62,7 +80,7 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
         &self,
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
-    ) -> Result<PictureInformation, impl std::fmt::Debug> {
+    ) -> Result<PictureInformation, impl StdError> {
         let cat_employee = self
             .cat_repository
             .find_by_email(authenticated_cat_employee.email)
@@ -103,7 +121,7 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
 impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> ServePictureFiles
     for PictureService<TPicturesRepo, TCatEmployeesRepo>
 {
-    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl std::fmt::Debug> {
+    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl StdError> {
         let future_picture = self.picture_repository.find_file_by_id(id);
 
         let picture = match self.picture_repository.find_by_id(id).await {
@@ -123,17 +141,30 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
     }
 }
 
+unsafe impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Send
+    for PictureService<TPicturesRepo, TCatEmployeesRepo>
+{
+}
+
+unsafe impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Sync
+    for PictureService<TPicturesRepo, TCatEmployeesRepo>
+{
+}
+
 #[cfg(test)]
 mod tests {
+    use std::sync::Mutex;
+
     use async_once::AsyncOnce;
     use lazy_static::lazy_static;
     use mockall::predicate;
     use once_cell::sync::Lazy;
     use tokio::runtime::Builder;
 
-    use crate::pictures::manage_pictures::MockManagePictures;
-    use crate::pictures::picture::Picture;
-    use crate::users::manage_cat_employees::MockManageCatEmployees;
+    use crate::pictures::picture_repository::MockManagePictures;
+    use crate::pictures::picture_repository::Picture;
+    use crate::users::cat_employee_repository::CatEmployee;
+    use crate::users::cat_employee_repository::MockManageCatEmployees;
 
     use super::*;
 
@@ -141,6 +172,8 @@ mod tests {
         use super::*;
 
         mod when_getting_the_first_page {
+            use crate::pictures::picture_repository::PartialPicture;
+
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
@@ -151,18 +184,16 @@ mod tests {
                     .with(predicate::eq(Some(0)), predicate::eq(Some(5)))
                     .returning(|n, s| {
                         Ok(vec![
-                            Picture {
+                            PartialPicture {
                                 id: 823,
                                 file_name: "xKLbRIuf".to_string(),
                                 cat_employee_id: 521,
-                                file: vec![],
                                 mime_type: "".to_string(),
                             },
-                            Picture {
+                            PartialPicture {
                                 id: 437,
                                 cat_employee_id: 521,
                                 file_name: "jwKJ996Yo".to_string(),
-                                file: vec![],
                                 mime_type: "".to_string(),
                             },
                         ])
@@ -226,6 +257,8 @@ mod tests {
         }
 
         mod when_getting_the_last_page {
+            use crate::pictures::picture_repository::PartialPicture;
+
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
@@ -235,11 +268,10 @@ mod tests {
                 mock.expect_find_all()
                     .with(predicate::eq(Some(1)), predicate::eq(Some(3)))
                     .returning(|n, s| {
-                        Ok(vec![Picture {
+                        Ok(vec![PartialPicture {
                             id: 0,
                             cat_employee_id: 0,
                             file_name: "".to_string(),
-                            file: vec![],
                             mime_type: "".to_string(),
                         }])
                     });
@@ -290,6 +322,8 @@ mod tests {
         }
 
         mod when_getting_all_picture_information {
+            use crate::pictures::picture_repository::PartialPicture;
+
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
@@ -300,25 +334,22 @@ mod tests {
                     .with(predicate::eq(None), predicate::eq(None))
                     .returning(|n, s| {
                         Ok(vec![
-                            Picture {
+                            PartialPicture {
                                 id: 892,
                                 file_name: "2onzuNJ".to_string(),
                                 cat_employee_id: 445,
-                                file: vec![],
                                 mime_type: "".to_string(),
                             },
-                            Picture {
+                            PartialPicture {
                                 id: 895,
                                 cat_employee_id: 35,
                                 file_name: "dlg0fWB".to_string(),
-                                file: vec![],
                                 mime_type: "".to_string(),
                             },
-                            Picture {
+                            PartialPicture {
                                 id: 69,
                                 cat_employee_id: 398,
                                 file_name: "qm4ZjAGAgb".to_string(),
-                                file: vec![],
                                 mime_type: "".to_string(),
                             },
                         ])
@@ -387,6 +418,8 @@ mod tests {
         }
 
         mod when_getting_a_picture {
+            use crate::pictures::picture_repository::PartialPicture;
+
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
@@ -397,12 +430,11 @@ mod tests {
                 mock.expect_find_by_id()
                     .with(predicate::eq(644))
                     .returning(|id| {
-                        Ok(Some(Picture {
+                        Ok(Some(PartialPicture {
                             id: 644,
                             mime_type: "zXHTufH".to_string(),
                             cat_employee_id: 99,
                             file_name: "9ZVugNotp".to_string(),
-                            file: vec![],
                         }))
                     });
 
@@ -449,10 +481,6 @@ mod tests {
         use super::*;
 
         mod when_adding_the_users_pictures {
-            use std::sync::Mutex;
-
-            use crate::users::cat_employee::CatEmployee;
-
             use super::*;
 
             static PICTURE_SERVICE: Lazy<

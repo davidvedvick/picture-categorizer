@@ -4,7 +4,7 @@ extern crate lazy_static;
 use std::convert::Infallible;
 use std::sync::Arc;
 
-use sqlite::Connection;
+use sqlx::{Connection, SqlitePool};
 use warp::{http::StatusCode, query, Filter};
 
 use crate::connection_config::ConnectionConfiguration;
@@ -33,7 +33,9 @@ async fn main() {
         file: "/home/david/.catpics/pics.db".to_string(),
     };
 
-    let connection = Arc::new(Connection::open_thread_safe(connection_configuration.file).unwrap());
+    let connection = SqlitePool::connect(&connection_configuration.file)
+        .await
+        .unwrap();
 
     let picture_repo = PictureRepository::new(connection.clone());
 
