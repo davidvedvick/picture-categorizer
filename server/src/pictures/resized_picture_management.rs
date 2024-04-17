@@ -1,14 +1,16 @@
 use std::fmt::Debug;
 
+use mockall::automock;
 use sqlx::{Executor, Pool, Row, Sqlite, Statement};
 use warp::hyper::body::HttpBody;
 
 use crate::errors::{DataAccessError, DataAccessResult};
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct ResizePictureRequest {
-    picture_id: i64,
-    max_width: u32,
-    max_height: u32,
+    pub picture_id: i64,
+    pub max_width: u32,
+    pub max_height: u32,
 }
 
 pub type ResizedPictureId = i64;
@@ -26,15 +28,16 @@ SELECT id as id
 FROM resized_picture
 ";
 
+#[automock]
 pub trait ManageResizedPictures {
     async fn find_by_request(
         &self,
         resize_picture_request: ResizePictureRequest,
     ) -> DataAccessResult<Option<ResizedPictureId>>;
 
-    async fn find_by_id(&self, id: i64) -> DataAccessResult<Option<ResizedPictureId>>;
+    async fn find_by_id(&self, id: ResizedPictureId) -> DataAccessResult<Option<ResizedPictureId>>;
 
-    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Vec<u8>>;
+    async fn find_file_by_id(&self, id: ResizedPictureId) -> DataAccessResult<Vec<u8>>;
 
     async fn save(&self, picture: &ResizedPicture) -> DataAccessResult<ResizedPictureId>;
 }
@@ -66,7 +69,7 @@ impl ManageResizedPictures for ResizedPictureRepository {
         })
     }
 
-    async fn find_by_id(&self, id: i64) -> DataAccessResult<Option<ResizedPictureId>> {
+    async fn find_by_id(&self, id: ResizedPictureId) -> DataAccessResult<Option<ResizedPictureId>> {
         let option = sqlx::query(&format!("{SELECT_RESIZED_PICTURE_IDS} WHERE id = $1"))
             .bind(id)
             .fetch_optional(&self.pool)
@@ -82,7 +85,7 @@ impl ManageResizedPictures for ResizedPictureRepository {
         })
     }
 
-    async fn find_file_by_id(&self, id: i64) -> DataAccessResult<Vec<u8>> {
+    async fn find_file_by_id(&self, id: ResizedPictureId) -> DataAccessResult<Vec<u8>> {
         let result = sqlx::query("SELECT file FROM resized_picture WHERE id = $1")
             .bind(id)
             .fetch_optional(&self.pool)

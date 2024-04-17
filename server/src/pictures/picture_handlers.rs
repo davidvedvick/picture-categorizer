@@ -11,7 +11,8 @@ use crate::errors::Error::Unexpected;
 use crate::errors::RejectableResult;
 use crate::pictures::picture_repository::PictureRepository;
 use crate::pictures::picture_service::PictureService;
-use crate::pictures::picture_service::{ServePictureFiles, ServePictureInformation};
+use crate::pictures::picture_service::ServePictureInformation;
+use crate::pictures::serve_picture_files::ServePictureFiles;
 use crate::users::cat_employee_repository::CatEmployeeRepository;
 
 #[derive(Deserialize)]

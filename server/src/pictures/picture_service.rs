@@ -1,9 +1,9 @@
 use serde::de::StdError;
 
 use crate::page::Page;
-use crate::pictures::picture_file::PictureFile;
 use crate::pictures::picture_information::PictureInformation;
 use crate::pictures::picture_repository::{ManagePictures, Picture};
+use crate::pictures::serve_picture_files::{PictureFile, ServePictureFiles};
 use crate::users::cat_employee_repository::ManageCatEmployees;
 use crate::users::email_identified_cat_employee::EmailIdentifiedCatEmployee;
 
@@ -19,10 +19,6 @@ pub trait ServePictureInformation {
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
     ) -> Result<PictureInformation, impl StdError>;
-}
-
-pub trait ServePictureFiles {
-    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl StdError>;
 }
 
 pub struct PictureService<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> {
@@ -121,13 +117,13 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
 impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> ServePictureFiles
     for PictureService<TPicturesRepo, TCatEmployeesRepo>
 {
-    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, impl StdError> {
+    async fn get_picture_file(&self, id: i64) -> Result<Option<PictureFile>, Box<dyn StdError>> {
         let future_picture = self.picture_repository.find_file_by_id(id);
 
         let picture = match self.picture_repository.find_by_id(id).await {
             Ok(Some(pic)) => pic,
             Ok(None) => return Ok(None),
-            Err(e) => return Err(e),
+            Err(e) => return Err(Box::new(e)),
         };
 
         match future_picture.await {
@@ -136,7 +132,7 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
                 file,
                 mime_type: picture.mime_type,
             })),
-            Err(e) => Err(e),
+            Err(e) => Err(Box::new(e)),
         }
     }
 }
@@ -162,6 +158,7 @@ mod tests {
     use tokio::runtime::Builder;
 
     use crate::pictures::picture_repository::MockManagePictures;
+    use crate::pictures::picture_repository::PartialPicture;
     use crate::pictures::picture_repository::Picture;
     use crate::users::cat_employee_repository::CatEmployee;
     use crate::users::cat_employee_repository::MockManageCatEmployees;
@@ -172,8 +169,6 @@ mod tests {
         use super::*;
 
         mod when_getting_the_first_page {
-            use crate::pictures::picture_repository::PartialPicture;
-
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
@@ -257,8 +252,6 @@ mod tests {
         }
 
         mod when_getting_the_last_page {
-            use crate::pictures::picture_repository::PartialPicture;
-
             use super::*;
 
             static PICTURE_SERVICE: Lazy<
