@@ -35,9 +35,9 @@ pub async fn get_pictures_handler(
     }
 }
 
-pub async fn get_picture_file_handler(
+pub async fn get_picture_file_handler<TServePictureFiles: ServePictureFiles>(
     id: i64,
-    picture_service: Arc<PictureService<PictureRepository, CatEmployeeRepository>>,
+    picture_service: Arc<TServePictureFiles>,
 ) -> RejectableResult<impl Reply> {
     let option = picture_service.get_picture_file(id).await;
 

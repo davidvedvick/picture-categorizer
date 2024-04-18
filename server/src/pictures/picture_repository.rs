@@ -44,6 +44,7 @@ pub trait ManagePictures {
     async fn save(&self, picture: Picture) -> DataAccessResult<Picture>;
 }
 
+#[derive(Clone)]
 pub struct PictureRepository {
     connection: Pool<Sqlite>,
 }

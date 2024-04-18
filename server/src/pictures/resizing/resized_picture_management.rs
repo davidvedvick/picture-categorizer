@@ -6,7 +6,7 @@ use warp::hyper::body::HttpBody;
 
 use crate::errors::{DataAccessError, DataAccessResult};
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub struct ResizePictureRequest {
     pub picture_id: i64,
     pub max_width: u32,
@@ -16,11 +16,11 @@ pub struct ResizePictureRequest {
 pub type ResizedPictureId = i64;
 
 #[derive(sqlx::FromRow)]
-struct ResizedPicture {
-    picture_id: i64,
-    max_width: u32,
-    max_height: u32,
-    file: Vec<u8>,
+pub struct ResizedPicture {
+    pub picture_id: i64,
+    pub max_width: u32,
+    pub max_height: u32,
+    pub file: Vec<u8>,
 }
 
 const SELECT_RESIZED_PICTURE_IDS: &str = "
@@ -42,8 +42,15 @@ pub trait ManageResizedPictures {
     async fn save(&self, picture: &ResizedPicture) -> DataAccessResult<ResizedPictureId>;
 }
 
-struct ResizedPictureRepository {
+#[derive(Clone)]
+pub struct ResizedPictureRepository {
     pool: Pool<Sqlite>, // The SQLite database connection pool
+}
+
+impl ResizedPictureRepository {
+    pub fn new(pool: Pool<Sqlite>) -> Self {
+        Self { pool }
+    }
 }
 
 impl ManageResizedPictures for ResizedPictureRepository {
@@ -52,7 +59,7 @@ impl ManageResizedPictures for ResizedPictureRepository {
         request: ResizePictureRequest,
     ) -> DataAccessResult<Option<ResizedPictureId>> {
         let option = sqlx::query(
-            &format!("{SELECT_RESIZED_PICTURE_IDS} WHERE picture_id = $1 AND max_width = $2 AND max_height = $3"))
+            &format!("{SELECT_RESIZED_PICTURE_IDS} WHERE picture_id = $1 AND maxWidth = $2 AND maxHeight = $3"))
             .bind(request.picture_id)
             .bind(request.max_width)
             .bind(request.max_height)
@@ -102,14 +109,15 @@ impl ManageResizedPictures for ResizedPictureRepository {
 
     async fn save(&self, picture: &ResizedPicture) -> DataAccessResult<ResizedPictureId> {
         let result = sqlx::query(
-            "INSERT INTO resized_picture (max_width, max_height, file) VALUES ($1, $2, $3)",
+            "INSERT INTO resized_picture (picture_id, maxWidth, maxHeight, file) VALUES ($1, $2, $3, $4)",
         )
-        .bind(picture.max_width)
-        .bind(picture.max_height)
-        .bind(&picture.file)
-        .execute(&self.pool)
-        .await
-        .map_err(DataAccessError::DataAccessError)?;
+            .bind(picture.picture_id)
+            .bind(picture.max_width)
+            .bind(picture.max_height)
+            .bind(&picture.file)
+            .execute(&self.pool)
+            .await
+            .map_err(DataAccessError::DataAccessError)?;
 
         Ok(result.last_insert_rowid())
     }
