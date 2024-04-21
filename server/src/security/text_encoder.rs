@@ -7,7 +7,16 @@ use crate::security::text_encoder::TextEncoderError::BCryptEncodingError;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct EncoderConfig {
+    #[serde(default)]
     salt_generations: u32,
+}
+
+impl Default for EncoderConfig {
+    fn default() -> Self {
+        Self {
+            salt_generations: 10,
+        }
+    }
 }
 
 #[derive(Error, Debug)]
@@ -28,7 +37,7 @@ pub struct BCryptEncoder {
 }
 
 impl BCryptEncoder {
-    fn new(encoder_config: EncoderConfig) -> Self {
+    pub(crate) fn new(encoder_config: EncoderConfig) -> Self {
         Self { encoder_config }
     }
 }

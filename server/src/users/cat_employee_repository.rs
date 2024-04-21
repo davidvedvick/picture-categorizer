@@ -20,6 +20,7 @@ pub trait ManageCatEmployees {
     async fn save(&self, cat_employee: CatEmployee) -> DataAccessResult<CatEmployee>;
 }
 
+#[derive(Clone)]
 pub struct CatEmployeeRepository {
     connection: Pool<Sqlite>,
 }

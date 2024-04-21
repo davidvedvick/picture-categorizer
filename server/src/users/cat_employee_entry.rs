@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use serde::Deserialize;
 use thiserror::Error;
 
 use crate::errors::{DataAccessError, Error};
@@ -22,10 +23,10 @@ pub enum CatEntryError {
     BadCatEmployeeCredentials(CatEmployeeCredentials),
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Deserialize)]
 pub struct CatEmployeeCredentials {
-    email: String,
-    password: String,
+    pub email: String,
+    pub password: String,
 }
 
 #[derive(Debug, PartialEq)]
