@@ -15,11 +15,11 @@ pub struct ResizePictureRequest {
 pub type ResizedPictureId = i64;
 
 #[derive(sqlx::FromRow)]
-pub struct ResizedPicture<'a> {
+pub struct ResizedPicture {
     pub picture_id: i64,
     pub max_width: u32,
     pub max_height: u32,
-    pub file: &'a [u8],
+    pub file: Vec<u8>,
 }
 
 const SELECT_RESIZED_PICTURE_IDS: &str = "
@@ -38,8 +38,7 @@ pub trait ManageResizedPictures {
 
     async fn find_file_by_id(&self, id: ResizedPictureId) -> DataAccessResult<Vec<u8>>;
 
-    async fn save<'a>(&self, picture: &'a ResizedPicture<'a>)
-        -> DataAccessResult<ResizedPictureId>;
+    async fn save(&self, picture: &ResizedPicture) -> DataAccessResult<ResizedPictureId>;
 }
 
 #[derive(Clone)]
@@ -107,17 +106,14 @@ impl ManageResizedPictures for ResizedPictureRepository {
         }
     }
 
-    async fn save<'a>(
-        &self,
-        picture: &'a ResizedPicture<'a>,
-    ) -> DataAccessResult<ResizedPictureId> {
+    async fn save(&self, picture: &ResizedPicture) -> DataAccessResult<ResizedPictureId> {
         let result = sqlx::query(
             "INSERT INTO resized_picture (picture_id, maxWidth, maxHeight, file) VALUES ($1, $2, $3, $4)",
         )
             .bind(picture.picture_id)
             .bind(picture.max_width)
             .bind(picture.max_height)
-            .bind(picture.file)
+            .bind(&picture.file)
             .execute(&self.pool)
             .await
             .map_err(DataAccessError::DataAccessError)?;

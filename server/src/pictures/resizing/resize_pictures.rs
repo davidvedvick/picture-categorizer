@@ -87,7 +87,7 @@ impl<TManageResizedPictures: ManageResizedPictures, TManagePictures: ManagePictu
                     max_height: message.max_height,
                     max_width: message.max_width,
                     picture_id: message.picture_id,
-                    file: &file_bytes,
+                    file: file_bytes,
                 })
                 .await;
 
