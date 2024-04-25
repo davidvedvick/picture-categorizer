@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use serde::Deserialize;
 use thiserror::Error;
 
-use crate::errors::{DataAccessError, Error};
+use crate::errors::DataAccessError;
 use crate::security::text_encoder::{TextEncoder, TextEncoderError};
 use crate::users::cat_employee_entry::AuthenticatedCatEmployee::{
     AuthorizedCatEmployee, DisabledCatEmployee, UnauthorizedCatEmployee,
@@ -29,11 +29,27 @@ pub struct CatEmployeeCredentials {
     pub password: String,
 }
 
+#[derive(Clone, Debug, PartialEq, Deserialize)]
+pub struct AuthorizedCatEmployeeCredentials {
+    pub cat_employee_id: i64,
+    pub email: String,
+    pub password: String,
+}
+
+impl Into<CatEmployeeCredentials> for AuthorizedCatEmployeeCredentials {
+    fn into(self) -> CatEmployeeCredentials {
+        CatEmployeeCredentials {
+            email: self.email,
+            password: self.password,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum AuthenticatedCatEmployee {
     UnauthorizedCatEmployee(CatEmployeeCredentials),
     DisabledCatEmployee(CatEmployeeCredentials),
-    AuthorizedCatEmployee(CatEmployeeCredentials),
+    AuthorizedCatEmployee(AuthorizedCatEmployeeCredentials),
 }
 
 pub trait AuthenticateCatEmployees {
@@ -101,7 +117,8 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
             }));
         }
 
-        let cat_employee_credentials = CatEmployeeCredentials {
+        let cat_employee_credentials = AuthorizedCatEmployeeCredentials {
+            cat_employee_id: employee.id,
             email: employee.email,
             password: employee.password.clone(),
         };
@@ -114,10 +131,10 @@ impl<TCatEmployees: ManageCatEmployees, TEncoder: TextEncoder> AuthenticateCatEm
             {
                 Ok(AuthorizedCatEmployee(cat_employee_credentials))
             } else {
-                Ok(UnauthorizedCatEmployee(cat_employee_credentials))
+                Ok(UnauthorizedCatEmployee(cat_employee_credentials.into()))
             }
         } else {
-            Ok(DisabledCatEmployee(cat_employee_credentials))
+            Ok(DisabledCatEmployee(cat_employee_credentials.into()))
         }
     }
 }
@@ -341,9 +358,10 @@ mod tests {
                         let authenticated_employee = AUTHENTICATED_CAT_EMPLOYEE.get().await;
                         assert_eq!(
                             *authenticated_employee,
-                            AuthorizedCatEmployee(CatEmployeeCredentials {
+                            AuthorizedCatEmployee(AuthorizedCatEmployeeCredentials {
                                 password: "MobWbSRg".to_string(),
                                 email: "2l9L".to_string(),
+                                cat_employee_id: 822
                             })
                         );
                     });

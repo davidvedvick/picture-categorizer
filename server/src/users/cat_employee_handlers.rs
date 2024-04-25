@@ -5,7 +5,7 @@ use warp::reject::custom;
 use warp::reply::json;
 use warp::{reject, Reply};
 
-use crate::errors::Error::Unexpected;
+use crate::errors::HttpError::Unexpected;
 use crate::errors::RejectableResult;
 use crate::security::jwt_token_management::ManageJwtTokens;
 use crate::users::cat_employee_entry::{

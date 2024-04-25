@@ -1,11 +1,23 @@
+use futures::TryFutureExt;
 use serde::de::StdError;
+use thiserror::Error;
 
+use crate::errors::DataAccessError;
 use crate::page::Page;
 use crate::pictures::picture_information::PictureInformation;
 use crate::pictures::picture_repository::{ManagePictures, Picture};
 use crate::pictures::serve_picture_files::{PictureFile, ServePictureFiles};
 use crate::users::cat_employee_repository::ManageCatEmployees;
 use crate::users::email_identified_cat_employee::EmailIdentifiedCatEmployee;
+
+#[derive(Error, Debug)]
+pub enum SavingPictureError {
+    #[error("data access error: {0}")]
+    DataAccessError(#[source] DataAccessError),
+
+    #[error("An employee with {0} was not found.")]
+    UnknownCatEmployee(String),
+}
 
 pub trait ServePictureInformation {
     async fn get_picture_information(
@@ -18,7 +30,7 @@ pub trait ServePictureInformation {
         &self,
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
-    ) -> Result<PictureInformation, impl StdError>;
+    ) -> Result<PictureInformation, SavingPictureError>;
 }
 
 pub struct PictureService<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> {
@@ -76,11 +88,12 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
         &self,
         picture_file: PictureFile,
         authenticated_cat_employee: EmailIdentifiedCatEmployee,
-    ) -> Result<PictureInformation, impl StdError> {
+    ) -> Result<PictureInformation, SavingPictureError> {
         let cat_employee = self
             .cat_repository
-            .find_by_email(authenticated_cat_employee.email)
-            .await;
+            .find_by_email(authenticated_cat_employee.email.to_string())
+            .map_err(SavingPictureError::DataAccessError)
+            .await?;
 
         let added_picture = self
             .picture_repository
@@ -88,29 +101,24 @@ impl<TPicturesRepo: ManagePictures, TCatEmployeesRepo: ManageCatEmployees> Serve
                 id: 0,
                 file_name: picture_file.file_name,
                 cat_employee_id: match cat_employee {
-                    Ok(Some(emp)) => emp.id,
-                    Ok(None) => {
-                        return Ok(PictureInformation {
-                            id: 0,
-                            cat_employee_id: 0,
-                            file_name: "".to_string(),
-                        })
+                    Some(emp) => emp.id,
+                    None => {
+                        return Err(SavingPictureError::UnknownCatEmployee(
+                            authenticated_cat_employee.email,
+                        ))
                     }
-                    Err(e) => return Err(e),
                 },
                 file: picture_file.file,
                 mime_type: picture_file.mime_type,
             })
-            .await;
+            .map_err(SavingPictureError::DataAccessError)
+            .await?;
 
-        return match added_picture {
-            Ok(p) => Ok(PictureInformation {
-                id: p.id,
-                file_name: p.file_name,
-                cat_employee_id: p.cat_employee_id,
-            }),
-            Err(e) => return Err(e),
-        };
+        Ok(PictureInformation {
+            id: added_picture.id,
+            file_name: added_picture.file_name,
+            cat_employee_id: added_picture.cat_employee_id,
+        })
     }
 }
 
@@ -560,6 +568,75 @@ mod tests {
                         }]
                     )
                 });
+            }
+        }
+
+        mod and_the_user_does_not_exist {
+            use super::*;
+
+            mod when_adding_the_users_pictures {
+                use super::*;
+
+                static PICTURE_SERVICE: Lazy<
+                    PictureService<MockManagePictures, MockManageCatEmployees>,
+                > = Lazy::new(|| {
+                    let mut mock = MockManagePictures::new();
+
+                    mock.expect_find_by_cat_employee_id_and_file_name()
+                        .returning(|e, f| Ok(None));
+
+                    mock.expect_save().returning(|p| {
+                        PICTURES.lock().unwrap().push(p.clone());
+
+                        Ok(p)
+                    });
+
+                    mock.expect_count_all().returning(|| Ok(-127i64));
+
+                    let mut employee_mock = MockManageCatEmployees::new();
+                    employee_mock.expect_find_by_email().returning(|_| Ok(None));
+
+                    PictureService::new(mock, employee_mock)
+                });
+
+                lazy_static! {
+                    static ref PICTURES: Mutex<Vec<Picture>> = Mutex::new(Vec::new());
+                    static ref SAVING_PICTURE_ERROR: AsyncOnce<SavingPictureError> =
+                        AsyncOnce::new(async {
+                            PICTURE_SERVICE
+                                .add_picture(
+                                    PictureFile {
+                                        file_name: "89UknQHnzQ".to_string(),
+                                        file: vec![247, (761 % 256) as u8, (879 % 256) as u8, 11],
+                                        mime_type: "hL32JWo1moU".to_string(),
+                                    },
+                                    EmailIdentifiedCatEmployee {
+                                        email: "xNoPPps".to_string(),
+                                    },
+                                )
+                                .await
+                                .unwrap_err()
+                        });
+                }
+
+                #[test]
+                fn then_the_added_pictures_are_correct() {
+                    let rt = Builder::new_current_thread().build().unwrap();
+                    rt.block_on(async {
+                        let error = SAVING_PICTURE_ERROR.get().await;
+                        assert!(matches!(error, SavingPictureError::UnknownCatEmployee(_)))
+                    });
+                }
+
+                #[test]
+                fn then_the_response_data_is_correct() {
+                    let rt = Builder::new_current_thread().build().unwrap();
+                    rt.block_on(async {
+                        SAVING_PICTURE_ERROR.get().await;
+                        let pictures = PICTURES.lock().unwrap().clone();
+                        assert_eq!(pictures, vec![])
+                    });
+                }
             }
         }
     }

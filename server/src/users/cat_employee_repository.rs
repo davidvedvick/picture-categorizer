@@ -1,6 +1,5 @@
 use mockall::automock;
 use sqlx::{Pool, Sqlite};
-use warp::hyper::body::HttpBody;
 
 use crate::errors::DataAccessError::DataAccessError;
 use crate::errors::DataAccessResult;

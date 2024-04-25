@@ -1,8 +1,7 @@
 use std::fmt::Debug;
 
 use mockall::automock;
-use sqlx::{Executor, Pool, Row, Sqlite, Statement};
-use warp::hyper::body::HttpBody;
+use sqlx::{Pool, Row, Sqlite};
 
 use crate::errors::{DataAccessError, DataAccessResult};
 

@@ -1,12 +1,9 @@
 use std::io::Cursor;
-use std::ops::Deref;
 
 use image::imageops::FilterType;
 use image::io::Reader;
-use image::EncodableLayout;
 use mockall::automock;
 use serde::de::StdError;
-use tokio::io::AsyncWriteExt;
 
 use crate::pictures::picture_repository::ManagePictures;
 use crate::pictures::resizing::resized_picture_management::{

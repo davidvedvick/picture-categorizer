@@ -93,7 +93,15 @@ impl ManagePictures for PictureRepository {
         cat_employee_id: i64,
         file_name: String,
     ) -> DataAccessResult<Option<PartialPicture>> {
-        todo!()
+        sqlx::query_as::<_, PartialPicture>(
+            format!("{SELECT_FROM_PICTURES} where cat_employee_id = $1 and file_name = $2")
+                .as_str(),
+        )
+        .bind(cat_employee_id)
+        .bind(file_name)
+        .fetch_optional(&self.connection)
+        .await
+        .map_err(DataAccessError)
     }
 
     async fn find_all(
