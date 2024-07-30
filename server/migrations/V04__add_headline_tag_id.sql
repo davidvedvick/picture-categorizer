@@ -1,0 +1,1 @@
+ALTER TABLE picture ADD COLUMN headline_tag_id INTEGER;

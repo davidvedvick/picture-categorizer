@@ -9,12 +9,24 @@ import { UnknownCatEmployeeException } from "../users/UnknownCatEmployeeExceptio
 import { PictureInformation } from "../../transfer/index.js";
 import { ServePictureFiles } from "./ServePictureFiles.js";
 import { EmailIdentifiedCatEmployee } from "../users/EmailIdentifiedCatEmployee.js";
+import { ManagePictureTags } from "./tags/ManagePictureTags.js";
+import { DescribedPicture } from "./DescribedPicture.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
         fileName: picture.fileName,
         id: picture.id,
         catEmployeeId: picture.catEmployeeId,
+        headlineTag: null,
+    };
+}
+
+function toHeadlinedPictureResponse(picture: DescribedPicture): PictureInformation {
+    return {
+        fileName: picture.fileName,
+        id: picture.id,
+        catEmployeeId: picture.catEmployeeId,
+        headlineTag: picture.headlineTag,
     };
 }
 
@@ -22,6 +34,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
     constructor(
         private readonly pictureManagement: ManagePictures,
         private readonly catEmployees: ManageCatEmployees,
+        private readonly pictureTags: ManagePictureTags,
     ) {}
 
     async addPicture(
@@ -38,6 +51,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
             employee.id,
             pictureFile.fileName,
         );
+
         if (existingPicture) {
             throw new PictureAlreadyExistsException(pictureFile, employee);
         }
@@ -47,12 +61,19 @@ export class PictureService implements ServePictureInformation, ServePictureFile
                 {
                     catEmployeeId: employee.id,
                     id: 0,
+                    headlineTagId: null,
                 },
                 pictureFile,
             ),
         );
 
         return toPictureResponse(picture);
+    }
+
+    async updateHeadlineTag(pictureId: number, headlineTag: string): Promise<PictureInformation | null> {
+        const tag = await this.pictureTags.getOrAddTag(pictureId, headlineTag);
+        const picture = await this.pictureManagement.setPictureTagId(pictureId, tag.tagId);
+        return picture ? toHeadlinedPictureResponse(picture) : null;
     }
 
     async getPictureInformation(
