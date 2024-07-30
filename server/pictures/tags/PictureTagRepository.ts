@@ -14,7 +14,7 @@ JOIN tag t ON t.id = pt.tag_id
 export class PictureTagRepository implements ManagePictureTags {
     constructor(private readonly database: Database) {}
 
-    async addTag(pictureId: number, tag: string): Promise<PictureTag> {
+    async getOrAddTag(pictureId: number, tag: string): Promise<PictureTag> {
         let newTag: Tag | null;
 
         const tagStatement = this.database.prepare<string>("INSERT INTO tag (tag) VALUES (?)");
@@ -26,13 +26,12 @@ export class PictureTagRepository implements ManagePictureTags {
             "INSERT INTO picture_tag (tag_id, picture_id) VALUES (?, ?)",
         );
 
-        pictureTagStatement.run(newTag.id, pictureId);
+        let pictureTag: PictureTag | null = null;
+        while ((pictureTag = this.getPictureTag(pictureId, newTag.id)) == null) {
+            pictureTagStatement.run(newTag.id, pictureId);
+        }
 
-        return {
-            pictureId: pictureId,
-            tagId: newTag.id,
-            tag: tag,
-        };
+        return pictureTag;
     }
 
     async deletePictureTag(pictureId: number, tagId: number): Promise<void> {
@@ -47,9 +46,17 @@ export class PictureTagRepository implements ManagePictureTags {
         return statement.all(pictureId) as PictureTag[];
     }
 
-    private getTagByName(tag: string) {
+    getTagByName(tag: string): Tag {
         const statement = this.database.prepare<string>("SELECT * FROM tag WHERE tag = ?");
 
         return statement.get(tag) as Tag;
+    }
+
+    getPictureTag(pictureId: number, tagId: number) {
+        const statement = this.database.prepare<[number, number]>(
+            `${selectFromPictureTags} WHERE picture_id = ? and tag_id = ?`,
+        );
+
+        return statement.get(pictureId, tagId) as PictureTag;
     }
 }

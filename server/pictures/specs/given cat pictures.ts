@@ -6,6 +6,8 @@ import { Picture } from "../Picture.js";
 import { ManagePictures } from "../ManagePictures.js";
 import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
 import { PictureFile } from "../PictureFile.js";
+import { ManagePictureTags } from "../tags/ManagePictureTags.js";
+import { PictureTag } from "../tags/PictureTag.js";
 
 describe("given cat pictures", () => {
     describe("when getting the first page", () => {
@@ -38,6 +40,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformation(0, 5);
@@ -49,11 +52,13 @@ describe("given cat pictures", () => {
                     id: 823,
                     catEmployeeId: 521,
                     fileName: "xKLbRIuf",
+                    headlineTag: null,
                 } as PictureInformation,
                 {
                     id: 437,
                     catEmployeeId: 521,
                     fileName: "jwKJ996Yo",
+                    headlineTag: null,
                 } as PictureInformation,
             ]);
         });
@@ -81,6 +86,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformation(1, 3);
@@ -115,6 +121,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformation();
@@ -157,6 +164,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             picture = await pictureService.getPictureFile(644);
@@ -168,6 +176,75 @@ describe("given cat pictures", () => {
                 fileName: "9ZVugNotp",
                 file: Buffer.of(322, 379, 706),
             });
+        });
+    });
+
+    describe("when updating a picture description tag", () => {
+        let picture: PictureInformation | null;
+        let updatedPictureTag: { pictureId: number; descriptionTagId: number } | null = null;
+
+        beforeAll(async () => {
+            const pictureService = new PictureService(
+                {
+                    findById(id: number): Promise<PictureFile | null> {
+                        return Promise.resolve(
+                            id == 470
+                                ? {
+                                    id: id,
+                                    mimeType: "zXHTufH",
+                                    catEmployeeId: 99,
+                                    fileName: "OdWSgeWOx5A",
+                                    file: Buffer.of(),
+                                }
+                                : null,
+                        );
+                    },
+                    setPictureTagId(id: number, descriptionTagId: number): Promise<PictureInformation | null> {
+                        updatedPictureTag = {
+                            pictureId: id,
+                            descriptionTagId: descriptionTagId,
+                        };
+                        return Promise.resolve({
+                            id: 285,
+                            catEmployeeId: 406,
+                            headlineTag: "U6e8Ju3",
+                            fileName: "OdWSgeWOx5A",
+                        });
+                    },
+                } as ManagePictures,
+                {} as ManageCatEmployees,
+                {
+                    getOrAddTag(pictureId: number, name: string): Promise<PictureTag> {
+                        return Promise.resolve(
+                            name == "U6e8Ju3"
+                                ? {
+                                    tagId: 470,
+                                    tag: "U6e8Ju3",
+                                    pictureId: pictureId,
+                                }
+                                : ({} as PictureTag),
+                        );
+                    },
+                } as ManagePictureTags,
+            );
+
+            picture = await pictureService.updateHeadlineTag(285, "U6e8Ju3");
+        });
+
+        test("then the updated picture tag is correct", () => {
+            expect(updatedPictureTag).toStrictEqual({
+                pictureId: 285,
+                descriptionTagId: 470,
+            });
+        });
+
+        test("then the updated picture is correct", () => {
+            expect(picture).toStrictEqual({
+                id: 285,
+                catEmployeeId: 406,
+                headlineTag: "U6e8Ju3",
+                fileName: "OdWSgeWOx5A",
+            } as PictureInformation);
         });
     });
 });

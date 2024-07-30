@@ -10,4 +10,6 @@ export interface ServePictureInformation {
         pictureFile: PictureFile,
         authenticatedCatEmployee: EmailIdentifiedCatEmployee,
     ): Promise<PictureInformation>;
+
+    updateHeadlineTag(pictureId: number, headlineTag: string): Promise<PictureInformation | null>;
 }

@@ -1,18 +1,18 @@
-import {ServePictureTags} from "./ServePictureTags.js";
-import {PictureTag} from "./PictureTag.js";
-import {ManageCatEmployees} from "../../users/ManageCatEmployees.js";
-import {ManagePictureTags} from "./ManagePictureTags.js";
-import {ManagePictures} from "../ManagePictures.js";
-import {IncorrectEmployeeException} from "../../users/IncorrectEmployeeException.js";
-import {PictureNotFoundException} from "../PictureNotFoundException.js";
-import {EmailIdentifiedCatEmployee} from "../../users/EmailIdentifiedCatEmployee.js";
+import { ServePictureTags } from "./ServePictureTags.js";
+import { PictureTag } from "./PictureTag.js";
+import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
+import { ManagePictureTags } from "./ManagePictureTags.js";
+import { ManagePictures } from "../ManagePictures.js";
+import { IncorrectEmployeeException } from "../../users/IncorrectEmployeeException.js";
+import { PictureNotFoundException } from "../PictureNotFoundException.js";
+import { EmailIdentifiedCatEmployee } from "../../users/EmailIdentifiedCatEmployee.js";
 
 export class PictureTagService implements ServePictureTags {
-
     constructor(
         private readonly catEmployees: ManageCatEmployees,
         private readonly pictures: ManagePictures,
-        private readonly pictureTags: ManagePictureTags) {}
+        private readonly pictureTags: ManagePictureTags,
+    ) {}
 
     async addTag(pictureId: number, tag: string, authenticatedUser: EmailIdentifiedCatEmployee): Promise<PictureTag> {
         const picture = await this.pictures.findById(pictureId);
@@ -23,7 +23,7 @@ export class PictureTagService implements ServePictureTags {
 
         if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
 
-        return await this.pictureTags.addTag(pictureId, tag.toLowerCase());
+        return await this.pictureTags.getOrAddTag(pictureId, tag.toLowerCase());
     }
 
     async deleteTag(pictureId: number, tagId: number, authenticatedUser: EmailIdentifiedCatEmployee): Promise<void> {
