@@ -43,7 +43,7 @@ describe("given cat pictures", () => {
                 {} as ManagePictureTags,
             );
 
-            page = await pictureService.getPictureInformation(0, 5);
+            page = await pictureService.getPictureInformationPages(0, 5);
         });
 
         test("then the returned pictures are correct", () => {
@@ -89,7 +89,7 @@ describe("given cat pictures", () => {
                 {} as ManagePictureTags,
             );
 
-            page = await pictureService.getPictureInformation(1, 3);
+            page = await pictureService.getPictureInformationPages(1, 3);
         });
 
         test("then the returned pictures are correct", () => {
@@ -124,7 +124,7 @@ describe("given cat pictures", () => {
                 {} as ManagePictureTags,
             );
 
-            page = await pictureService.getPictureInformation();
+            page = await pictureService.getPictureInformationPages();
         });
 
         test("then the returned pictures are correct", () => {
@@ -221,6 +221,7 @@ describe("given cat pictures", () => {
                                     tagId: 470,
                                     tag: "U6e8Ju3",
                                     pictureId: pictureId,
+                                    rank: 727,
                                 }
                                 : ({} as PictureTag),
                         );

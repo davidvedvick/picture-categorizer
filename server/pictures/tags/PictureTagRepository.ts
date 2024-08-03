@@ -7,7 +7,8 @@ const selectFromPictureTags = `
 SELECT
     pt.tag_id as tagId,
     pt.picture_id as pictureId,
-    t.tag
+    t.tag,
+    pt.rank
 FROM picture_tag pt
 JOIN tag t ON t.id = pt.tag_id
 `;
@@ -44,6 +45,19 @@ export class PictureTagRepository implements ManagePictureTags {
         const statement = this.database.prepare<number>(`${selectFromPictureTags} WHERE picture_id = ?`);
 
         return statement.all(pictureId) as PictureTag[];
+    }
+
+    async promotePictureTag(pictureId: number, tagId: number): Promise<PictureTag | null> {
+        this.database
+            .prepare<[number, number]>(
+                `UPDATE picture_tag
+                 SET rank = (SELECT MAX(rank) + 1 FROM picture_tag WHERE picture_id = ? and tag_id = ?)
+                 WHERE picture_id = ?
+                   and tag_id = ?`,
+            )
+            .run(pictureId, tagId);
+
+        return this.getPictureTag(pictureId, tagId);
     }
 
     getTagByName(tag: string): Tag {

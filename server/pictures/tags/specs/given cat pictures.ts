@@ -100,6 +100,7 @@ describe("given cat pictures", () => {
                             tag: tag,
                             tagId: 3,
                             pictureId: pictureId,
+                            rank: 0,
                         });
                     },
                 } as ManagePictureTags,
@@ -113,11 +114,83 @@ describe("given cat pictures", () => {
                 tag: "x8rmke68gae",
                 tagId: 3,
                 pictureId: 204,
+                rank: 0,
             });
         });
 
         test("then the added tags are correct", () => {
             expect(addedTags).toStrictEqual([[204, "x8rmke68gae"]]);
+        });
+    });
+
+    describe("when promoting a picture tag", () => {
+        const employeeEmail = "esZUPS3ZsOA";
+        const employeeId = 248;
+        const pictureIdUnderTest = 302;
+        const tagIdUnderTest = 670;
+
+        let promotedPictureTag: PictureTag | null = null;
+
+        beforeAll(async () => {
+            const pictureTagService = new PictureTagService(
+                {
+                    findByEmail(email: string): Promise<CatEmployee | null> {
+                        return Promise.resolve(
+                            email == employeeEmail
+                                ? {
+                                    email: email,
+                                    id: employeeId,
+                                    password: "",
+                                    isEnabled: true,
+                                }
+                                : null,
+                        );
+                    },
+                } as ManageCatEmployees,
+                {
+                    findById(id: number): Promise<Picture | null> {
+                        return Promise.resolve(
+                            id == pictureIdUnderTest
+                                ? {
+                                    id: id,
+                                    fileName: "8r2jagmLZBT",
+                                    catEmployeeId: employeeId,
+                                    file: Buffer.of(),
+                                    mimeType: "6KX66Tyy6",
+                                    headlineTagId: null,
+                                }
+                                : null,
+                        );
+                    },
+                } as ManagePictures,
+                {
+                    promotePictureTag(pictureId: number, tagId: number): Promise<PictureTag | null> {
+                        return Promise.resolve(
+                            pictureId == pictureIdUnderTest && tagId == tagIdUnderTest
+                                ? {
+                                    tagId: tagId,
+                                    pictureId: pictureId,
+                                    tag: "FWrL95NJ2",
+                                    rank: 510,
+                                }
+                                : null,
+                        );
+                    },
+                } as ManagePictureTags,
+            );
+
+            promotedPictureTag = await pictureTagService.promoteTag(pictureIdUnderTest, tagIdUnderTest, {
+                email: employeeEmail,
+            });
+        });
+
+        test("then the promoted picture tag is correct", () => {
+            expect(promotedPictureTag).toStrictEqual({
+                tagId: tagIdUnderTest,
+                pictureId: pictureIdUnderTest,
+                tag: "FWrL95NJ2",
+                rank: 510,
+            });
         });
     });
 
@@ -210,6 +283,7 @@ describe("given cat pictures", () => {
                                 tag: tag,
                                 tagId: 3,
                                 pictureId: pictureId,
+                                rank: 0,
                             });
                         },
                     } as ManagePictureTags,
@@ -223,6 +297,7 @@ describe("given cat pictures", () => {
                     tag: "x8rmke68gae",
                     tagId: 3,
                     pictureId: 204,
+                    rank: 0,
                 });
             });
 
@@ -276,6 +351,7 @@ describe("given cat pictures", () => {
                                 tag: tag,
                                 tagId: 3,
                                 pictureId: pictureId,
+                                rank: 0,
                             });
                         },
                     } as ManagePictureTags,
@@ -389,6 +465,7 @@ describe("given cat pictures", () => {
                                 tag: tag,
                                 tagId: 3,
                                 pictureId: pictureId,
+                                rank: 0,
                             });
                         },
                     } as ManagePictureTags,

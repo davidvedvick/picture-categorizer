@@ -1,13 +1,18 @@
-import express, {Express} from "express";
-import {ServePictureInformation} from "./ServePictureInformation.js";
-import {ManageJwtTokens} from "../security/ManageJwtTokens.js";
-import {UploadedFile} from "express-fileupload";
-import {PictureAlreadyExistsException} from "./PictureAlreadyExistsException.js";
-import {UnknownCatEmployeeException} from "../users/UnknownCatEmployeeException.js";
-import {ServePictureFiles, ServeResizedPictureFiles} from "./ServePictureFiles.js";
+import express, { Express } from "express";
+import { ServePictureInformation } from "./ServePictureInformation.js";
+import { ManageJwtTokens } from "../security/ManageJwtTokens.js";
+import { UploadedFile } from "express-fileupload";
+import { PictureAlreadyExistsException } from "./PictureAlreadyExistsException.js";
+import { UnknownCatEmployeeException } from "../users/UnknownCatEmployeeException.js";
+import { ServePictureFiles, ServeResizedPictureFiles } from "./ServePictureFiles.js";
 
-export default function(app: Express, pictureService: ServePictureInformation, pictureFileService: ServePictureFiles, resizedPictureFileService: ServeResizedPictureFiles, manageJwtTokens: ManageJwtTokens) {
-
+export default function (
+    app: Express,
+    pictureService: ServePictureInformation,
+    pictureFileService: ServePictureFiles,
+    resizedPictureFileService: ServeResizedPictureFiles,
+    manageJwtTokens: ManageJwtTokens,
+) {
     app.get("/api/pictures", async (req, res) => {
         const pageNumberString = req.query.page;
         const pageNumber = pageNumberString ? Number(pageNumberString) : null;
@@ -15,7 +20,19 @@ export default function(app: Express, pictureService: ServePictureInformation, p
         const pageSizeString = req.query.size;
         const pageSize = pageSizeString ? Number(pageSizeString) : null;
 
-        res.send(await pictureService.getPictureInformation(pageNumber, pageSize))
+        res.send(await pictureService.getPictureInformationPages(pageNumber, pageSize));
+    });
+
+    app.get("/api/pictures/:id", async (req, res) => {
+        const idString = req.params.id;
+        if (!idString) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const id = Number(idString);
+
+        res.send(await pictureService.getPictureInformation(id));
     });
 
     app.get("/api/pictures/:id/file", handlePictureFileRequests(pictureFileService));
@@ -23,7 +40,7 @@ export default function(app: Express, pictureService: ServePictureInformation, p
     app.get("/api/pictures/:id/preview", handlePictureFileRequests(resizedPictureFileService));
 
     app.post("/api/pictures", async (req, res) => {
-        const token = req.get('authorization');
+        const token = req.get("authorization");
         if (!token) {
             res.sendStatus(400);
             return;
@@ -57,7 +74,8 @@ export default function(app: Express, pictureService: ServePictureInformation, p
                     file: uploadedFile.data,
                     mimeType: uploadedFile.mimetype,
                 },
-                authenticatedUser);
+                authenticatedUser,
+            );
             res.status(202).send(picture);
         } catch (e) {
             if (e instanceof PictureAlreadyExistsException) {
@@ -75,8 +93,10 @@ export default function(app: Express, pictureService: ServePictureInformation, p
         }
     });
 
-    function handlePictureFileRequests(pictureFiles: ServePictureFiles): (req: express.Request, res: express.Response) => Promise<void> {
-        return async (req, res) =>  {
+    function handlePictureFileRequests(
+        pictureFiles: ServePictureFiles,
+    ): (req: express.Request, res: express.Response) => Promise<void> {
+        return async (req, res) => {
             const idString = req.params.id;
             if (!idString) {
                 res.sendStatus(400);
@@ -92,10 +112,7 @@ export default function(app: Express, pictureService: ServePictureInformation, p
                 return;
             }
 
-            res
-                .set("cache-control", "public, max-age=31536000, immutable")
-                .type(picture.mimeType)
-                .send(picture.file);
-        }
+            res.set("cache-control", "public, max-age=31536000, immutable").type(picture.mimeType).send(picture.file);
+        };
     }
 }

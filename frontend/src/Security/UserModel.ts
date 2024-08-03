@@ -1,36 +1,35 @@
 import { User } from "./User";
 import { ServeAuthentication } from "./ServeAuthentication";
-import { ReadOnlyBehaviorSubject } from "../ReadOnlyBehaviorSubject";
-import { BehaviorSubject } from "rxjs";
 import { instance as auth } from "../Security/AuthorizationService";
 import { InvalidTokenException } from "./InvalidTokenException";
 import { JwtToken } from "../../../transfer/JwtToken";
+import { InteractionState, mutableInteractionState, UpdatableInteractionState } from "../interactions/InteractionState";
 
 interface UserModel {
-    get isLoggedIn(): ReadOnlyBehaviorSubject<boolean>;
+    get isLoggedIn(): InteractionState<boolean>;
 
-    get catEmployeeId(): ReadOnlyBehaviorSubject<number | null>;
+    get catEmployeeId(): InteractionState<number | null>;
 
     authenticate(user: User): Promise<JwtToken | null>;
 }
 
 class UserViewModel implements UserModel {
-    private readonly isLoggedInSubject: BehaviorSubject<boolean>;
-    private readonly catEmployeeIdSubject: BehaviorSubject<number | null>;
+    private readonly isLoggedInSubject: UpdatableInteractionState<boolean>;
+    private readonly catEmployeeIdSubject: UpdatableInteractionState<number | null>;
 
     constructor(private readonly authentication: ServeAuthentication) {
-        this.isLoggedInSubject = new BehaviorSubject(authentication.isLoggedIn());
-        this.catEmployeeIdSubject = new BehaviorSubject(authentication.getUserToken()?.catEmployeeId ?? null);
+        this.isLoggedInSubject = mutableInteractionState(authentication.isLoggedIn());
+        this.catEmployeeIdSubject = mutableInteractionState(authentication.getUserToken()?.catEmployeeId ?? null);
     }
 
-    get catEmployeeId(): ReadOnlyBehaviorSubject<number | null> {
+    get catEmployeeId(): InteractionState<number | null> {
         return this.catEmployeeIdSubject;
     }
 
     async authenticate(user: User): Promise<JwtToken | null> {
         const token = await this.authentication.authenticate(user);
-        this.catEmployeeIdSubject.next(token?.catEmployeeId ?? null);
-        this.isLoggedInSubject.next(token != null);
+        this.catEmployeeIdSubject.value = token?.catEmployeeId ?? null;
+        this.isLoggedInSubject.value = token != null;
         return token;
     }
 
@@ -56,14 +55,14 @@ class UserViewModel implements UserModel {
         return response;
     }
 
-    get isLoggedIn(): ReadOnlyBehaviorSubject<boolean> {
+    get isLoggedIn(): InteractionState<boolean> {
         return this.isLoggedInSubject;
     }
 
     private logOut() {
         this.authentication.logOut();
-        this.catEmployeeIdSubject.next(null);
-        this.isLoggedInSubject.next(false);
+        this.catEmployeeIdSubject.value = null;
+        this.isLoggedInSubject.value = false;
     }
 }
 
