@@ -75,6 +75,7 @@ export function PictureList(props: PictureListProperties) {
                             pictureId={p.id}
                             catEmployeeId={p.catEmployeeId}
                             onTagPromoted={() => updatePicture(p.id)}
+                            onTagDeleted={() => updatePicture(p.id)}
                         />
                     </CardBody>
                 </PictureCard>

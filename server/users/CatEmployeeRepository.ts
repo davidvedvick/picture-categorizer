@@ -21,11 +21,11 @@ export class CatEmployeeRepository implements ManageCatEmployees {
     }
 
     async save(catEmployee: CatEmployee): Promise<CatEmployee> {
-        const statement = this.db.prepare<[string, string, boolean]>(
+        const statement = this.db.prepare<[string, string, number]>(
             "INSERT INTO cat_employee (email, password, is_enabled) VALUES (?, ?, ?);",
         );
 
-        const result = statement.run(catEmployee.email, catEmployee.password, catEmployee.isEnabled);
+        const result = statement.run(catEmployee.email, catEmployee.password, catEmployee.isEnabled ? 1 : 0);
 
         catEmployee.id = result.lastInsertRowid as number;
 
