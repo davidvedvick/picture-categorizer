@@ -74,17 +74,4 @@ export class PictureRepository implements ManagePictures {
 
         return picture;
     }
-
-    async setPictureTagId(pictureId: number, headlineTagId: number): Promise<DescribedPicture | null> {
-        let picture: DescribedPicture | null = null;
-        while ((picture = await this.findById(pictureId)) != null && picture.headlineTagId != headlineTagId) {
-            const statement = this.database.prepare<[number, number]>(
-                "UPDATE picture SET headline_tag_id = ? WHERE p.id = ?",
-            );
-
-            statement.run(headlineTagId, pictureId);
-        }
-
-        return picture;
-    }
 }

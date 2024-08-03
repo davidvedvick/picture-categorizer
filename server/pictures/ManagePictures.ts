@@ -13,6 +13,4 @@ export interface ManagePictures {
     countAll(): Promise<number>;
 
     save(picture: Picture): Promise<Picture>;
-
-    setPictureTagId(pictureId: number, descriptionTagId: number): Promise<DescribedPicture | null>;
 }
