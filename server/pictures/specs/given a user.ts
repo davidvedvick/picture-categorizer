@@ -7,7 +7,6 @@ import CatEmployee from "../../users/CatEmployee.js";
 import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
 import { PictureAlreadyExistsException } from "../PictureAlreadyExistsException.js";
 import { UnknownCatEmployeeException } from "../../users/UnknownCatEmployeeException.js";
-import { ManagePictureTags } from "../tags/ManagePictureTags.js";
 
 describe("given a user", () => {
     describe("when adding the users pictures", () => {
@@ -38,7 +37,6 @@ describe("given a user", () => {
                         });
                     },
                 } as ManageCatEmployees,
-                {} as ManagePictureTags,
             );
 
             response = await pictureService.addPicture(
@@ -113,7 +111,6 @@ describe("given a user", () => {
                             });
                         },
                     } as ManageCatEmployees,
-                    {} as ManagePictureTags,
                 );
 
                 try {
@@ -178,7 +175,6 @@ describe("given a user", () => {
                             return Promise.resolve(null);
                         },
                     } as ManageCatEmployees,
-                    {} as ManagePictureTags,
                 );
 
                 try {
