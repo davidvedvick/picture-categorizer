@@ -4,5 +4,4 @@ export interface Picture {
     catEmployeeId: number;
     file: Buffer;
     mimeType: string;
-    headlineTagId: number | null;
 }

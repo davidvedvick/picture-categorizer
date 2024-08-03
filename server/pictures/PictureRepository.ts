@@ -11,11 +11,12 @@ SELECT
     p.mime_type as mimeType,
     t.tag as headlineTag
 FROM picture p
-LEFT JOIN picture_tag pt on pt.picture_id = p.id
-LEFT JOIN picture_tag pt2
-    ON pt.picture_id = pt2.picture_id AND pt.tag_id = pt2.tag_id AND ((pt.rank < pt2.rank)
-        OR (pt.rank = pt2.rank AND pt.tag_id < pt.tag_id))
-LEFT JOIN tag t on t.id = pt.tag_id
+         LEFT JOIN picture_tag pt on pt.picture_id = p.id
+         LEFT JOIN picture_tag pt2
+                   ON pt.picture_id = pt2.picture_id AND ((pt.rank < pt2.rank)
+                       OR (pt.rank = pt2.rank AND pt.tag_id < pt2.tag_id))
+         LEFT JOIN tag t on t.id = pt.tag_id
+WHERE pt2.picture_id IS NULL
 `;
 export class PictureRepository implements ManagePictures {
     constructor(private readonly database: Database) {}
@@ -41,7 +42,7 @@ export class PictureRepository implements ManagePictures {
 
     async findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<DescribedPicture | null> {
         const statement = this.database.prepare<[number, string]>(
-            `${selectFromPictures} WHERE p.cat_employee_id = ? AND p.file_name = ?`,
+            `${selectFromPictures} AND p.cat_employee_id = ? AND p.file_name = ?`,
         );
 
         const result = statement.get(catEmployeeId, fileName) as DescribedPicture;
@@ -50,7 +51,7 @@ export class PictureRepository implements ManagePictures {
     }
 
     async findById(id: number): Promise<DescribedPicture | null> {
-        const statement = this.database.prepare<number>(`${selectFromPictures} WHERE p.id = ?`);
+        const statement = this.database.prepare<number>(`${selectFromPictures} AND p.id = ?`);
 
         return (statement.get(id) as DescribedPicture) ?? null;
     }
