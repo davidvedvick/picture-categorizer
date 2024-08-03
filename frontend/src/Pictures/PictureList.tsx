@@ -7,6 +7,7 @@ import styled from "styled-components";
 import { Card, CardBody, CardTitle } from "../components/Card";
 import { VisuallyHidden } from "../components/VisuallyHidden";
 import { Spinner } from "../components/Spinner";
+import { useInteractionState } from "../interactions/InteractionState";
 
 const Pictures = styled.div`
     display: flex;
@@ -35,23 +36,26 @@ interface PictureListProperties {
 }
 
 export function PictureList(props: PictureListProperties) {
-    const [pictures, setItemPictures] = React.useState<PictureInformation[]>([]);
-    const [isLoading, setIsLoading] = React.useState(false);
+    const viewModel = React.useMemo(
+        () => newPictureListModel(document, props.initialPictureList),
+        [props.initialPictureList],
+    );
+    const pictures = useInteractionState(viewModel.pictures);
+    const isLoading = useInteractionState(viewModel.isLoading);
 
     React.useEffect(() => {
         const token = cancellationToken();
-        const viewModel = newPictureListModel(document, props.initialPictureList);
-        const picturesSub = viewModel.pictures.subscribe(setItemPictures);
-        const isLoadingSub = viewModel.isLoading.subscribe(setIsLoading);
         viewModel
             .watchFromScrollState(token)
             .catch((err) => console.error("An unrecoverable error occurred watching the scroll state.", err));
-        return () => {
-            token.cancel();
-            picturesSub.unsubscribe();
-            isLoadingSub.unsubscribe();
-        };
-    }, [props.initialPictureList]);
+        return () => token.cancel();
+    }, [viewModel]);
+
+    function updatePicture(pictureId: number) {
+        viewModel
+            .updatePicture(pictureId)
+            .catch((err) => console.error("An unrecoverable error updating the picture.", err));
+    }
 
     return (
         <Pictures className="pictures">
@@ -66,8 +70,14 @@ export function PictureList(props: PictureListProperties) {
                         />
                     </a>
                     <CardBody>
-                        <CardTitle>{p.fileName}</CardTitle>
-                        <PictureTagList pictureId={p.id} catEmployeeId={p.catEmployeeId} />
+                        <CardTitle>{p.headlineTag ?? p.fileName}</CardTitle>
+                        <PictureTagList
+                            pictureId={p.id}
+                            catEmployeeId={p.catEmployeeId}
+                            onTagPromoted={() => updatePicture(p.id)}
+                            onTagDeleted={() => updatePicture(p.id)}
+                            onTagAdded={() => updatePicture(p.id)}
+                        />
                     </CardBody>
                 </PictureCard>
             ))}

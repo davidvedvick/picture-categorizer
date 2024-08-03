@@ -6,6 +6,7 @@ import { Picture } from "../Picture.js";
 import { ManagePictures } from "../ManagePictures.js";
 import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
 import { PictureFile } from "../PictureFile.js";
+import { DescribedPicture } from "../DescribedPicture.js";
 
 describe("given cat pictures", () => {
     describe("when getting the first page", () => {
@@ -14,7 +15,7 @@ describe("given cat pictures", () => {
         beforeAll(async () => {
             const pictureService = new PictureService(
                 {
-                    findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
+                    findAll(pageNumber: number | null, pageSize: number | null): Promise<DescribedPicture[]> {
                         return Promise.resolve(
                             pageNumber == 0 && pageSize == 5
                                 ? [
@@ -23,12 +24,14 @@ describe("given cat pictures", () => {
                                           catEmployeeId: 521,
                                           mimeType: "",
                                           fileName: "xKLbRIuf",
-                                      } as Picture,
+                                          headlineTag: null,
+                                      } as DescribedPicture,
                                       {
                                           id: 437,
                                           catEmployeeId: 521,
                                           fileName: "jwKJ996Yo",
-                                      } as Picture,
+                                          headlineTag: null,
+                                      } as DescribedPicture,
                                 ]
                                 : [],
                         );
@@ -40,7 +43,7 @@ describe("given cat pictures", () => {
                 {} as ManageCatEmployees,
             );
 
-            page = await pictureService.getPictureInformation(0, 5);
+            page = await pictureService.getPictureInformationPages(0, 5);
         });
 
         test("then the returned pictures are correct", () => {
@@ -49,11 +52,13 @@ describe("given cat pictures", () => {
                     id: 823,
                     catEmployeeId: 521,
                     fileName: "xKLbRIuf",
+                    headlineTag: null,
                 } as PictureInformation,
                 {
                     id: 437,
                     catEmployeeId: 521,
                     fileName: "jwKJ996Yo",
+                    headlineTag: null,
                 } as PictureInformation,
             ]);
         });
@@ -83,7 +88,7 @@ describe("given cat pictures", () => {
                 {} as ManageCatEmployees,
             );
 
-            page = await pictureService.getPictureInformation(1, 3);
+            page = await pictureService.getPictureInformationPages(1, 3);
         });
 
         test("then the returned pictures are correct", () => {
@@ -117,7 +122,7 @@ describe("given cat pictures", () => {
                 {} as ManageCatEmployees,
             );
 
-            page = await pictureService.getPictureInformation();
+            page = await pictureService.getPictureInformationPages();
         });
 
         test("then the returned pictures are correct", () => {

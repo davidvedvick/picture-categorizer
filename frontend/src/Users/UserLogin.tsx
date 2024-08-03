@@ -24,8 +24,14 @@ export function UserLogin() {
     async function handleSubmit(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
 
-        const result = await userModel().authenticate(new User(email, password));
-        setIsLoginError(!result);
+        setIsLoginError(false);
+        try {
+            const result = await userModel().authenticate(new User(email, password));
+            setIsLoginError(!result);
+        } catch (err) {
+            console.error("An unexpected error occurred logging in.", err);
+            setIsLoginError(true);
+        }
     }
 
     function LoginError() {

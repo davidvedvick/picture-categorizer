@@ -1,67 +1,77 @@
-import { BehaviorSubject, filter, firstValueFrom, fromEvent } from "rxjs";
-import { Page } from "../Page";
-import { ReadOnlyBehaviorSubject } from "../ReadOnlyBehaviorSubject";
+import { filter, firstValueFrom, fromEvent } from "rxjs";
 import { CancellationToken } from "../CancellationToken";
 import { PictureInformation } from "../../../transfer";
+import { InteractionState, mutableInteractionState, UpdatableInteractionState } from "../interactions/InteractionState";
+import { AccessPictures, PictureAccess } from "./AccessPictures";
 
 const pageSize = 20;
 
 interface PictureListModel {
-    get isLoading(): ReadOnlyBehaviorSubject<boolean>;
-    get pictures(): ReadOnlyBehaviorSubject<PictureInformation[]>;
+    get isLoading(): InteractionState<boolean>;
+    get pictures(): InteractionState<PictureInformation[]>;
 
     watchFromScrollState(cancellationToken: CancellationToken): Promise<void>;
+
+    updatePicture(pictureId: number): Promise<void>;
 }
 
-class PictureListViewModel implements PictureListModel {
-    private readonly loadedPictures;
-    private readonly isLoadingSubject = new BehaviorSubject(false);
-    private readonly picturesSubject;
+export class PictureListViewModel implements PictureListModel {
+    private readonly loadedPictures: Map<number, PictureInformation>;
+    private readonly isLoadingSubject = mutableInteractionState(false);
+    private readonly picturesSubject: UpdatableInteractionState<PictureInformation[]>;
 
     constructor(
         private readonly document: Document,
+        private readonly pictureAccess: AccessPictures,
         initialPictures: PictureInformation[] = [],
     ) {
-        this.loadedPictures = new Set<number>(initialPictures.map((p) => p.id));
-        this.picturesSubject = new BehaviorSubject<PictureInformation[]>(initialPictures.sort((a, b) => b.id - a.id));
+        this.loadedPictures = new Map<number, PictureInformation>(initialPictures.map((p) => [p.id, p]));
+        this.picturesSubject = mutableInteractionState<PictureInformation[]>(
+            initialPictures.sort((a, b) => b.id - a.id),
+        );
     }
 
-    get isLoading(): ReadOnlyBehaviorSubject<boolean> {
+    get isLoading(): InteractionState<boolean> {
         return this.isLoadingSubject;
     }
 
-    get pictures(): ReadOnlyBehaviorSubject<PictureInformation[]> {
+    get pictures(): InteractionState<PictureInformation[]> {
         return this.picturesSubject;
+    }
+
+    async updatePicture(pictureId: number): Promise<void> {
+        const updatedPicture = await this.pictureAccess.getPictureInformation(pictureId);
+        const existingPicture = this.loadedPictures.get(pictureId);
+        if (existingPicture && updatedPicture) {
+            this.loadedPictures.set(pictureId, updatedPicture);
+            this.picturesSubject.value = [...this.loadedPictures.values()].sort((a, b) => b.id - a.id);
+        }
     }
 
     async watchFromScrollState(cancellationToken: CancellationToken) {
         let nextPageNumber = 0;
         while (!cancellationToken.isCancelled) {
-            this.isLoadingSubject.next(true);
+            this.isLoadingSubject.value = true;
             try {
-                const promisedResponse = fetch(`/api/pictures?page=${nextPageNumber}&size=${pageSize}`);
+                const promisedResponse = this.pictureAccess.getPictures(nextPageNumber, pageSize);
                 await Promise.any([promisedResponse, cancellationToken.promisedCancellation]);
                 if (cancellationToken.isCancelled) return;
 
-                const response = await promisedResponse;
-                if (!response.ok) return;
-
-                const page = (await response.json()) as Page<PictureInformation>;
-                this.picturesSubject.next(
-                    this.pictures.value.concat(
-                        page.content.filter((p) => {
-                            if (this.loadedPictures.has(p.id)) return false;
-                            this.loadedPictures.add(p.id);
-                            return true;
-                        }),
-                    ),
+                const page = await promisedResponse;
+                this.picturesSubject.value = this.pictures.value.concat(
+                    page.content.filter((p) => {
+                        if (this.loadedPictures.has(p.id)) return false;
+                        this.loadedPictures.set(p.id, p);
+                        return true;
+                    }),
                 );
+
                 if (page.last) return;
                 nextPageNumber = Math.max(nextPageNumber, page.number + 1);
             } catch (error) {
                 console.error("There was an error getting item pictures", error);
             } finally {
-                this.isLoadingSubject.next(false);
+                this.isLoadingSubject.value = false;
             }
 
             const events = fromEvent(this.document, "scroll").pipe(
@@ -80,5 +90,5 @@ class PictureListViewModel implements PictureListModel {
 }
 
 export function newPictureListModel(document: Document, initialPictures: PictureInformation[] = []): PictureListModel {
-    return new PictureListViewModel(document, initialPictures);
+    return new PictureListViewModel(document, new PictureAccess(), initialPictures);
 }

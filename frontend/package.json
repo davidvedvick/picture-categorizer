@@ -29,9 +29,6 @@
         "fs-extra": "^10.0.0",
         "html-webpack-plugin": "^5.5.0",
         "identity-obj-proxy": "^3.0.0",
-        "jest": "^27.4.3",
-        "jest-resolve": "^27.4.2",
-        "jest-watch-typeahead": "^1.0.0",
         "mini-css-extract-plugin": "^2.4.5",
         "prompts": "^2.4.2",
         "react": "^18.2.0",
@@ -59,7 +56,10 @@
         "@types/node": "^16.18.3",
         "@types/react": "^18.0.25",
         "@types/react-dom": "^18.0.9",
-        "react-dev-utils": "^12.0.1"
+        "react-dev-utils": "^12.0.1",
+        "jest": "^27.4.3",
+        "jest-resolve": "^27.4.2",
+        "jest-watch-typeahead": "^1.0.0"
     },
     "scripts": {
         "clean": "rm -rf build",
@@ -97,7 +97,7 @@
             "<rootDir>/src/setupTests.ts"
         ],
         "testMatch": [
-            "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+            "<rootDir>/src/**/specs/**/*.{js,jsx,ts,tsx}",
             "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
         ],
         "testEnvironment": "jsdom",

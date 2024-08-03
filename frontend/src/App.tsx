@@ -10,6 +10,7 @@ import { Header } from "./components/Header";
 import { Modal, ModalBody } from "./components/Modal";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { CloseButton } from "./components/CloseButton";
+import { useInteractionState } from "./interactions/InteractionState";
 
 const theme = {
     surface: "white",
@@ -125,7 +126,7 @@ const Logo = styled.img`
 
 function App() {
     const [isUploadDisplayed, setIsUploadDisplayed] = React.useState(false);
-    const [isLoggedIn, setIsLoggedIn] = React.useState(userModel().isLoggedIn.value);
+    const isLoggedIn = useInteractionState(userModel().isLoggedIn);
     const [initialPictures, setInitialPictures] = React.useState<PictureInformation[]>([]);
 
     async function showUploads() {
@@ -140,13 +141,6 @@ function App() {
     function hideUploads() {
         setIsUploadDisplayed(false);
     }
-
-    React.useEffect(() => {
-        const vm = userModel();
-        const isLoggedInSub = vm.isLoggedIn.subscribe(setIsLoggedIn);
-
-        return () => isLoggedInSub.unsubscribe();
-    }, []);
 
     return (
         <ThemeProvider theme={theme}>

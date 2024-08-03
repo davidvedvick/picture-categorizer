@@ -9,12 +9,23 @@ import { UnknownCatEmployeeException } from "../users/UnknownCatEmployeeExceptio
 import { PictureInformation } from "../../transfer/index.js";
 import { ServePictureFiles } from "./ServePictureFiles.js";
 import { EmailIdentifiedCatEmployee } from "../users/EmailIdentifiedCatEmployee.js";
+import { DescribedPicture } from "./DescribedPicture.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
         fileName: picture.fileName,
         id: picture.id,
         catEmployeeId: picture.catEmployeeId,
+        headlineTag: null,
+    };
+}
+
+function toHeadlinedPictureResponse(picture: DescribedPicture): PictureInformation {
+    return {
+        fileName: picture.fileName,
+        id: picture.id,
+        catEmployeeId: picture.catEmployeeId,
+        headlineTag: picture.headlineTag,
     };
 }
 
@@ -38,6 +49,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
             employee.id,
             pictureFile.fileName,
         );
+
         if (existingPicture) {
             throw new PictureAlreadyExistsException(pictureFile, employee);
         }
@@ -47,6 +59,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
                 {
                     catEmployeeId: employee.id,
                     id: 0,
+                    headlineTagId: null,
                 },
                 pictureFile,
             ),
@@ -55,7 +68,13 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         return toPictureResponse(picture);
     }
 
-    async getPictureInformation(
+    async getPictureInformation(pictureId: number): Promise<PictureInformation | null> {
+        const picture = await this.pictureManagement.findById(pictureId);
+
+        return picture ? toHeadlinedPictureResponse(picture) : null;
+    }
+
+    async getPictureInformationPages(
         pageNumber: number | null = null,
         pageSize: number | null = null,
     ): Promise<Page<PictureInformation>> {
@@ -68,7 +87,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         }
 
         return {
-            content: (await promisedPictures).map(toPictureResponse),
+            content: (await promisedPictures).map(toHeadlinedPictureResponse),
             number: pageNumber ?? 0,
             last: isLast,
         };

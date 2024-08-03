@@ -1,8 +1,5 @@
 {
     "db": {
-        "uri": "mysql://localhost:3306/catpics",
-        "user": "cat",
-        "password": "scratch",
         "file": "/home/david/.catpics/pics.db"
     },
     "security": {

@@ -1,0 +1,1 @@
+ALTER TABLE picture_tag ADD COLUMN `rank` INTEGER DEFAULT 0;

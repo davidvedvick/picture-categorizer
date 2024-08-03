@@ -1,14 +1,22 @@
 import { ManagePictures } from "./ManagePictures.js";
 import { Picture } from "./Picture.js";
 import { Database } from "better-sqlite3";
+import { DescribedPicture } from "./DescribedPicture.js";
 
 const selectFromPictures = `
 SELECT
-    id as id,
-    cat_employee_id as catEmployeeId,
-    file_name as fileName,
-    mime_type as mimeType
-FROM picture
+    p.id as id,
+    p.cat_employee_id as catEmployeeId,
+    p.file_name as fileName,
+    p.mime_type as mimeType,
+    t.tag as headlineTag
+FROM picture p
+         LEFT JOIN picture_tag pt on pt.picture_id = p.id
+         LEFT JOIN picture_tag pt2
+                   ON pt.picture_id = pt2.picture_id AND ((pt.rank < pt2.rank)
+                       OR (pt.rank = pt2.rank AND pt.rowid > pt2.rowid))
+         LEFT JOIN tag t on t.id = pt.tag_id
+WHERE pt2.picture_id IS NULL
 `;
 export class PictureRepository implements ManagePictures {
     constructor(private readonly database: Database) {}
@@ -19,37 +27,37 @@ export class PictureRepository implements ManagePictures {
         return result.count;
     }
 
-    async findAll(pageNumber: number | null, pageSize: number | null): Promise<Picture[]> {
+    async findAll(pageNumber: number | null, pageSize: number | null): Promise<DescribedPicture[]> {
         let sql = selectFromPictures;
 
         let offset = 0;
         if (pageNumber != null && pageSize != null) {
-            sql += "ORDER BY id DESC LIMIT ?,?";
+            sql += "ORDER BY p.id DESC LIMIT ?,?";
             offset = pageNumber * pageSize;
         }
 
         const statement = this.database.prepare<[number | null, number | null]>(sql);
-        return statement.all(offset, pageSize) as Picture[];
+        return statement.all(offset, pageSize) as DescribedPicture[];
     }
 
-    async findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<Picture | null> {
+    async findByCatEmployeeIdAndFileName(catEmployeeId: number, fileName: string): Promise<DescribedPicture | null> {
         const statement = this.database.prepare<[number, string]>(
-            `${selectFromPictures} WHERE cat_employee_id = ? AND file_name = ?`,
+            `${selectFromPictures} AND p.cat_employee_id = ? AND p.file_name = ?`,
         );
 
-        const result = statement.get(catEmployeeId, fileName) as Picture;
+        const result = statement.get(catEmployeeId, fileName) as DescribedPicture;
 
         return result ?? null;
     }
 
-    async findById(id: number): Promise<Picture | null> {
-        const statement = this.database.prepare<number>(`${selectFromPictures} WHERE id = ?`);
+    async findById(id: number): Promise<DescribedPicture | null> {
+        const statement = this.database.prepare<number>(`${selectFromPictures} AND p.id = ?`);
 
-        return (statement.get(id) as Picture) ?? null;
+        return (statement.get(id) as DescribedPicture) ?? null;
     }
 
     async findFileById(id: number): Promise<Buffer> {
-        const statement = this.database.prepare<number>("SELECT file FROM picture WHERE id = ?");
+        const statement = this.database.prepare<number>("SELECT file FROM picture p WHERE p.id = ?");
 
         const result = statement.get(id) as { file: Buffer };
         return result?.file ?? Buffer.of();

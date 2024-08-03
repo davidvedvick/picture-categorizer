@@ -4,7 +4,7 @@ import { PrimaryButton } from "../../components/PrimaryButton";
 
 interface PictureTagProps {
     pictureId: number;
-    onNewPictureAdded: () => void;
+    onTagAdded: () => void;
 }
 
 export function NewPictureTag(props: PictureTagProps) {
@@ -22,7 +22,7 @@ export function NewPictureTag(props: PictureTagProps) {
         });
 
         if (response.ok) {
-            props.onNewPictureAdded();
+            props.onTagAdded();
         }
     }
 
