@@ -44,8 +44,6 @@ export function PictureTag(props: PictureTagProps) {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     async function promoteTag() {
-        setIsExpanded(false);
-
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
             method: "PATCH",
             body: JSON.stringify({ op: "promote" }),
@@ -63,6 +61,10 @@ export function PictureTag(props: PictureTagProps) {
 
         if (response.ok) props.onTagDeleted();
     }
+
+    React.useEffect(() => {
+        if (isExpanded) setTimeout(() => addEventListener("click", () => setIsExpanded(false), { once: true }));
+    }, [isExpanded]);
 
     return (
         <ExpandoGroup>
