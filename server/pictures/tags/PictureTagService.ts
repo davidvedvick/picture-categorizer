@@ -14,14 +14,18 @@ export class PictureTagService implements ServePictureTags {
         private readonly pictureTags: ManagePictureTags,
     ) {}
 
+    async promoteTag(
+        pictureId: number,
+        tagId: number,
+        authenticatedUser: EmailIdentifiedCatEmployee,
+    ): Promise<PictureTag | null> {
+        await this.verifyCatEmployeeOwnsPicture(pictureId, authenticatedUser);
+
+        return await this.pictureTags.promotePictureTag(pictureId, tagId);
+    }
+
     async addTag(pictureId: number, tag: string, authenticatedUser: EmailIdentifiedCatEmployee): Promise<PictureTag> {
-        const picture = await this.pictures.findById(pictureId);
-
-        if (!picture) throw new PictureNotFoundException(pictureId);
-
-        const employee = await this.catEmployees.findByEmail(authenticatedUser.email);
-
-        if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
+        await this.verifyCatEmployeeOwnsPicture(pictureId, authenticatedUser);
 
         return await this.pictureTags.getOrAddTag(pictureId, tag.toLowerCase());
     }
@@ -39,5 +43,18 @@ export class PictureTagService implements ServePictureTags {
         if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
 
         await this.pictureTags.deletePictureTag(pictureId, tagId);
+    }
+
+    async verifyCatEmployeeOwnsPicture(
+        pictureId: number,
+        authenticatedUser: EmailIdentifiedCatEmployee,
+    ): Promise<void> {
+        const picture = await this.pictures.findById(pictureId);
+
+        if (!picture) throw new PictureNotFoundException(pictureId);
+
+        const employee = await this.catEmployees.findByEmail(authenticatedUser.email);
+
+        if (!employee || picture.catEmployeeId != employee.id) throw new IncorrectEmployeeException();
     }
 }

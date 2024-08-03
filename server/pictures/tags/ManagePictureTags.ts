@@ -6,4 +6,6 @@ export interface ManagePictureTags {
     deletePictureTag(pictureId: number, tagId: number): Promise<void>;
 
     getPictureTags(pictureId: number): Promise<PictureTag[]>;
+
+    promotePictureTag(pictureId: number, tagId: number): Promise<PictureTag | null>;
 }

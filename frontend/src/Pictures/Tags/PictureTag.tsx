@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import { Tag } from "../../../../transfer";
 import { fetchAuthenticated } from "../../Security/UserModel";
 import { ButtonGroup, VerticalButtonGroup } from "../../components/ButtonGroup";
@@ -33,10 +33,24 @@ const ExpandedButtons = styled(VerticalButtonGroup)`
 interface PictureTagProps extends Tag {
     pictureId: number;
     onTagDeleted: () => void;
+    onTagPromoted: () => void;
+}
+
+function Menu(props: PropsWithChildren<{ isExpanded: boolean }>) {
+    return <ExpandedButtons>{props.isExpanded && props.children}</ExpandedButtons>;
 }
 
 export function PictureTag(props: PictureTagProps) {
     const [isExpanded, setIsExpanded] = React.useState(false);
+
+    async function promoteTag() {
+        const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
+            method: "patch",
+            body: JSON.stringify({ op: "promote" }),
+        });
+
+        if (response.ok) props.onTagPromoted();
+    }
 
     async function deleteTag() {
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
@@ -53,7 +67,10 @@ export function PictureTag(props: PictureTagProps) {
                 <span style={{ display: "none" }}>Toggle Dropdown</span>
             </DropdownButton>
 
-            <ExpandedButtons>{isExpanded && <Button onClick={deleteTag}>Delete</Button>}</ExpandedButtons>
+            <Menu isExpanded={isExpanded}>
+                <Button onClick={promoteTag}>Make Headline</Button>
+                <Button onClick={deleteTag}>Delete</Button>
+            </Menu>
         </ExpandoGroup>
     );
 }

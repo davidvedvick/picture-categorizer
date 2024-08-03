@@ -5,6 +5,7 @@ import { Tag } from "../../../../transfer";
 import { ReadOnlyPictureTag } from "./ReadOnlyPictureTag";
 import { userModel } from "../../Security/UserModel";
 import styled from "styled-components";
+import { useInteractionState } from "../../interactions/InteractionState";
 
 const Styled = styled.div`
     > * {
@@ -15,39 +16,42 @@ const Styled = styled.div`
 interface PictureTagListProps {
     catEmployeeId: number;
     pictureId: number;
+    onTagPromoted: () => void;
 }
 
 export function PictureTagList(props: PictureTagListProps) {
     const { pictureId } = props;
     const [tags, setTags] = React.useState<Tag[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = React.useState(userModel().isLoggedIn.value);
-    const [loggedInCatEmployeeId, setLoggedInCatEmployeeId] = React.useState(userModel().catEmployeeId.value);
+    const isLoggedIn = useInteractionState(userModel().isLoggedIn);
+    const loggedInCatEmployeeId = useInteractionState(userModel().catEmployeeId);
 
-    async function updateTags(pictureId: number) {
-        const response = await fetch(`/api/pictures/${pictureId}/tags`);
-        const tags = (await response.json()) as Tag[];
-        setTags(tags);
+    function updateTags(pictureId: number) {
+        async function asyncUpdate() {
+            const response = await fetch(`/api/pictures/${pictureId}/tags`);
+            const tags = (await response.json()) as Tag[];
+            setTags(tags);
+        }
+
+        asyncUpdate().catch(console.error);
     }
 
     React.useEffect(() => {
         updateTags(pictureId);
     }, [pictureId]);
 
-    React.useEffect(() => {
-        const vm = userModel();
-        const isLoggedInSub = vm.isLoggedIn.subscribe(setIsLoggedIn);
-        const idSub = vm.catEmployeeId.subscribe(setLoggedInCatEmployeeId);
-
-        return () => {
-            isLoggedInSub.unsubscribe();
-            idSub.unsubscribe();
-        };
-    }, []);
-
     return isLoggedIn && loggedInCatEmployeeId === props.catEmployeeId ? (
         <Styled>
             {tags.map((t) => (
-                <PictureTag key={t.id} {...t} {...props} onTagDeleted={() => updateTags(pictureId)} />
+                <PictureTag
+                    key={t.id}
+                    {...t}
+                    pictureId={pictureId}
+                    onTagPromoted={() => {
+                        updateTags(pictureId);
+                        props.onTagPromoted();
+                    }}
+                    onTagDeleted={() => updateTags(pictureId)}
+                />
             ))}
             <NewPictureTag {...props} onNewPictureAdded={() => updateTags(pictureId)} />
         </Styled>

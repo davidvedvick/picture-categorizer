@@ -9,10 +9,13 @@ SELECT
     p.cat_employee_id as catEmployeeId,
     p.file_name as fileName,
     p.mime_type as mimeType,
-    p.headline_tag_id as headlineTagId,
     t.tag as headlineTag
 FROM picture p
-LEFT JOIN tag t on t.id = p.headline_tag_id
+LEFT JOIN picture_tag pt on pt.picture_id = p.id
+LEFT JOIN picture_tag pt2
+    ON pt.picture_id = pt2.picture_id AND pt.tag_id = pt2.tag_id AND ((pt.rank < pt2.rank)
+        OR (pt.rank = pt2.rank AND pt.tag_id < pt.tag_id))
+LEFT JOIN tag t on t.id = pt.tag_id
 `;
 export class PictureRepository implements ManagePictures {
     constructor(private readonly database: Database) {}

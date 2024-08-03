@@ -76,7 +76,13 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         return picture ? toHeadlinedPictureResponse(picture) : null;
     }
 
-    async getPictureInformation(
+    async getPictureInformation(pictureId: number): Promise<PictureInformation | null> {
+        const picture = await this.pictureManagement.findById(pictureId);
+
+        return picture ? toHeadlinedPictureResponse(picture) : null;
+    }
+
+    async getPictureInformationPages(
         pageNumber: number | null = null,
         pageSize: number | null = null,
     ): Promise<Page<PictureInformation>> {
@@ -89,7 +95,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         }
 
         return {
-            content: (await promisedPictures).map(toPictureResponse),
+            content: (await promisedPictures).map(toHeadlinedPictureResponse),
             number: pageNumber ?? 0,
             last: isLast,
         };
