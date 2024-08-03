@@ -36,6 +36,10 @@ export const VerticalButtonGroup = styled.div`
         position: relative;
     }
 
+    > button {
+        width: 100%;
+    }
+
     > button:is(:first-of-type:not(:last-of-type)) {
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
