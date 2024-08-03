@@ -43,7 +43,8 @@ export class PictureListViewModel implements PictureListModel {
         const updatedPicture = await this.pictureAccess.getPictureInformation(pictureId);
         const existingPicture = this.loadedPictures.get(pictureId);
         if (existingPicture && updatedPicture) {
-            Object.assign(existingPicture, updatedPicture);
+            this.loadedPictures.set(pictureId, updatedPicture);
+            this.picturesSubject.value = [...this.loadedPictures.values()].sort((a, b) => b.id - a.id);
         }
     }
 

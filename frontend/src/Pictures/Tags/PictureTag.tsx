@@ -44,8 +44,10 @@ export function PictureTag(props: PictureTagProps) {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     async function promoteTag() {
+        setIsExpanded(false);
+
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
-            method: "patch",
+            method: "PATCH",
             body: JSON.stringify({ op: "promote" }),
         });
 
@@ -53,6 +55,8 @@ export function PictureTag(props: PictureTagProps) {
     }
 
     async function deleteTag() {
+        setIsExpanded(false);
+
         const response = await fetchAuthenticated(`/api/pictures/${props.pictureId}/tags/${props.id}`, {
             method: "delete",
         });
@@ -68,7 +72,7 @@ export function PictureTag(props: PictureTagProps) {
             </DropdownButton>
 
             <Menu isExpanded={isExpanded}>
-                <Button onClick={promoteTag}>Make Headline</Button>
+                <Button onClick={promoteTag}>Promote</Button>
                 <Button onClick={deleteTag}>Delete</Button>
             </Menu>
         </ExpandoGroup>

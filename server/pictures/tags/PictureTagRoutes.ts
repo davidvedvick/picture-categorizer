@@ -21,7 +21,7 @@ export default function (
         }
     });
 
-    app.patch("/api/pictures/:pictureId/tags/:id", async (req, res) => {
+    app.patch("/api/pictures/:pictureId/tags/:tagId", async (req, res) => {
         const token = req.get("authorization");
         if (!token) {
             res.sendStatus(400);
@@ -38,7 +38,10 @@ export default function (
             const pictureIdString = req.params.pictureId;
             const pictureId = Number(pictureIdString);
 
-            const pictureTag = await pictureTagService.promoteTag(pictureId, req.body.tag, authenticatedUser);
+            const tagIdString = req.params.tagId;
+            const tagId = Number(tagIdString);
+
+            const pictureTag = await pictureTagService.promoteTag(pictureId, tagId, authenticatedUser);
             res.status(200).send(pictureTag);
         } catch (e) {
             if (e instanceof IncorrectEmployeeException) {

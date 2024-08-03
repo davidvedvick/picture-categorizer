@@ -49,13 +49,13 @@ export class PictureTagRepository implements ManagePictureTags {
 
     async promotePictureTag(pictureId: number, tagId: number): Promise<PictureTag | null> {
         this.database
-            .prepare<[number, number]>(
+            .prepare<[number, number, number]>(
                 `UPDATE picture_tag
-                 SET rank = (SELECT MAX(rank) + 1 FROM picture_tag WHERE picture_id = ? and tag_id = ?)
+                 SET rank = (SELECT MAX(rank) + 1 FROM picture_tag WHERE picture_id = ?)
                  WHERE picture_id = ?
                    and tag_id = ?`,
             )
-            .run(pictureId, tagId);
+            .run(pictureId, pictureId, tagId);
 
         return this.getPictureTag(pictureId, tagId);
     }
