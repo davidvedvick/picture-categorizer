@@ -16,6 +16,7 @@ const Styled = styled.div`
 interface PictureTagListProps {
     catEmployeeId: number;
     pictureId: number;
+    onTagDeleted: () => void;
     onTagPromoted: () => void;
 }
 
@@ -50,7 +51,10 @@ export function PictureTagList(props: PictureTagListProps) {
                         updateTags(pictureId);
                         props.onTagPromoted();
                     }}
-                    onTagDeleted={() => updateTags(pictureId)}
+                    onTagDeleted={() => {
+                        updateTags(pictureId);
+                        props.onTagDeleted();
+                    }}
                 />
             ))}
             <NewPictureTag {...props} onNewPictureAdded={() => updateTags(pictureId)} />
