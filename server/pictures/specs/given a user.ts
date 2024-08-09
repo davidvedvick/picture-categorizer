@@ -7,6 +7,8 @@ import CatEmployee from "../../users/CatEmployee.js";
 import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
 import { PictureAlreadyExistsException } from "../PictureAlreadyExistsException.js";
 import { UnknownCatEmployeeException } from "../../users/UnknownCatEmployeeException.js";
+import { PictureFile } from "../PictureFile.js";
+import { IncorrectEmployeeException } from "../../users/IncorrectEmployeeException.js";
 
 describe("given a user", () => {
     describe("when adding the users pictures", () => {
@@ -66,6 +68,55 @@ describe("given a user", () => {
 
         test("then the response data is correct", () => {
             expect(response.fileName).toBe(addedPictures[0].fileName);
+        });
+    });
+
+    describe("when deleting a picture", () => {
+        let deletedPictureId: number = -1;
+        const employeeEmail = "z6ZBLPIAY";
+        const employeeId = 737;
+        const pictureId = 466;
+
+        beforeAll(async () => {
+            const pictureService = new PictureService(
+                {
+                    findById(id: number): Promise<PictureFile | null> {
+                        return Promise.resolve(
+                            id == pictureId
+                                ? {
+                                    id: id,
+                                    mimeType: "zXHTufH",
+                                    catEmployeeId: employeeId,
+                                    fileName: "9ZVugNotp",
+                                    file: Buffer.of(),
+                                }
+                                : null,
+                        );
+                    },
+                    deletePicture(id: number): Promise<void> {
+                        deletedPictureId = id;
+                        return Promise.resolve();
+                    },
+                } as ManagePictures,
+                {
+                    findByEmail(email: string): Promise<CatEmployee | null> {
+                        if (email != employeeEmail) return Promise.resolve(null);
+
+                        return Promise.resolve({
+                            id: employeeId,
+                            password: "OaH1Su",
+                            isEnabled: true,
+                            email: email,
+                        });
+                    },
+                } as ManageCatEmployees,
+            );
+
+            await pictureService.deletePicture(pictureId, { email: employeeEmail });
+        });
+
+        test("then the deleted picture is correct", () => {
+            expect(deletedPictureId).toBe(pictureId);
         });
     });
 
@@ -199,6 +250,66 @@ describe("given a user", () => {
 
             test("then the picture is not added", () => {
                 expect(addedPictures).toStrictEqual([]);
+            });
+        });
+    });
+
+    describe("and it is not the user's picture", () => {
+        describe("when deleting a picture", () => {
+            let deletedPictureId: number = -1;
+            let incorrectEmployeeException: IncorrectEmployeeException | null = null;
+            const employeeEmail = "7DSwDwf";
+            const employeeId = 659;
+            const pictureId = 633;
+
+            beforeAll(async () => {
+                const pictureService = new PictureService(
+                    {
+                        findById(id: number): Promise<PictureFile | null> {
+                            return Promise.resolve(
+                                id == pictureId
+                                    ? {
+                                        id: id,
+                                        mimeType: "zXHTufH",
+                                        catEmployeeId: 560,
+                                        fileName: "9ZVugNotp",
+                                        file: Buffer.of(),
+                                    }
+                                    : null,
+                            );
+                        },
+                        deletePicture(id: number): Promise<void> {
+                            deletedPictureId = id;
+                            return Promise.resolve();
+                        },
+                    } as ManagePictures,
+                    {
+                        findByEmail(email: string): Promise<CatEmployee | null> {
+                            if (email != employeeEmail) return Promise.resolve(null);
+
+                            return Promise.resolve({
+                                id: employeeId,
+                                password: "OaH1Su",
+                                isEnabled: true,
+                                email: email,
+                            });
+                        },
+                    } as ManageCatEmployees,
+                );
+
+                try {
+                    await pictureService.deletePicture(pictureId, { email: employeeEmail });
+                } catch (err) {
+                    if (err instanceof IncorrectEmployeeException) incorrectEmployeeException = err;
+                }
+            });
+
+            test("then the picture is not deleted", () => {
+                expect(deletedPictureId).toBe(-1);
+            });
+
+            test("then an incorrect employee exception is thrown", () => {
+                expect(incorrectEmployeeException).toBeDefined();
             });
         });
     });

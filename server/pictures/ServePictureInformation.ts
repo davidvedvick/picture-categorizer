@@ -12,4 +12,6 @@ export interface ServePictureInformation {
         pictureFile: PictureFile,
         authenticatedCatEmployee: EmailIdentifiedCatEmployee,
     ): Promise<PictureInformation>;
+
+    deletePicture(pictureId: number, authenticatedUser: EmailIdentifiedCatEmployee): Promise<void>;
 }
