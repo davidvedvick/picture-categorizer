@@ -10,6 +10,7 @@ import { PictureInformation } from "../../transfer/index.js";
 import { ServePictureFiles } from "./ServePictureFiles.js";
 import { EmailIdentifiedCatEmployee } from "../users/EmailIdentifiedCatEmployee.js";
 import { DescribedPicture } from "./DescribedPicture.js";
+import { IncorrectEmployeeException } from "../users/IncorrectEmployeeException.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
@@ -66,6 +67,23 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         );
 
         return toPictureResponse(picture);
+    }
+
+    async deletePicture(pictureId: number, authenticatedCatEmployee: EmailIdentifiedCatEmployee): Promise<void> {
+        const employee = await this.catEmployees.findByEmail(authenticatedCatEmployee.email);
+
+        if (!employee) {
+            throw new UnknownCatEmployeeException(authenticatedCatEmployee.email);
+        }
+
+        const picture = await this.getPictureInformation(pictureId);
+        if (!picture) return;
+
+        if (picture.catEmployeeId != employee.id) {
+            throw new IncorrectEmployeeException();
+        }
+
+        await this.pictureManagement.deletePicture(pictureId);
     }
 
     async getPictureInformation(pictureId: number): Promise<PictureInformation | null> {

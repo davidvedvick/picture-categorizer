@@ -75,4 +75,8 @@ export class PictureRepository implements ManagePictures {
 
         return picture;
     }
+
+    async deletePicture(id: number): Promise<void> {
+        this.database.prepare<number>("DELETE FROM picture p WHERE p.id = ?").run(id);
+    }
 }
