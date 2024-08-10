@@ -7,6 +7,7 @@ import { ManagePictures } from "../ManagePictures.js";
 import { ManageCatEmployees } from "../../users/ManageCatEmployees.js";
 import { PictureFile } from "../PictureFile.js";
 import { DescribedPicture } from "../DescribedPicture.js";
+import { ManagePictureTags } from "../tags/ManagePictureTags.js";
 
 describe("given cat pictures", () => {
     describe("when getting the first page", () => {
@@ -41,6 +42,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformationPages(0, 5);
@@ -86,6 +88,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformationPages(1, 3);
@@ -120,6 +123,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             page = await pictureService.getPictureInformationPages();
@@ -162,6 +166,7 @@ describe("given cat pictures", () => {
                     },
                 } as ManagePictures,
                 {} as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             picture = await pictureService.getPictureFile(644);

@@ -9,6 +9,7 @@ import { PictureAlreadyExistsException } from "../PictureAlreadyExistsException.
 import { UnknownCatEmployeeException } from "../../users/UnknownCatEmployeeException.js";
 import { PictureFile } from "../PictureFile.js";
 import { IncorrectEmployeeException } from "../../users/IncorrectEmployeeException.js";
+import { ManagePictureTags } from "../tags/ManagePictureTags.js";
 
 describe("given a user", () => {
     describe("when adding the users pictures", () => {
@@ -39,6 +40,7 @@ describe("given a user", () => {
                         });
                     },
                 } as ManageCatEmployees,
+                {} as ManagePictureTags,
             );
 
             response = await pictureService.addPicture(
@@ -72,10 +74,13 @@ describe("given a user", () => {
     });
 
     describe("when deleting a picture", () => {
-        let deletedPictureId: number = -1;
         const employeeEmail = "z6ZBLPIAY";
         const employeeId = 737;
         const pictureId = 466;
+
+        let deletedPictureId = -1;
+        let deletedPictureTagId = -1;
+        let arePictureTagsDeletedFirst = false;
 
         beforeAll(async () => {
             const pictureService = new PictureService(
@@ -95,6 +100,7 @@ describe("given a user", () => {
                     },
                     deletePicture(id: number): Promise<void> {
                         deletedPictureId = id;
+                        arePictureTagsDeletedFirst = deletedPictureTagId === id;
                         return Promise.resolve();
                     },
                 } as ManagePictures,
@@ -110,6 +116,12 @@ describe("given a user", () => {
                         });
                     },
                 } as ManageCatEmployees,
+                {
+                    deleteAllPictureTags(pictureId: number): Promise<void> {
+                        deletedPictureTagId = pictureId;
+                        return Promise.resolve();
+                    },
+                } as ManagePictureTags,
             );
 
             await pictureService.deletePicture(pictureId, { email: employeeEmail });
@@ -117,6 +129,14 @@ describe("given a user", () => {
 
         test("then the deleted picture is correct", () => {
             expect(deletedPictureId).toBe(pictureId);
+        });
+
+        test("then the deleted picture tag ID is correct", () => {
+            expect(deletedPictureTagId).toBe(pictureId);
+        });
+
+        test("then the picture tags are deleted first", () => {
+            expect(arePictureTagsDeletedFirst).toBeTruthy();
         });
     });
 
@@ -162,6 +182,7 @@ describe("given a user", () => {
                             });
                         },
                     } as ManageCatEmployees,
+                    {} as ManagePictureTags,
                 );
 
                 try {
@@ -226,6 +247,7 @@ describe("given a user", () => {
                             return Promise.resolve(null);
                         },
                     } as ManageCatEmployees,
+                    {} as ManagePictureTags,
                 );
 
                 try {
@@ -295,6 +317,7 @@ describe("given a user", () => {
                             });
                         },
                     } as ManageCatEmployees,
+                    {} as ManagePictureTags,
                 );
 
                 try {
