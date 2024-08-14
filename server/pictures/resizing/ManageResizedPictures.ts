@@ -10,4 +10,6 @@ export interface ManageResizedPictures {
     findFileById(id: number): Buffer;
 
     save(picture: ResizedPicture): ResizedPictureId;
+
+    delete(id: number): void;
 }

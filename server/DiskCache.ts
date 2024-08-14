@@ -4,7 +4,8 @@ export class DiskCache {
     constructor(
         private readonly database: Database,
         private readonly cacheName: string,
-        private readonly sizeInMegabytes: number,
+        private readonly sizeInMegabytes: number = 0,
+        private readonly accessStalenessMs: number = 0,
     ) {}
 
     set(cacheKey: string, value: Buffer) {
@@ -48,6 +49,14 @@ export class DiskCache {
     }
 
     private trimCache() {
+        if (this.accessStalenessMs > 0) {
+            this.database
+                .prepare<number>("DELETE FROM disk_cache WHERE last_accessed_time < ?")
+                .run(Date.now() - this.accessStalenessMs);
+        }
+
+        if (this.sizeInMegabytes <= 0) return;
+
         const sizeStatement = this.database.prepare(
             "SELECT (SUM(LENGTH(value)) / 1024 / 1024) as size FROM disk_cache WHERE cache_name = ?",
         );

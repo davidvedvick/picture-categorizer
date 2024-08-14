@@ -12,6 +12,7 @@ import { EmailIdentifiedCatEmployee } from "../users/EmailIdentifiedCatEmployee.
 import { DescribedPicture } from "./DescribedPicture.js";
 import { IncorrectEmployeeException } from "../users/IncorrectEmployeeException.js";
 import { ManagePictureTags } from "./tags/ManagePictureTags.js";
+import { ManageResizedPictures } from "./resizing/ManageResizedPictures.js";
 
 function toPictureResponse(picture: Picture): PictureInformation {
     return {
@@ -36,6 +37,7 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         private readonly pictureManagement: ManagePictures,
         private readonly catEmployees: ManageCatEmployees,
         private readonly pictureTags: ManagePictureTags,
+        private readonly resizedPictures: ManageResizedPictures,
     ) {}
 
     async addPicture(
@@ -84,6 +86,8 @@ export class PictureService implements ServePictureInformation, ServePictureFile
         if (picture.catEmployeeId != employee.id) {
             throw new IncorrectEmployeeException();
         }
+
+        this.resizedPictures.delete(pictureId);
 
         await this.pictureTags.deleteAllPictureTags(pictureId);
 

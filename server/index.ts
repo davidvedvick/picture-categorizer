@@ -55,7 +55,12 @@ const port = 5000;
     const resizePictureRepository = new ResizedPictureRepository(database);
     const catEmployeeRepository = new CatEmployeeRepository(database);
     const pictureTagRepository = new PictureTagRepository(database);
-    const pictureService = new PictureService(pictureRepository, catEmployeeRepository, pictureTagRepository);
+    const pictureService = new PictureService(
+        pictureRepository,
+        catEmployeeRepository,
+        pictureTagRepository,
+        resizePictureRepository,
+    );
     const jwtTokenManagement = new JwtTokenManagement(config.authentication);
 
     PictureRoutes(
