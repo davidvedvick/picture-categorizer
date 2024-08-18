@@ -25,6 +25,7 @@ const ExpandoGroup = styled(ButtonGroup)`
 `;
 
 const ExpandedButtons = styled(VerticalButtonGroup)`
+    z-index: 1000;
     position: absolute;
     top: 100%;
     left: 0;
