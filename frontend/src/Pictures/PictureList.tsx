@@ -8,6 +8,9 @@ import { Card, CardBody, CardTitle } from "../components/Card";
 import { VisuallyHidden } from "../components/VisuallyHidden";
 import { Spinner } from "../components/Spinner";
 import { useInteractionState } from "../interactions/InteractionState";
+import { userModel } from "../Security/UserModel";
+import { Anchor } from "../components/Anchor";
+import { Button } from "../components/Button";
 
 const Pictures = styled.div`
     display: flex;
@@ -30,6 +33,13 @@ const PictureCard = styled(Card)`
     }
 `;
 
+const DeleteButton = styled(Button)`
+    font-size: 0.8rem;
+    color: darkred;
+    border: none;
+    background: none;
+`;
+
 interface PictureListProperties {
     initialPictureList?: PictureInformation[];
     isLoggedIn: boolean;
@@ -42,6 +52,8 @@ export function PictureList(props: PictureListProperties) {
     );
     const pictures = useInteractionState(viewModel.pictures);
     const isLoading = useInteractionState(viewModel.isLoading);
+    const isLoggedIn = useInteractionState(userModel().isLoggedIn);
+    const loggedInCatEmployeeId = useInteractionState(userModel().catEmployeeId);
 
     React.useEffect(() => {
         const token = cancellationToken();
@@ -61,14 +73,15 @@ export function PictureList(props: PictureListProperties) {
         <Pictures className="pictures">
             {pictures.map((p) => (
                 <PictureCard key={p.id} className="picture">
-                    <a target="_blank" href={`/api/pictures/${p.id}/file`} title={p.fileName} rel="noreferrer">
+                    <Anchor target="_blank" href={`/api/pictures/${p.id}/file`} title={p.fileName} rel="noreferrer">
                         <img
                             src={`/api/pictures/${p.id}/preview`}
                             alt={p.fileName}
                             title={p.fileName}
                             className="card-img-top"
                         />
-                    </a>
+                    </Anchor>
+                    {isLoggedIn && loggedInCatEmployeeId === p.catEmployeeId && <DeleteButton>Delete</DeleteButton>}
                     <CardBody>
                         <CardTitle>{p.headlineTag ?? p.fileName}</CardTitle>
                         <PictureTagList
