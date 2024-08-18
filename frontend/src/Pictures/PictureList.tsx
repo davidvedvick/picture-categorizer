@@ -8,6 +8,8 @@ import { Card, CardBody, CardTitle } from "../components/Card";
 import { VisuallyHidden } from "../components/VisuallyHidden";
 import { Spinner } from "../components/Spinner";
 import { useInteractionState } from "../interactions/InteractionState";
+import { Button } from "../components/Button";
+import { userModel } from "../Security/UserModel";
 
 const Pictures = styled.div`
     display: flex;
@@ -30,6 +32,13 @@ const PictureCard = styled(Card)`
     }
 `;
 
+const DeleteButton = styled(Button)`
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+`;
+
 interface PictureListProperties {
     initialPictureList?: PictureInformation[];
     isLoggedIn: boolean;
@@ -42,6 +51,8 @@ export function PictureList(props: PictureListProperties) {
     );
     const pictures = useInteractionState(viewModel.pictures);
     const isLoading = useInteractionState(viewModel.isLoading);
+    const isLoggedIn = useInteractionState(userModel().isLoggedIn);
+    const loggedInCatEmployeeId = useInteractionState(userModel().catEmployeeId);
 
     React.useEffect(() => {
         const token = cancellationToken();
@@ -79,6 +90,7 @@ export function PictureList(props: PictureListProperties) {
                             onTagAdded={() => updatePicture(p.id)}
                         />
                     </CardBody>
+                    {isLoggedIn && loggedInCatEmployeeId === p.catEmployeeId && <DeleteButton>Delete</DeleteButton>}
                 </PictureCard>
             ))}
             {isLoading && (
