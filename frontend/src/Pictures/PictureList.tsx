@@ -10,6 +10,7 @@ import { Spinner } from "../components/Spinner";
 import { useInteractionState } from "../interactions/InteractionState";
 import { userModel } from "../Security/UserModel";
 import { Anchor } from "../components/Anchor";
+import { Button } from "../components/Button";
 
 const Pictures = styled.div`
     display: flex;
@@ -32,9 +33,11 @@ const PictureCard = styled(Card)`
     }
 `;
 
-const DeleteButton = styled(Anchor)`
+const DeleteButton = styled(Button)`
     font-size: 0.8rem;
     color: darkred;
+    border: none;
+    background: none;
 `;
 
 interface PictureListProperties {
@@ -78,9 +81,7 @@ export function PictureList(props: PictureListProperties) {
                             className="card-img-top"
                         />
                     </Anchor>
-                    {isLoggedIn && loggedInCatEmployeeId === p.catEmployeeId && (
-                        <DeleteButton href="#">Delete</DeleteButton>
-                    )}
+                    {isLoggedIn && loggedInCatEmployeeId === p.catEmployeeId && <DeleteButton>Delete</DeleteButton>}
                     <CardBody>
                         <CardTitle>{p.headlineTag ?? p.fileName}</CardTitle>
                         <PictureTagList
