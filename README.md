@@ -1,5 +1,7 @@
 # Picture Categorizer
 
+![CatPics Logo](./frontend/public/cat-logo.png)
+
 Picture Categorizer is public image gallery software. An instance of Picture Categorizer runs at [Catpics!](https://catpics.fun),
 devoted entirely to those animals we most love, cats! To best serve our cat overlords, Picture Categorizer has gone through
 several different iterations:
