@@ -13,7 +13,11 @@ interface UserModel {
     authenticate(user: User): Promise<JwtToken | null>;
 }
 
-class UserViewModel implements UserModel {
+export interface AuthenticatedFetch {
+    fetchAuthenticated(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+}
+
+class UserViewModel implements UserModel, AuthenticatedFetch {
     private readonly isLoggedInSubject: UpdatableInteractionState<boolean>;
     private readonly catEmployeeIdSubject: UpdatableInteractionState<number | null>;
 
@@ -74,6 +78,10 @@ function instance(): UserViewModel {
 }
 
 export function userModel(): UserModel {
+    return instance();
+}
+
+export function authenticatedFetcher(): AuthenticatedFetch {
     return instance();
 }
 
