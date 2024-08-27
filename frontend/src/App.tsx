@@ -11,6 +11,7 @@ import { Modal, ModalBody } from "./components/Modal";
 import { PrimaryButton } from "./components/PrimaryButton";
 import { CloseButton } from "./components/CloseButton";
 import { useInteractionState } from "./interactions/InteractionState";
+import { Anchor } from "./components/Anchor";
 
 const theme = {
     surface: "white",
@@ -41,11 +42,6 @@ const Root = styled.div`
 
     text-align: start;
     font-size: 1rem;
-
-    a {
-        text-decoration: none;
-        color: ${(props) => props.theme.onSurface};
-    }
 
     h1,
     h2,
@@ -147,10 +143,10 @@ function App() {
             <Root>
                 <Header>
                     <NavBar>
-                        <a href="/">
+                        <Anchor href="/">
                             <Logo src="/cat-logo.png" alt="Logo of a Smirking Cat" />
                             Cat Pics!
-                        </a>
+                        </Anchor>
                         <PrimaryButton onClick={showUploads}>Upload More Catpics!</PrimaryButton>
                     </NavBar>
                 </Header>

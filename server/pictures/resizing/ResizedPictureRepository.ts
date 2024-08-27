@@ -12,6 +12,10 @@ const selectResizedPictureIds = `
 export class ResizedPictureRepository implements ManageResizedPictures {
     constructor(private readonly database: Database) {}
 
+    delete(id: number): void {
+        this.database.prepare<number>("DELETE FROM resized_picture WHERE picture_id = ?").run(id);
+    }
+
     findByRequest(resizePictureRequest: ResizePictureRequest): ResizedPictureId | null {
         const statement = this.database.prepare<ResizePictureRequest>(
             `${selectResizedPictureIds} WHERE picture_id = @pictureId AND maxWidth = @maxWidth and maxHeight = @maxHeight`,

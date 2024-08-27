@@ -93,6 +93,41 @@ export default function (
         }
     });
 
+    app.delete("/api/pictures/:id", async (req, res) => {
+        const idString = req.params.id;
+        if (!idString) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const id = Number(idString);
+
+        const token = req.get("authorization");
+        if (!token) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const authenticatedUser = await manageJwtTokens.decodeToken(token);
+        if (!authenticatedUser || !authenticatedUser.email) {
+            res.sendStatus(401);
+            return;
+        }
+
+        try {
+            await pictureService.deletePicture(id, authenticatedUser);
+            res.sendStatus(200);
+        } catch (e) {
+            if (e instanceof UnknownCatEmployeeException) {
+                res.sendStatus(403);
+                return;
+            }
+
+            console.error("An error occurred deleting the picture.", e);
+            res.status(500).send("I'm not sure what happened here.");
+        }
+    });
+
     function handlePictureFileRequests(
         pictureFiles: ServePictureFiles,
     ): (req: express.Request, res: express.Response) => Promise<void> {

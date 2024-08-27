@@ -41,6 +41,10 @@ export class PictureTagRepository implements ManagePictureTags {
             .run(tagId, pictureId);
     }
 
+    async deleteAllPictureTags(pictureId: number): Promise<void> {
+        this.database.prepare<[number]>("DELETE FROM picture_tag WHERE picture_id = ?").run(pictureId);
+    }
+
     async getPictureTags(pictureId: number): Promise<PictureTag[]> {
         const statement = this.database.prepare<number>(`${selectFromPictureTags} WHERE picture_id = ?`);
 

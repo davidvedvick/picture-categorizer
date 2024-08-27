@@ -13,4 +13,6 @@ export interface ManagePictures {
     countAll(): Promise<number>;
 
     save(picture: Picture): Promise<Picture>;
+
+    deletePicture(id: number): Promise<void>;
 }

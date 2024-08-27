@@ -3,6 +3,7 @@ import { CancellationToken } from "../CancellationToken";
 import { PictureInformation } from "../../../transfer";
 import { InteractionState, mutableInteractionState, UpdatableInteractionState } from "../interactions/InteractionState";
 import { AccessPictures, PictureAccess } from "./AccessPictures";
+import { authenticatedFetcher } from "../Security/UserModel";
 
 const pageSize = 20;
 
@@ -13,6 +14,8 @@ interface PictureListModel {
     watchFromScrollState(cancellationToken: CancellationToken): Promise<void>;
 
     updatePicture(pictureId: number): Promise<void>;
+
+    deletePicture(pictureId: number): Promise<void>;
 }
 
 export class PictureListViewModel implements PictureListModel {
@@ -44,6 +47,13 @@ export class PictureListViewModel implements PictureListModel {
         const existingPicture = this.loadedPictures.get(pictureId);
         if (existingPicture && updatedPicture) {
             this.loadedPictures.set(pictureId, updatedPicture);
+            this.picturesSubject.value = [...this.loadedPictures.values()].sort((a, b) => b.id - a.id);
+        }
+    }
+
+    async deletePicture(pictureId: number): Promise<void> {
+        await this.pictureAccess.deletePicture(pictureId);
+        if (this.loadedPictures.delete(pictureId)) {
             this.picturesSubject.value = [...this.loadedPictures.values()].sort((a, b) => b.id - a.id);
         }
     }
@@ -90,5 +100,5 @@ export class PictureListViewModel implements PictureListModel {
 }
 
 export function newPictureListModel(document: Document, initialPictures: PictureInformation[] = []): PictureListModel {
-    return new PictureListViewModel(document, new PictureAccess(), initialPictures);
+    return new PictureListViewModel(document, new PictureAccess(authenticatedFetcher()), initialPictures);
 }
