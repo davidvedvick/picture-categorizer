@@ -14,6 +14,7 @@ import { Button } from "../components/Button";
 import { Modal, ModalBody } from "../components/Modal";
 import { CloseButton } from "../components/CloseButton";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { ReactComponent as PoopBag } from "../poop-bag.svg";
 
 const Pictures = styled.div`
     display: flex;
@@ -41,6 +42,14 @@ const DeleteButton = styled(Button)`
     color: darkred;
     border: none;
     background: none;
+`;
+
+const DeleteIcon = styled(PoopBag)`
+    max-height: 1.5rem;
+    max-width: 1.5rem;
+    fill: ${(props) => props.theme.onPrimary};
+    padding-left: 0.5rem;
+    vertical-align: middle;
 `;
 
 interface PictureListProperties {
@@ -72,24 +81,26 @@ export function PictureList(props: PictureListProperties) {
     }, [viewModel]);
 
     function updatePicture(pictureId: number) {
-        viewModel
-            .updatePicture(pictureId)
-            .catch((err) => console.error("An unrecoverable error updating the picture.", err));
+        viewModel.updatePicture(pictureId).catch((err) => console.error("An unrecoverable error occurred.", err));
+    }
+
+    function resetDelete() {
+        setPictureToDelete(null);
+        setDeleteConfirmation("");
     }
 
     async function deletePicture() {
         try {
             const pictureId = pictureToDelete;
-            if (pictureId) await viewModel.deletePicture(pictureId);
+            if (pictureId && deleteConfirmation == deleteString) await viewModel.deletePicture(pictureId);
         } finally {
-            setPictureToDelete(null);
-            setDeleteConfirmation("");
+            resetDelete();
         }
     }
 
     function handleDelete(formEvent: FormEvent<HTMLFormElement>) {
         formEvent.preventDefault();
-        deletePicture().catch((err) => console.error("An unrecoverable error updating the picture.", err));
+        deletePicture().catch((err) => console.error("An unrecoverable error occurred.", err));
     }
 
     return (
@@ -106,7 +117,9 @@ export function PictureList(props: PictureListProperties) {
                             />
                         </Anchor>
                         {isLoggedIn && loggedInCatEmployeeId === p.catEmployeeId && (
-                            <DeleteButton onClick={() => setPictureToDelete(p.id)}>Delete</DeleteButton>
+                            <div>
+                                <DeleteButton onClick={() => setPictureToDelete(p.id)}>Delete</DeleteButton>
+                            </div>
                         )}
                         <CardBody>
                             <CardTitle>{p.headlineTag ?? p.fileName}</CardTitle>
@@ -130,15 +143,15 @@ export function PictureList(props: PictureListProperties) {
                 <Modal>
                     <header>
                         <h5>Delete Picture?!?!</h5>
-                        <CloseButton onClick={() => setPictureToDelete(null)} />
+                        <CloseButton onClick={resetDelete} />
                     </header>
                     <ModalBody>
                         <form onSubmit={handleDelete}>
                             <div>
-                                <p>To delete this picture and its associated data, enter LITTERBOX below.</p>
+                                <p>{`To delete this picture and its associated data, enter ${deleteString} below.`}</p>
                                 <input
                                     type="text"
-                                    placeholder="LITTERBOX"
+                                    placeholder={deleteString}
                                     value={deleteConfirmation}
                                     onChange={(e) => setDeleteConfirmation(e.target.value)}
                                 />
@@ -146,6 +159,7 @@ export function PictureList(props: PictureListProperties) {
                             <p>
                                 <PrimaryButton type="submit" disabled={!isDeleteEnabled}>
                                     DELETE!
+                                    {isDeleteEnabled && <DeleteIcon />}
                                 </PrimaryButton>
                             </p>
                         </form>
