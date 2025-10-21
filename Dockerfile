@@ -1,4 +1,4 @@
-FROM node:20.9.0 AS build
+FROM node:22.20.0 AS build
 
 WORKDIR /workspace
 COPY package*.json .
@@ -25,7 +25,7 @@ FROM scratch AS staging
 ARG DEPENDENCY=/workspace/server/build
 COPY --from=build ${DEPENDENCY} /
 
-FROM node:20.9.0
+FROM node:22.20.0
 
 VOLUME /tmp
 
